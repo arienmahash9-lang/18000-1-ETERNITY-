@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>18 000 + 1 Eternity | Official Web Novel Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-cosmos: #020617;
+            --bg-nebula: #090d1c;
+            --accent-cyan: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-gold: #fbbf24;
+        }
+        body {
+            background-color: var(--bg-cosmos);
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.14) 0%, transparent 45%),
+                radial-gradient(circle at 85% 25%, rgba(168, 85, 247, 0.16) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(30, 58, 138, 0.22) 0%, transparent 60%);
+            background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 110px;
+        }
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+        .cosmic-title {
+            background: linear-gradient(135deg, #ffffff 0%, #bae6fd 45%, #38bdf8 80%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.45));
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+        }
+        .glass-card-gold {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            box-shadow: 0 8px 32px rgba(251, 191, 36, 0.12);
+        }
+        .star-bg {
+            background-image: radial-gradient(rgba(255,255,255,0.7) 1px, transparent 1px), radial-gradient(rgba(56,189,248,0.5) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+        .folder-icon-wrapper {
+            position: relative;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .folder-icon-wrapper:active {
+            transform: scale(0.95);
+        }
+        /* Скрытие скроллбара для мобильных табов */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.35); }
+            50% { box-shadow: 0 0 28px rgba(168, 85, 247, 0.6); }
+        }
+        .glow-anim {
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen selection:bg-sky-500 selection:text-white">
+
+    <!-- ВЕРХНЯЯ ШАПКА НАВИГАЦИИ (Адаптивная под iPhone) -->
+    <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-sky-500/20 px-3 sm:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <!-- Логотип -->
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchMainTab('chapters')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 via-indigo-600 to-purple-700 p-0.5 glow-anim">
+                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                        <span class="font-cinzel font-bold text-sky-400 text-sm">18K+1</span>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-cinzel font-bold text-base sm:text-xl tracking-wider cosmic-title leading-none">18 000 + 1 ETERNITY</h1>
+                    <span id="roleHeaderBadge" class="text-[11px] font-medium text-amber-400 flex items-center gap-1 mt-0.5">
+                        <i class="fa-solid fa-crown text-[10px]"></i> <span id="roleHeaderText">Режим: Владелец (Админ)</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Переключатель языка и быстрые кнопки -->
+            <div class="flex items-center gap-2">
+                <button onclick="toggleLanguage()" id="langToggleBtn" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-sky-400/40 text-sky-300 font-semibold text-xs sm:text-sm flex items-center gap-1.5 hover:bg-sky-950/60 active:scale-95 transition">
+                    <i class="fa-solid fa-globe"></i>
+                    <span id="langLabel">RU / EN</span>
+                </button>
+                <button id="adminQuickBtn" onclick="openFolderModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-amber-500/20 active:scale-95 transition">
+                    <i class="fa-solid fa-folder-plus"></i>
+                    <span data-i18n="btnNewFolder">+ Папка</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Главные вкладки (Табы) -->
+        <div class="max-w-7xl mx-auto mt-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            <button onclick="switchMainTab('chapters')" id="tabBtn-chapters" class="tab-btn active-tab shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-sky-500/20 text-sky-300 border border-sky-400/40">
+                <i class="fa-solid fa-book-open"></i>
+                <span data-i18n="navChapters">Главы (1–45)</span>
+            </button>
+            <button onclick="switchMainTab('wiki')" id="tabBtn-wiki" class="tab-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-400 hover:text-slate-200 bg-slate-900/60 border border-slate-800">
+                <i class="fa-solid fa-folder-tree"></i>
+                <span data-i18n="navWiki">Папки Лор-Библии</span>
+            </button>
+            <button onclick="switchMainTab('arts')" id="tabBtn-arts" class="tab-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-400 hover:text-slate-200 bg-slate-900/60 border border-slate-800">
+                <i class="fa-solid fa-gem text-amber-400"></i>
+                <span data-i18n="navArts">Эксклюзивные Арты</span>
+            </button>
+            <button onclick="switchMainTab('cosmology')" id="tabBtn-cosmology" class="tab-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-400 hover:text-slate-200 bg-slate-900/60 border border-slate-800">
+                <i class="fa-solid fa-wand-sparkles text-purple-400"></i>
+                <span data-i18n="navCosmology">Система Сил (27 Уровней)</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 pt-4">
+
+        <!-- БАННЕР НОВЕЛЛЫ С ОБЛОЖКАМИ (IMG_3463 и IMG_3466) -->
+        <section class="relative rounded-3xl overflow-hidden mb-6 border border-sky-500/30 shadow-2xl star-bg">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-slate-950/40 z-10"></div>
+            
+            <div class="relative z-20 p-5 sm:p-8 flex flex-col md:flex-row items-center gap-6">
+                <!-- Двойная обложка (с переключением) -->
+                <div class="relative w-48 sm:w-56 shrink-0 group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-sky-400 via-purple-500 to-amber-400 rounded-2xl blur opacity-60"></div>
+                    <div class="relative rounded-2xl overflow-hidden border-2 border-sky-300/40 aspect-[2/3] bg-slate-900 shadow-2xl">
+                        <img id="heroCoverImg" src="IMG_3463_3c8864.jpg" onerror="this.src='https://placehold.co/600x900/090d1c/38bdf8?text=18+000+%2B+1+Eternity'" alt="18 000 + 1 Eternity Cover" class="w-full h-full object-cover transition duration-500">
+                        <div class="absolute bottom-2 inset-x-2 flex justify-center gap-1.5 bg-slate-950/80 backdrop-blur-md p-1.5 rounded-xl border border-white/10">
+                            <button onclick="switchCover('IMG_3463_3c8864.jpg')" class="px-2 py-1 text-[10px] font-bold rounded-lg bg-sky-500/30 text-sky-200 border border-sky-400/30">Арт 1</button>
+                            <button onclick="switchCover('IMG_3466_3c8864.jpg')" class="px-2 py-1 text-[10px] font-bold rounded-lg bg-purple-500/30 text-purple-200 border border-purple-400/30">Арт 2</button>
+                            <label id="heroUploadLabel" class="px-2 py-1 text-[10px] font-bold rounded-lg bg-amber-500/30 text-amber-300 border border-amber-400/30 cursor-pointer">
+                                <i class="fa-solid fa-camera"></i> Сменить
+                                <input type="file" accept="image/*" class="hidden" onchange="uploadHeroCover(event)">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Описание и Статистика -->
+                <div class="flex-1 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-semibold mb-3">
+                        <i class="fa-solid fa-sparkles"></i>
+                        <span data-i18n="heroBadge">Арка 1 Завершена • 45 Глав • Официальная Библия Лора</span>
+                    </div>
+                    <h2 class="font-cinzel text-2xl sm:text-4xl lg:text-5xl font-extrabold cosmic-title tracking-wide mb-3">
+                        18 000 + 1 ETERNITY
+                    </h2>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl mb-5" data-i18n="heroSynopsis">
+                        Да раскроются крылья судьбы и воспарят над безбрежным бытием! В мире 18 001 сверхвселенной и 5 Божественных Измерений рождается дитя порядка, хаоса, вечности и любви — наследный принц Святой Белой Империи Расса Ди Ариэн, благословленный самими Архангелами Азраилом и Михаилом.
+                    </p>
+
+                    <!-- Быстрые плашки статистики -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5 max-w-xl mx-auto md:mx-0">
+                        <div class="glass-card p-2.5 rounded-xl text-center">
+                            <div class="text-sky-400 font-cinzel font-bold text-base sm:text-lg">45 / 45</div>
+                            <div class="text-[11px] text-slate-400" data-i18n="statChapters">Глав Арки 1</div>
+                        </div>
+                        <div class="glass-card p-2.5 rounded-xl text-center">
+                            <div class="text-purple-400 font-cinzel font-bold text-base sm:text-lg">70+</div>
+                            <div class="text-[11px] text-slate-400" data-i18n="statCharacters">Папок Персонажей</div>
+                        </div>
+                        <div class="glass-card p-2.5 rounded-xl text-center">
+                            <div class="text-amber-400 font-cinzel font-bold text-base sm:text-lg">515</div>
+                            <div class="text-[11px] text-slate-400" data-i18n="statArtifacts">Артефактов Бога</div>
+                        </div>
+                        <div class="glass-card p-2.5 rounded-xl text-center">
+                            <div class="text-emerald-400 font-cinzel font-bold text-base sm:text-lg">RU / EN</div>
+                            <div class="text-[11px] text-slate-400" data-i18n="statLang">2 Языка</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                        <button onclick="openChapterReader(1)" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/30 flex items-center gap-2 active:scale-95 transition">
+                            <i class="fa-solid fa-play"></i>
+                            <span data-i18n="btnReadFirst">Читать с Главы 1</span>
+                        </button>
+                        <button onclick="openChapterReader(45)" class="px-5 py-2.5 rounded-xl bg-slate-800/90 border border-purple-400/40 text-purple-200 font-bold text-xs sm:text-sm flex items-center gap-2 active:scale-95 transition">
+                            <i class="fa-solid fa-bolt text-amber-400"></i>
+                            <span data-i18n="btnReadLatest">Глава 45 (Таймскип 15 лет)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ПАНЕЛЬ УПРАВЛЕНИЯ ВЛАДЕЛЬЦА (Видна только Админу) -->
+        <section id="adminDashboard" class="glass-card-gold rounded-2xl p-4 sm:p-5 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-cinzel font-bold text-amber-300 text-sm sm:text-base" data-i18n="adminPanelTitle">Панель Владельца (Управление Монетизацией и Контентом)</h3>
+                        <p class="text-[11px] text-slate-400" data-i18n="adminPanelSub">Вы вошли как создатель новеллы. Нажимайте на переключатели, чтобы закрывать главы и арты для Премиум-доступа.</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="lockLastNChapters(3)" class="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-semibold hover:bg-amber-500/30 active:scale-95 transition">
+                        <i class="fa-solid fa-lock mr-1"></i> <span data-i18n="btnLockLast3">Сделать последние 3 главы платными</span>
+                    </button>
+                    <button onclick="unlockAllChapters()" class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-600 text-slate-300 text-xs font-semibold hover:bg-slate-700 active:scale-95 transition">
+                        <i class="fa-solid fa-lock-open mr-1"></i> <span data-i18n="btnUnlockAll">Открыть все</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400" data-i18n="admStatLockedCh">Платных глав (Премиум):</div>
+                        <div id="admLockedChaptersCount" class="text-lg font-bold text-amber-400 mt-0.5">3 главы (43, 44, 45)</div>
+                    </div>
+                    <i class="fa-solid fa-book-bookmark text-2xl text-amber-500/40"></i>
+                </div>
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400" data-i18n="admStatFolders">Папок персонажей и лора:</div>
+                        <div id="admFoldersCount" class="text-lg font-bold text-sky-400 mt-0.5">42 папки</div>
+                    </div>
+                    <button onclick="openFolderModal()" class="px-2.5 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 font-semibold">
+                        + Создать
+                    </button>
+                </div>
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400" data-i18n="admStatAddCh">Добавить новую главу:</div>
+                        <div class="text-xs text-slate-300 mt-0.5">Глава 46+ (Арка 2)</div>
+                    </div>
+                    <button onclick="openNewChapterModal()" class="px-2.5 py-1.5 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40 font-semibold">
+                        + Глава
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 1: ВСЕ 45 ГЛАВ -->
+        <section id="view-chapters" class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-scroll text-sky-400"></i>
+                        <span data-i18n="chaptersHeading">Оглавление: Арка 1 (Главы 1 – 45)</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5" data-i18n="chaptersSub">Нажмите на любую главу для чтения на Русском или Английском языке. Админ может закрывать или открывать доступ к любой главе.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="chapterSearchInput" oninput="renderChapters()" placeholder="Поиск главы..." class="w-full sm:w-56 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-700 text-xs text-white focus:outline-none focus:border-sky-400">
+                </div>
+            </div>
+
+            <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                <!-- Заполняется скриптом -->
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 2: ПАПКИ ПЕРСОНАЖЕЙ, АРТЕФАКТОВ И ТЕХНИК (БИБЛИЯ ЛОРА) -->
+        <section id="view-wiki" class="hidden space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-amber-400"></i>
+                        <span data-i18n="wikiHeading">Интерактивные Папки: Персонажи, Артефакты и Техники</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5" data-i18n="wikiSub">Нажмите на папку-иконку, чтобы открыть полное досье, истинный скрытый уровень сил и загрузить фото с iPhone.</p>
+                </div>
+                <button id="wikiAddBtn" onclick="openFolderModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs flex items-center gap-2 self-start sm:self-auto shadow-lg">
+                    <i class="fa-solid fa-plus"></i> <span data-i18n="btnCreateFolder">Создать папку персонажа/артефакта</span>
+                </button>
+            </div>
+
+            <!-- Фильтры категорий папок -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" id="wikiCategoryFilters">
+                <button onclick="filterWiki('all')" class="wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-sky-500 text-slate-950 shrink-0" data-cat="all" data-i18n="catAll">Все Папки</button>
+                <button onclick="filterWiki('white_empire')" class="wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 shrink-0" data-cat="white_empire" data-i18n="catWhite">Святая Белая Империя (30 Столпов)</button>
+                <button onclick="filterWiki('other_empires')" class="wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 shrink-0" data-cat="other_empires" data-i18n="catOtherEmp">Империи Молнии, Тени, Ветра и Крови</button>
+                <button onclick="filterWiki('cosmology')" class="wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 shrink-0" data-cat="cosmology" data-i18n="catCosmo">Архангелы, Демоны, Звери и Древние Цари</button>
+                <button onclick="filterWiki('artifacts')" class="wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 shrink-0" data-cat="artifacts" data-i18n="catArtifacts">Артефакты Энпатуара (515)</button>
+                <button onclick="filterWiki('techniques')" class="wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 shrink-0" data-cat="techniques" data-i18n="catTech">Великие Искусства и Техники</button>
+            </div>
+
+            <!-- Сетка папок-иконок -->
+            <div id="wikiFoldersGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+                <!-- Заполняется скриптом -->
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 3: ЭКСКЛЮЗИВНЫЕ АРТЫ (С ПЛАТНЫМ ДОСТУПОМ) -->
+        <section id="view-arts" class="hidden space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-crown text-amber-400"></i>
+                        <span data-i18n="artsHeading">Эксклюзивная Галерея Артов (Альтернативные образы и Сцены битв)</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5" data-i18n="artsSub">Эксклюзивные иллюстрации персонажей, дворцов и оптимизированных техник. Владелец может закрывать любой арт под замок Премиум-подписки.</p>
+                </div>
+            </div>
+
+            <div id="exclusiveArtsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Заполняется скриптом -->
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 4: СИСТЕМА СИЛ (27 УРОВНЕЙ И 11 ЭТАПОВ) -->
+        <section id="view-cosmology" class="hidden space-y-6">
+            <div class="glass-card rounded-2xl p-5">
+                <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-sky-300 mb-2" data-i18n="sysTitle1">Откровение Небес: 27 Уровней Развития Сил (в каждом по 9 ступеней)</h2>
+                <p class="text-xs sm:text-sm text-slate-300 mb-4" data-i18n="sysDesc1">
+                    В мире 18 001 вселенной практики отказались от накопления энергии только в даньтяне и превратили в сосуд всё своё тело (органы, вены, меридианы, кости, мозг и сердце). Поэтому начиная с 3-го уровня они именуются «Пробужденными».
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-sky-500/30">
+                        <h3 class="font-cinzel font-bold text-sky-400 text-sm mb-2">Смертные и Пробужденные уровни (1 – 13)</h3>
+                        <ol class="text-xs space-y-1.5 text-slate-200 list-decimal list-inside">
+                            <li><strong>Уровень Начал</strong> (1–9 ступени)</li>
+                            <li><strong>Уровень Основы</strong> (1–9 ступени)</li>
+                            <li><strong>Пробужденный Воин</strong> (1–9 ступени)</li>
+                            <li><strong>Пробужденный Истинный Воин</strong> (1–9 ступени)</li>
+                            <li><strong>Пробужденный Высший Воин</strong> (1–9 ступени) — <em>Ариэн в 4.5–5 лет</em></li>
+                            <li><strong>Пробужденный Лорд</strong> (1–9 ступени) — <em>Ариэн на банкете (пик 8 ст.)</em></li>
+                            <li><strong>Пробужденный Высший Лорд</strong> (1–9 ступени) — <em>Астер (пик 3 ст.), Кармилла (7 ст.)</em></li>
+                            <li><strong>Пробужденный Король</strong> (1–9 ступени) — <em>Ариэн в 15 лет (7 ступень), Святые Девы</em></li>
+                            <li><strong>Пробужденный Верховный Король</strong> (1–9 ступени) — <em>Императрица Журен (пик 8 ст.), Агарес (пик 9 ст.), Столпы</em></li>
+                            <li><strong>Пробужденный Император</strong> (1–9 ступени) — <em>Доступна ментальная телепатия</em></li>
+                            <li><strong>Пробужденный Верховный Император</strong> (1–9 ступени)</li>
+                            <li><strong>Пробужденный Монарх</strong> (1–9 ступени)</li>
+                            <li><strong>Пробужденный Верховный Монарх</strong> (1–9 ступени) — <em>Предел легенд для обывателей</em></li>
+                        </ol>
+                    </div>
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-purple-500/30">
+                        <h3 class="font-cinzel font-bold text-purple-400 text-sm mb-2">Божественные уровни (14 – 27)</h3>
+                        <ol start="14" class="text-xs space-y-1.5 text-slate-200 list-decimal list-inside">
+                            <li><strong>Полубог</strong> (1–9 ступени)</li>
+                            <li><strong>Бог</strong> (1–9 ступени)</li>
+                            <li><strong>Истинный Бог</strong> (1–9 ступени)</li>
+                            <li><strong>Воинственный Бог</strong> (1–9 ступени)</li>
+                            <li><strong>Божественный Лорд</strong> (1–9 ступени)</li>
+                            <li><strong>Божественный Король</strong> (1–9 ступени)</li>
+                            <li><strong>Божественный Верховный Король</strong> (1–9 ступени)</li>
+                            <li><strong>Божественный Император</strong> (1–9 ступени)</li>
+                            <li><strong>Божественный Верховный Император</strong> (1–9 ступени)</li>
+                            <li><strong>Божественный Монарх</strong> (1–9 ступени)</li>
+                            <li><strong>Верховный Божественный Монарх</strong> (1–9 ступени)</li>
+                            <li><strong>Скрытый Божественный Уровень 25</strong> (1–9 ступени)</li>
+                            <li><strong>Скрытый Божественный Уровень 26</strong> (1–9 ступени)</li>
+                            <li><strong>Вечный Бог (Истинный Предел)</strong> (1–9 ступени)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11 Этапов Святого Белого Искусства и Календарь -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card rounded-2xl p-5">
+                    <h3 class="font-cinzel font-bold text-amber-300 text-base mb-2">11 Этапов Великого Святого Белого Искусства</h3>
+                    <p class="text-xs text-slate-400 mb-3">В остальных 7 Великих Империях искусства имеют только 9 этапов. Святая Белая Империя обладает 11 этапами и способностью исцелять 98% ранений и отращивать органы:</p>
+                    <ul class="text-xs space-y-1.5 text-slate-200">
+                        <li><span class="text-sky-400 font-bold">1 этап:</span> Святой белый шар</li>
+                        <li><span class="text-sky-400 font-bold">2 этап:</span> Святой белый щит</li>
+                        <li><span class="text-sky-400 font-bold">3 этап:</span> Святое белое копьё</li>
+                        <li><span class="text-sky-400 font-bold">4 этап:</span> Святая белая броня</li>
+                        <li><span class="text-sky-400 font-bold">5 этап:</span> Святой белый меч</li>
+                        <li><span class="text-sky-400 font-bold">6 этап:</span> Святая белая сфера</li>
+                        <li><span class="text-sky-400 font-bold">7 этап:</span> Святые белые крылья</li>
+                        <li><span class="text-sky-400 font-bold">8 этап:</span> Святое белое исцеление</li>
+                        <li><span class="text-sky-400 font-bold">9 этап:</span> Святой белый дракон (муж.) / Святой белый феникс (жен.)</li>
+                        <li><span class="text-amber-400 font-bold">10 этап:</span> Десять Светил Святого Света</li>
+                        <li><span class="text-amber-400 font-bold">11 этап:</span> Снисхождение Бога: Кара Святого Белого Света (Владеет только Журен)</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5">
+                    <h3 class="font-cinzel font-bold text-sky-300 text-base mb-2">Древний Календарь Свободных Людей (372 дня)</h3>
+                    <p class="text-xs text-slate-400 mb-3">События происходят в 598 115 году до н.э. (1015–1030 гг. от начала календаря Свободных людей). В году 4 сезона по 3 цикла (каждый цикл ровно 31 день):</p>
+                    <div class="space-y-2 text-xs text-slate-200">
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                            <strong class="text-emerald-400">Весна:</strong> 1-й цикл (Март), 2-й цикл (Апрель), 3-й цикл (Май)
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                            <strong class="text-amber-400">Лето:</strong> 1-й цикл (Июнь), 2-й цикл (Июль), 3-й цикл (Август — 15-го числа родился Ариэн)
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                            <strong class="text-orange-400">Осень:</strong> 1-й цикл (Сентябрь), 2-й цикл (Октябрь — 15-го числа банкет), 3-й цикл (Ноябрь)
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                            <strong class="text-sky-400">Зима:</strong> 1-й цикл (Декабрь), 2-й цикл (Январь), 3-й цикл (Февраль)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ КОММЕНТАРИЕВ ЧИТАТЕЛЕЙ (Закрыта для Гостей) -->
+        <section class="mt-8 glass-card rounded-2xl p-5">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <h3 class="font-cinzel font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-sky-400"></i>
+                    <span data-i18n="commentsTitle">Комментарии читателей</span>
+                </h3>
+                <span id="commentAccessNotice" class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Комментирование разрешено
+                </span>
+            </div>
+
+            <!-- Форма отправки (Скрывается для гостей) -->
+            <div id="commentFormBox" class="mb-5">
+                <textarea id="newCommentText" rows="2" placeholder="Напишите ваш отзыв о главе или персонаже..." class="w-full p-3 rounded-xl bg-slate-900/90 border border-slate-700 text-xs sm:text-sm text-white focus:outline-none focus:border-sky-400 mb-2"></textarea>
+                <div class="flex justify-end">
+                    <button onclick="submitComment()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition active:scale-95">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> <span data-i18n="btnSendComment">Опубликовать комментарий</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Блокировка для незарегистрированных гостей -->
+            <div id="guestCommentLockBox" class="hidden mb-5 p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-center">
+                <i class="fa-solid fa-user-lock text-rose-400 text-xl mb-1"></i>
+                <p class="text-xs sm:text-sm font-semibold text-rose-200" data-i18n="guestCommentBlocked">
+                    Незарегистрированные читатели (Гости) не могут оставлять комментарии.
+                </p>
+                <p class="text-[11px] text-rose-300/80 mt-1" data-i18n="guestCommentSub">
+                    Пожалуйста, войдите в аккаунт или оформите Премиум-подписку в нижней панели.
+                </p>
+            </div>
+
+            <div id="commentsContainer" class="space-y-3">
+                <!-- Заполняется скриптом -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- МОДАЛЬНОЕ ОКНО ЧИТАЛКИ ГЛАВ -->
+    <div id="chapterReaderModal" class="fixed inset-0 z-50 hidden bg-slate-950/95 backdrop-blur-xl overflow-y-auto">
+        <div class="max-w-3xl mx-auto px-4 py-6 min-h-screen flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-5 sticky top-0 bg-slate-950/90 backdrop-blur-md py-3 z-10">
+                <button onclick="closeChapterReader()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> <span data-i18n="btnBack">Назад</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleLanguage()" class="px-3 py-1.5 rounded-xl bg-sky-500/20 border border-sky-400/40 text-sky-300 text-xs font-bold">
+                        RU / EN
+                    </button>
+                    <button onclick="changeFontSize(1)" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-bold">A+</button>
+                    <button onclick="changeFontSize(-1)" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-bold">A-</button>
+                </div>
+            </div>
+
+            <div id="readerContentWrapper" class="flex-1">
+                <div class="text-xs font-bold text-sky-400 uppercase tracking-widest mb-1" id="readerChapterNum">ГЛАВА 1</div>
+                <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mb-4" id="readerChapterTitle">АБСОЛЮТНОЕ НАЧАЛО. РОЖДЕНИЕ</h2>
+                
+                <!-- Плашка ключевых событий лора в главе -->
+                <div class="p-3.5 rounded-xl bg-sky-950/40 border border-sky-500/30 mb-6 text-xs text-sky-200">
+                    <div class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-bookmark mr-1"></i> Архив Библии Лора в этой главе:</div>
+                    <div id="readerLoreSummary"></div>
+                </div>
+
+                <!-- Основной литературный текст главы -->
+                <div id="readerBodyText" class="text-slate-200 leading-relaxed space-y-4 text-base whitespace-pre-line font-normal"></div>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-800 pt-5 mt-8">
+                <button id="prevChapterBtn" onclick="navigateChapter(-1)" class="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-chevron-left"></i> <span data-i18n="btnPrevCh">Предыдущая</span>
+                </button>
+                <button id="nextChapterBtn" onclick="navigateChapter(1)" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                    <span data-i18n="btnNextCh">Следующая</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПРОСМОТРА ПАПКИ ПЕРСОНАЖА / АРТЕФАКТА -->
+    <div id="folderDetailModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-lg flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="glass-card rounded-3xl max-w-lg w-full p-5 sm:p-6 border border-sky-400/40 relative my-auto max-h-[90vh] overflow-y-auto">
+            <button onclick="closeFolderDetailModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 border border-slate-700 text-slate-400 flex items-center justify-center hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
+                <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-sky-400 shadow-lg shrink-0 bg-slate-900">
+                    <img id="detailFolderImg" src="" alt="" class="w-full h-full object-cover">
+                    <label id="detailUploadBtn" class="absolute inset-x-0 bottom-0 bg-slate-950/85 text-amber-300 text-[10px] font-bold text-center py-1 cursor-pointer">
+                        <i class="fa-solid fa-camera"></i> Фото с iPhone
+                        <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoToOpenedFolder(event)">
+                    </label>
+                </div>
+                <div class="text-center sm:text-left">
+                    <span id="detailFolderCat" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">Персонаж</span>
+                    <h3 id="detailFolderName" class="font-cinzel text-xl sm:text-2xl font-bold text-white mt-1">Принц Расса Ди Ариэн</h3>
+                    <div id="detailFolderRank" class="text-xs font-semibold text-amber-400 mt-0.5"></div>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs sm:text-sm text-slate-200 bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                <p id="detailFolderDesc" class="leading-relaxed whitespace-pre-line"></p>
+            </div>
+
+            <!-- Админ-настройки внутри папки -->
+            <div id="detailAdminControls" class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-amber-300 font-semibold"><i class="fa-solid fa-key mr-1"></i> Доступ к эксклюзивным артам папки:</span>
+                <button id="detailToggleLockBtn" onclick="toggleOpenedFolderLock()" class="px-3 py-1.5 rounded-xl font-bold transition"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ НОВОЙ ПАПКИ (ДЛЯ АДМИНА С IPHONE) -->
+    <div id="createFolderModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-lg flex items-center justify-center p-3 overflow-y-auto">
+        <div class="glass-card-gold rounded-3xl max-w-md w-full p-5 relative my-auto">
+            <button onclick="closeFolderModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 text-slate-400 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-cinzel text-lg font-bold text-amber-300 mb-1">Создать Новую Папку-Иконку</h3>
+            <p class="text-xs text-slate-400 mb-4">Загрузите фото персонажа, артефакта или техники прямо из галереи вашего iPhone.</p>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Название (RU):</label>
+                    <input type="text" id="newFolderNameRu" placeholder="Например: Артефакт №91 Кольцо Первого Монарха" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Название на Английском (EN):</label>
+                    <input type="text" id="newFolderNameEn" placeholder="Artifact #91 Ring of the First Monarch" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-300 mb-1 font-semibold">Категория:</label>
+                        <select id="newFolderCat" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white">
+                            <option value="white_empire">Святая Белая Империя</option>
+                            <option value="other_empires">Другие Великие Империи</option>
+                            <option value="cosmology">Космология / Боги / Звери</option>
+                            <option value="artifacts">Артефакт Энпатуара</option>
+                            <option value="techniques">Техника / Искусство</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 mb-1 font-semibold">Уровень сил / Статус:</label>
+                        <input type="text" id="newFolderRank" placeholder="Верховный Король 3 ст." class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Загрузить фото (из Галереи iPhone):</label>
+                    <input type="file" id="newFolderFile" accept="image/*" class="w-full p-2 rounded-xl bg-slate-900 border border-amber-500/40 text-amber-300">
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Подробное описание лора (RU):</label>
+                    <textarea id="newFolderDescRu" rows="3" placeholder="Полная информация о персонаже, его дворец, оптимизированные техники..." class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white"></textarea>
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Описание на Английском (EN - необязательно):</label>
+                    <textarea id="newFolderDescEn" rows="2" placeholder="English lore description..." class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white"></textarea>
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="newFolderLocked" class="w-4 h-4 accent-amber-500">
+                    <label for="newFolderLocked" class="text-amber-300 font-semibold">Сделать эксклюзивной платной папкой (Только для Премиум)</label>
+                </div>
+                <button onclick="saveNewFolder()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-bold text-sm shadow-lg mt-2">
+                    Создать папку и сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ НОВОЙ ГЛАВЫ (ДЛЯ АДМИНА) -->
+    <div id="newChapterModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-lg flex items-center justify-center p-3 overflow-y-auto">
+        <div class="glass-card-gold rounded-3xl max-w-md w-full p-5 relative my-auto">
+            <button onclick="closeNewChapterModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 text-slate-400 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-cinzel text-lg font-bold text-amber-300 mb-3">Опубликовать Новую Главу</h3>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Заголовок главы (RU):</label>
+                    <input type="text" id="addChTitleRu" placeholder="ГЛАВА 46: СПАРРИНГ С ЛОРДОМ СЕТОМ" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Заголовок главы (EN):</label>
+                    <input type="text" id="addChTitleEn" placeholder="CHAPTER 46: SPARRING WITH LORD SET" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Текст главы (RU):</label>
+                    <textarea id="addChTextRu" rows="4" placeholder="Текст вашей новой главы..." class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white"></textarea>
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Текст главы (EN):</label>
+                    <textarea id="addChTextEn" rows="3" placeholder="English literary translation..." class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white"></textarea>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="addChPaid" checked class="w-4 h-4 accent-amber-500">
+                    <label for="addChPaid" class="text-amber-300 font-semibold">Закрыть главу для Премиум-подписчиков (Платный ранний доступ)</label>
+                </div>
+                <button onclick="saveNewChapter()" class="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold text-sm shadow-lg mt-2">
+                    Опубликовать главу
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- УВЕДОМЛЕНИЕ TOAST (ВМЕСТО ALERT) -->
+    <div id="toastMessage" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-2xl bg-slate-900/95 border border-sky-400 text-white text-xs sm:text-sm font-semibold shadow-2xl flex items-center gap-2">
+        <i class="fa-solid fa-circle-info text-sky-400"></i>
+        <span id="toastText"></span>
+    </div>
+
+    <!-- ПЛАВАЮЩАЯ НИЖНЯЯ ПАНЕЛЬ ПЕРЕКЛЮЧЕНИЯ 3 УРОВНЕЙ ДОСТУПА (ДЛЯ ТЕСТА НА IPHONE) -->
+    <div class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-sky-500/30 px-3 py-2.5 shadow-2xl">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-sky-400"></i>
+                <span data-i18n="AccessBarLabel">Переключение режима доступа (проверка прав):</span>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5 w-full sm:w-auto">
+                <button onclick="setAccessRole('admin')" id="roleBtn-admin" class="px-3 py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 bg-amber-500 text-slate-950 shadow-md transition">
+                    <i class="fa-solid fa-crown"></i> <span>1. Владелец (Админ)</span>
+                </button>
+                <button onclick="setAccessRole('premium')" id="roleBtn-premium" class="px-3 py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 bg-slate-900 text-purple-300 border border-purple-500/30 transition">
+                    <i class="fa-solid fa-gem"></i> <span>2. Премиум</span>
+                </button>
+                <button onclick="setAccessRole('guest')" id="roleBtn-guest" class="px-3 py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 bg-slate-900 text-slate-400 border border-slate-800 transition">
+                    <i class="fa-solid fa-user"></i> <span>3. Гость</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // ГЛОБАЛЬНОЕ СОСТОЯНИЕ: ПО УМОЛЧАНИЮ АВТОР ВХОДИТ КАК ВЛАДЕЛЕЦ (ADMIN)
+        // =========================================================================
+        let currentLang = 'ru';
+        let currentRole = 'admin'; // По умолчанию сразу Админ для удобства работы с iPhone
+        let currentWikiFilter = 'all';
+        let currentReadingChapterId = 1;
+        let currentOpenedFolderId = null;
+        let readerFontSize = 16;
+
+        // Словарь интерфейса (RU / Литературный EN)
+        const uiTranslations = {
+            ru: {
+                btnNewFolder: "+ Папка",
+                navChapters: "Главы (1–45)",
+                navWiki: "Папки Лор-Библии",
+                navArts: "Эксклюзивные Арты",
+                navCosmology: "Система Сил (27 Уровней)",
+                heroBadge: "Арка 1 Завершена • 45 Глав • Официальная Библия Лора",
+                heroSynopsis: "Да раскроются крылья судьбы и воспарят над безбрежным бытием! В мире 18 001 сверхвселенной и 5 Божественных Измерений рождается дитя порядка, хаоса, вечности и любви — наследный принц Святой Белой Империи Расса Ди Ариэн, благословленный самими Архангелами Азраилом и Михаилом.",
+                statChapters: "Глав Арки 1",
+                statCharacters: "Папок Персонажей",
+                statArtifacts: "Артефактов Бога",
+                statLang: "2 Языка",
+                btnReadFirst: "Читать с Главы 1",
+                btnReadLatest: "Глава 45 (Таймскип 15 лет)",
+                adminPanelTitle: "Панель Владельца (Управление Монетизацией и Контентом)",
+                adminPanelSub: "Вы вошли как создатель новеллы. Нажимайте на переключатели, чтобы закрывать главы и арты для Премиум-доступа.",
+                btnLockLast3: "Сделать последние 3 главы платными",
+                btnUnlockAll: "Открыть все",
+                admStatLockedCh: "Платных глав (Премиум):",
+                admStatFolders: "Папок персонажей и лора:",
+                admStatAddCh: "Добавить новую главу:",
+                chaptersHeading: "Оглавление: Арка 1 (Главы 1 – 45)",
+                chaptersSub: "Нажмите на любую главу для чтения на Русском или Английском языке. Админ может закрывать или открывать доступ к любой главе.",
+                wikiHeading: "Интерактивные Папки: Персонажи, Артефакты и Техники",
+                wikiSub: "Нажмите на папку-иконку, чтобы открыть полное досье, истинный скрытый уровень сил и загрузить фото с iPhone.",
+                btnCreateFolder: "Создать папку персонажа/артефакта",
+                catAll: "Все Папки",
+                catWhite: "Святая Белая Империя (30 Столпов)",
+                catOtherEmp: "Империи Молнии, Тени, Ветра и Крови",
+                catCosmo: "Архангелы, Демоны, Звери и Древние Цари",
+                catArtifacts: "Артефакты Энпатуара (515)",
+                catTech: "Великие Искусства и Техники",
+                artsHeading: "Эксклюзивная Галерея Артов (Альтернативные образы и Сцены битв)",
+                artsSub: "Эксклюзивные иллюстрации персонажей, дворцов и оптимизированных техник. Владелец может закрывать любой арт под замок Премиум-подписки.",
+                commentsTitle: "Комментарии читателей",
+                btnSendComment: "Опубликовать комментарий",
+                guestCommentBlocked: "Незарегистрированные читатели (Гости) не могут оставлять комментарии.",
+                guestCommentSub: "Пожалуйста, переключитесь на Премиум или Владельца в нижней панели, чтобы писать комментарии.",
+                AccessBarLabel: "Переключение режима доступа (проверка прав):",
+                btnBack: "Назад",
+                btnPrevCh: "Предыдущая",
+                btnNextCh: "Следующая"
+            },
+            en: {
+                btnNewFolder: "+ Folder",
+                navChapters: "Chapters (1–45)",
+                navWiki: "Lore Bible Folders",
+                navArts: "Exclusive Arts",
+                navCosmology: "Power System (27 Realms)",
+                heroBadge: "Arc 1 Completed • 45 Chapters • Official Lore Bible",
+                heroSynopsis: "Let the wings of fate unfold and soar above boundless existence! Across 18,001 super-universes and 5 Divine Dimensions, the child of order, chaos, eternity, and love is born — Crown Prince Rassa D. Arien of the Holy White Empire, blessed by Archangels Azrael and Mikael themselves.",
+                statChapters: "Arc 1 Chapters",
+                statCharacters: "Lore Folders",
+                statArtifacts: "Divine Artifacts",
+                statLang: "Bilingual",
+                btnReadFirst: "Read Chapter 1",
+                btnReadLatest: "Chapter 45 (15yo Timeskip)",
+                adminPanelTitle: "Owner Dashboard (Monetization & CMS Control)",
+                adminPanelSub: "Logged in as Novel Creator. Toggle switches to lock chapters and exclusive character arts for Premium subscribers.",
+                btnLockLast3: "Lock Last 3 Chapters as Paid",
+                btnUnlockAll: "Unlock All",
+                admStatLockedCh: "Paid Chapters (Premium):",
+                admStatFolders: "Character & Lore Folders:",
+                admStatAddCh: "Publish New Chapter:",
+                chaptersHeading: "Table of Contents: Arc 1 (Chapters 1 – 45)",
+                chaptersSub: "Tap any chapter to read in Russian or Literary English. Owner can lock/unlock individual chapters anytime.",
+                wikiHeading: "Interactive Folders: Characters, Artifacts & Techniques",
+                wikiSub: "Tap any folder icon to view full dossier, hidden cultivation levels, and upload photos from your iPhone.",
+                btnCreateFolder: "Create Character/Artifact Folder",
+                catAll: "All Folders",
+                catWhite: "Holy White Empire (30 Pillars)",
+                catOtherEmp: "Lightning, Shadow, Wind & Blood Empires",
+                catCosmo: "Archangels, Demons, Beasts & Ancient Kings",
+                catArtifacts: "Enpatuar's Artifacts (515)",
+                catTech: "Grand Arts & Techniques",
+                artsHeading: "Exclusive Art Gallery (Alternate Outfits & Battle Scenes)",
+                artsSub: "Exclusive character illustrations, palaces, and optimized techniques. Owner can lock/unlock any art for Premium tier.",
+                commentsTitle: "Reader Discussions",
+                btnSendComment: "Post Comment",
+                guestCommentBlocked: "Unregistered readers (Guests) cannot post comments.",
+                guestCommentSub: "Please switch to Premium or Owner mode in the bottom bar to leave a comment.",
+                AccessBarLabel: "Live Access Role Switcher:",
+                btnBack: "Back",
+                btnPrevCh: "Previous",
+                btnNextCh: "Next"
+            }
+        };
+
+        // =========================================================================
+        // ПОЛНАЯ БАЗА 45 ГЛАВ ПЕРВОЙ АРКИ (НА РУССКОМ И ЛИТЕРАТУРНОМ АНГЛИЙСКОМ)
+        // =========================================================================
+        const defaultChapters = [
+            {
+                id: 1, paid: false,
+                titleRu: "АБСОЛЮТНОЕ НАЧАЛО. РОЖДЕНИЕ",
+                titleEn: "THE ABSOLUTE BEGINNING. BIRTH",
+                loreRu: "598 115 г. до н.э. (1015 г. Свободных людей, 15 августа). Рождение принца Ариэна у первой императрицы Святой Белой Империи Рассы Ди Журен (518+ лет). Святая дева Анали.",
+                loreEn: "598,115 BC (Year 1015 of Free People, August 15). Birth of Prince Arien to Empress Rassa D. Juren. Holy Maiden Anali assists.",
+                textRu: `Да раскроются крылья судьбы
+И воспарят над безбрежным бытием.
+Прозвучит звон, не звучавший с начала времен,
+И проснется дитя порядка, хаоса, вечности и любви.
+Обещанный час настал. Пришло время этому миру прийти в движение.
+
+598 115 год до нашей эры. 1015 год от начала календаря Свободных людей. 15-й день 3-го цикла лета (15 августа).
+В величественном Императорском дворце Святого Белого Света, в личных покоях императрицы Рассы Ди Журен, шли тяжелые схватки, длившиеся уже девять дней. Святая дева Анали укутала новорожденного мальчика в белый шелк и передала матери.
+
+Младенец впервые открыл свои небесно-синие глаза и вместо плача звонко и невинно улыбнулся. Хотя императрица Журен хотела назвать его Тэн, словно по провидению небес с её губ сорвалось имя, которого этот мир еще никогда не слышал:
+— Ариэн. Твое имя Ариэн, мой маленький принц.`,
+                textEn: `Let the wings of fate unfold
+And soar above the boundless existence.
+A chime unheard since the dawn of time shall ring out,
+And the child of order, chaos, eternity, and love shall awaken.
+The promised hour has come. It is time for this world to be set in motion.
+
+598,115 BC. Year 1015 of the Calendar of Free People. The 15th day of the 3rd summer cycle (August 15).
+Within the majestic Imperial Palace of Holy White Light, inside the personal chambers of Empress Rassa D. Juren, arduous labor had lasted for nine whole days. Holy Maiden Anali wrapped the newborn boy in pure white silk and placed him into his mother's arms.
+
+The infant opened his sky-blue eyes for the very first time. Instead of crying, he offered an innocent, radiant smile accompanied by a melodic chime. Though Empress Juren had long intended to name him Ten, as if guided by heavenly providence, she whispered a name never before heard in this world:
+"Arien. Your name is Arien, my little prince."`
+            },
+            {
+                id: 2, paid: false,
+                titleRu: "ДАРЕНИЕ ИМЕНИ АРХАНГЕЛАМИ",
+                titleEn: "THE BESTOWAL OF THE NAME",
+                loreRu: "Остановка времени. Сошествие Архангела Мудрости и Всезнания Михаила (6 пар фиолетовых звездных крыльев) и Архангела Смерти и Покоя Азраила (6 пар черных звездных крыльев). Непорочное зачатие. Благословение именем Расса Ди Ариэн.",
+                loreEn: "Time freezes. Descent of Archangel Mikael (Wisdom/Omniscience, 6 pairs of violet starlit wings) and Archangel Azrael (Death/Peace, 6 pairs of black starlit wings). Blessing of the name Rassa D. Arien.",
+                textRu: `В тот же миг прозвучал небесный звон, словно десять тысяч горнов воспели славу, и время во всем мире застыло. С небес во дворец спустились два великих архангела, служащих Вечному Единому Богу-Творцу: Архангел Михаил в роскошных фиолетовых одеяниях с шестью парами звездных крыльев и Архангел Азраил в черных одеяниях с лазурными узорами и шестью парами черных звездных крыльев.
+
+Услышав имя «Ариэн», Азраил на мгновение погрузил весь мир во тьму от нахлынувших чувств, но Михаил остановил брата, отметив непорочное зачатие младенца и его чистые небесно-синие глаза. Смертным было запрещено произносить это древнее имя без дозволения свыше.
+Взяв малыша на руки и увидев его лучезарную улыбку, сам Архангел Смерти Азраил впервые за долгие эпохи улыбнулся:
+— Учитывая твое родовое имя Расса Ди, маленькое дитя, я, Азраил, благословляю тебя именем Расса Ди Ариэн! Теперь смертные смогут называть твое имя.
+Затем Михаил благословил младенца мудростью, и архангелы исчезли, стерев память всем во дворце, кроме самой императрицы Журен.`,
+                textEn: `In that very instant, a celestial resonance echoed as though ten thousand horns sang of glory, and time across the world stood still. Descending from the heavens into the palace were two grand Archangels serving the Eternal One Creator God: Archangel Mikael in regal violet vestments with six pairs of starlit wings, and Archangel Azrael in obsidian robes with azure patterns and six pairs of night-sky wings.
+
+Upon hearing the name "Arien," Azrael's surging emotions momentarily plunged the entire planet into darkness, yet Mikael calmed his brother, noting the child's immaculate conception and pure sky-blue eyes. No mortal was permitted to utter that forbidden name unaided.
+Cradling the infant and witnessing his bright, fearless smile, the Archangel of Death himself smiled for the first time in eons:
+"Given your bloodline name Rassa D., little one, I, Azrael, bless you with the name Rassa D. Arien! Now mortals may speak your name."
+Mikael then bestowed the blessing of supreme wisdom upon the child before both vanished, leaving only Empress Juren with the memory of their visitation.`
+            },
+            {
+                id: 3, paid: false,
+                titleRu: "МИРОУСТРОЙСТВО И ЗНАНИЯ О МИРЕ",
+                titleEn: "WORLD ORDER AND KNOWLEDGE",
+                loreRu: "1020 год (7 апреля). Ариэну 4,5 года. Одновременно пишет левой рукой, рисует правой и читает. Наставники Азиль и Баан. 8 Великих Империй, 24 вассальных королевства и 8 Великих Искусств.",
+                loreEn: "Year 1020 (April 7). Arien is 4.5 years old. Multitasking genius. Mentors Azil and Baan. The 8 Great Empires, 24 vassal kingdoms, and 8 Grand Martial Arts.",
+                textRu: `1020 год от начала календаря Свободных людей, 7-й день 2-го цикла весны (7 апреля).
+Четырехлетний принц Ариэн сидел за учебным столом: левой рукой он переписывал книгу по истории, правой рисовал пейзаж далеких гор и рек, а глазами читал книгу о приключениях. Напротив него сидели два наставника из числа Королей Белого Света — сереброволосая Азиль и могучий стратег Баан.
+
+Не отрываясь от трех дел сразу, Ариэн безупречно перечислил 8 Великих Человеческих Держав в порядке их мощи:
+1. Великая Фиолетовая Империя Молнии (Пурпурное Громовое искусство)
+2. Великая Империя Черной Тени (Искусство Теневого правителя)
+3. Великая Святая Белая Империя (Великое Святое Белое искусство)
+4. Великая Империя Изумрудного Ветра (Искусство Изумрудных ветров)
+5. Великая Кроваво-Красная Империя (Искусство тирании Алой крови)
+6. Великая Империя Бронзового Пламени (Искусство пламени Бронзовых облаков)
+7. Великая Империя Лазурных Морей (Искусство Лазурного моря)
+8. Великая Империя Желтой Земли (Искусство созидания Земли)
+А также 24 вассальных королевства. В этот момент вошла святая дева Анали и сообщила, что принца ждут императрица Журен и наставница по боевым искусствам Скарлетт.`,
+                textEn: `Year 1020 of the Free People, 7th day of the 2nd spring cycle (April 7).
+Four-and-a-half-year-old Prince Arien sat at his study desk: with his left hand he transcribed a history tome, with his right he painted distant mountains and rivers, all while reading an adventure chronicle. Across from him sat two mentors from the Kings of White Light — silver-haired Azil and the formidable strategist Baan.
+
+Without pausing any of his three tasks, Arien flawlessly recited the 8 Great Human Empires ranked by power:
+1. Great Violet Lightning Empire (Grand Purple Thunder Art)
+2. Great Black Shadow Empire (Shadow Ruler Art)
+3. Great Holy White Empire (Grand Holy White Art)
+4. Great Emerald Wind Empire (Emerald Winds Art)
+5. Great Blood-Red Empire (Scarlet Blood Tyranny Art)
+6. Great Bronze Flame Empire (Bronze Cloud Flame Art)
+7. Great Azure Seas Empire (Azure Sea Art)
+8. Great Yellow Earth Empire (Earth Creation Art)
+Along with their 24 vassal kingdoms. Just then, Holy Maiden Anali entered to announce that Empress Juren and martial arts mentor Scarlett were awaiting him.`
+            },
+            {
+                id: 4, paid: false,
+                titleRu: "ТАЙНЫ МИРА И УРОВНИ РАЗВИТИЯ",
+                titleEn: "SECRETS OF THE WORLD & CULTIVATION REALMS",
+                loreRu: "Дворец Звездных Облаков (резиденция принца). Наставница Скарлетт (гетерохромия, красные волосы). Шкала уровней развития от Начал до Верховного Монарха. 9 Великих Кланов зверей и 10 легендарных Арфангелов.",
+                loreEn: "Starry Clouds Palace. Mentor Scarlett. Cultivation tiers from Inception to Supreme Monarch. The 9 Great Beast Clans and 10 legendary Arfangels.",
+                textRu: `Во Дворце Звездных Облаков (личной резиденции принца) Ариэна встретили императрица Журен и наставница Скарлетт — одна из 18 Королей Белого Света с ярко-красными волосами и гетерохромией (правый глаз красный, левый синий).
+
+Перед началом урока Ариэн перечислил 13 известных миру уровней развития (в каждом по 9 ступеней): от Уровня Начал и Основы до Пробужденного Верховного Монарха. Скарлетт пояснила, что уровни выше Монарха — не выдумка, а реальность высших миров.
+Кроме людей, планету населяют дикие племена варваров и дикарей, 9 Великих Кланов (Драконы, Фениксы, Птицы Рух, Девятихвостые лисы, Морские драконы, Львы, Тигры, Волки, Олени), а от вторжений Сумеречных демонов и гостей из иных измерений мир защищают 10 легендарных Арфангелов, назначенных напрямую Архангелами.`,
+                textEn: `At the Palace of Starry Clouds (the prince's personal residence), Arien was greeted by Empress Juren and his martial mentor Scarlett — one of the 18 Kings of White Light, striking with her crimson hair and heterochromia (right eye red, left eye blue).
+
+Before meditation began, Arien recited the 13 publicly known cultivation realms (each divided into 9 stages): from Inception and Foundation up to Awakened Supreme Monarch. Scarlett revealed that realms beyond Monarch are no mere myth.
+Beyond humanity, the planet is home to untamable barbarian tribes, the 9 Great Beast Clans (Dragons, Phoenixes, Rukh Birds, Nine-Tailed Foxes, Sea Dragons, Lions, Tigers, Wolves, Deer), while 10 legendary Arfangels — appointed directly by the Archangels — safeguard the world against Twilight Demons and dimensional invaders.`
+            },
+            {
+                id: 5, paid: false,
+                titleRu: "11 ЭТАПОВ СВЯТОГО БЕЛОГО ИСКУССТВА",
+                titleEn: "THE 11 STAGES OF THE HOLY WHITE ART",
+                loreRu: "Эксклюзивная структура Великого Святого Белого Искусства: 11 этапов вместо 9. От Святого белого шара до Снисхождения Бога: Кары Святого Белого Света.",
+                loreEn: "Exclusive 11-stage structure of the Grand Holy White Art: from Holy White Orb to Descent of God: Punishment of Holy White Light.",
+                textRu: `Урок продолжился разбором главного достояния империи — Великого Святого Белого Искусства. В то время как великие искусства остальных семи империй насчитывают только 9 этапов, Святое Белое Искусство состоит из 11 ступеней мастерства:
+1. Святой белый шар (концентрация чистой энергии)
+2. Святой белый щит (защитные конструкты с крылатым узором)
+3. Святое белое копьё (пробивная атака)
+4. Святая белая броня (покров света вокруг тела)
+5. Святой белый меч (клинки разрушительной ауры)
+6. Святая белая сфера (абсолютный барьер и домен контроля)
+7. Святые белые крылья (полет и световая скорость)
+8. Святое белое исцеление (регенерация органов и панацея)
+9. Святой белый дракон (для мужчин) или Святой белый феникс (для женщин)
+10. Десять Светил Святого Света
+11. Снисхождение Бога: Кара Святого Белого Света (высшее таинство императрицы Журен).`,
+                textEn: `The lesson delved into the empire's crown jewel — the Grand Holy White Art. While the grand arts of the other seven empires possess only 9 stages, the Holy White Art encompasses 11 transcendent stages:
+1. Holy White Orb
+2. Holy White Shield
+3. Holy White Spear
+4. Holy White Armor
+5. Holy White Sword
+6. Holy White Sphere
+7. Holy White Wings
+8. Holy White Healing
+9. Holy White Dragon (male) / Holy White Phoenix (female)
+10. Ten Luminaries of Holy Light
+11. Descent of God: Punishment of Holy White Light (mastered solely by Empress Juren).`
+            },
+            {
+                id: 6, paid: false,
+                titleRu: "СОКРЫТИЕ СПОСОБНОСТЕЙ И КОЛЬЦО №138",
+                titleEn: "CONCEALING ABILITIES & ARTIFACT RING #138",
+                loreRu: "Демонстрация 4 этапов перед Скарлетт. Тайная проверка с матерью: истинный уровень Ариэна — Пробужденный Истинный Воин 9-й ступени, освоен 5-й этап (7 мечей). Номерной артефакт №138 (Кольцо сокрытия силы).",
+                loreEn: "Arien shows 4 stages to Scarlett, then reveals his true 9th-stage True Warrior realm and 5th stage (7 swords) to Juren. Artifact #138: Perfect Ring of Power Concealment.",
+                textRu: `На тренировочной площадке Ариэн показал Скарлетт сразу четыре этапа Святого Белого Искусства: десятки белых шаров, 18 щитов, 18 копий и Святую белую броню, притворившись, что броня забирает у него половину энергии. Скарлетт была потрясена: за два месяца самостоятельно дойти до 4-го этапа в неполные 5 лет! В ответ наставница продемонстрировала 5-й этап — «Святой белый меч», одним серповидным взмахом разрубив 30-метровый стальной монолит.
+
+Когда Скарлетт ушла отдыхать, императрица Журен попросила сына показать его настоящую силу. Сняв маскировку, Ариэн высвободил ауру Пробужденного Истинного Воина 9-й ступени (на пороге Высшего Воина) и играючи материализовал в воздухе сразу 7 Святых белых мечей, разорвавших 10-метровый стальной блок в клочья!
+Его истинный уровень скрывал Номерной Артефакт №138 из коллекции 515 творений бога-кузнеца Энпатуара — «Совершенное Кольцо сокрытия силы». Оно занижало видимый уровень развития ровно на одну целую сферу, и распознать иллюзию мог лишь практик, превосходящий владельца на 6 полных уровней (Пробужденный Император).`,
+                textEn: `On the training grounds, Arien demonstrated four stages of the Holy White Art to Scarlett simultaneously: dozens of white orbs, 18 shields, 18 spears, and the Holy White Armor, feigning exhaustion afterward. Scarlett was left speechless — mastering four stages in two months at barely five years old! In turn, she demonstrated the 5th stage, "Holy White Sword," cleaving a 30-meter solid steel monolith in two with a crescent slash.
+
+Once Scarlett departed, Empress Juren asked her son to reveal his true cultivation. Unleashing his suppressed aura, Arien stood at the 9th stage of an Awakened True Warrior and effortlessly conjured 7 Holy White Swords, shredding a 10-meter steel block!
+His true realm was masked by Numbered Artifact #138 forged by the Blacksmith God Enpatuar — the "Perfect Ring of Power Concealment," which lowers one's perceived cultivation by a full realm and can only be seen through by someone 6 full realms higher (Awakened Emperor).`
+            },
+            {
+                id: 7, paid: false,
+                titleRu: "НОВЫЙ ПРОРЫВ И РЫК ТИГРА",
+                titleEn: "A NEW BREAKTHROUGH & THE TIGER'S ROAR",
+                loreRu: "Журен накрывает дворец Святой Белой Сферой (6 этап). Ариэн поглощает 523+ святых белых слитка и прорывается до пика 5-й ступени Пробужденного Высшего Воина. Объем энергии в 15,9 раз выше нормы.",
+                loreEn: "Juren casts the Holy White Sphere (Stage 6). Arien absorbs over 600 holy white ingots, breaking through to the peak of 5th-stage Higher Warrior. Energy reserve 15.9x above normal.",
+                textRu: `В тот же день Ариэн попросил маму помочь ему совершить прорыв. Императрица Журен взмахом руки накрыла всю резиденцию «Святой Белой Сферой» (6-й этап искусства) и выложила платформу из высококонцентрированных святых белых слитков, начертав фильтрующий массив.
+
+Впитывая энергию всем телом — сердцем, легкими, мозгом, костями и меридианами, как это делают истинные Пробужденные, — Ариэн превратился в ненасытный вихрь. Журен пришлось подкладывать новые партии слитков: 100, затем еще 200 и еще 200!
+Под звуки яростного и благородного рыка тиранического тигра Ариэн совершил серию непрерывных прорывов, перешагнув сразу до пика 5-й ступени Пробужденного Высшего Воина! Опустошив всю энергию резиденции и более 600 святых слитков (которых хватило бы на сотню обычных практиков), мальчик стабилизировал основу. Его объем энергии превышал показатели любого Высшего Воина того же уровня в 15,9 раза.`,
+                textEn: `That very day, Arien asked his mother to oversee his breakthrough. With a wave of her hand, Empress Juren enveloped the entire residence in a "Holy White Sphere" (Stage 6) and arranged a platform of high-density holy white ingots inscribed with a purifying array.
+
+Absorbing energy through his entire body — heart, lungs, brain, bones, and meridians, the true path of the Awakened — Arien became an insatiable vortex. Juren had to continually replenish the array with hundreds more ingots!
+Accompanied by the phantom roar of a tyrannical tiger, Arien surged through multiple stages in a single sitting, reaching the peak of the 5th stage of an Awakened Higher Warrior! Having drained over 600 ingots (enough for a hundred normal warriors), his foundation remained rock-solid, with an energy capacity 15.9 times greater than peers of the same rank.`
+            },
+            {
+                id: 8, paid: false,
+                titleRu: "СКРЫТАЯ УГРОЗА И ПОЛОЖЕНИЕ ДЕЛ",
+                titleEn: "HIDDEN THREAT AND GEOPOLITICAL BALANCE",
+                loreRu: "Кольцо №138 теперь показывает Ариэна как Истинного Воина 5-й ступени. Монополия Святой Белой Империи на исцеление (98% болезней и регенерация сердца/мозга). Договор о 3 вассальных королевствах.",
+                loreEn: "Ring #138 now shows Arien as a 5th-stage True Warrior. Holy White Empire's healing monopoly (98% cure rate, regrowing organs). The 24 Vassal Kingdoms treaty.",
+                textRu: `Проверив пульс сына, императрица Журен задумалась. Поскольку Кольцо №138 снижает видимую сферу ровно на один уровень, теперь окружающие будут видеть в четырехлетнем Ариэне Истинного Воина 5-й ступени — невиданный для ребенка показатель!
+Святая Белая Империя занимала 3-е место в мире, и все державы стремились дружить с ней, ведь Святое Белое Искусство было абсолютной панацеей: святые девы могли исцелять более 98% ранений и болезней, восстанавливать утраченные конечности и даже отращивать заново сердце и мозг, если смерть не была мгновенной. Передача этого искусства чужакам каралась смертью.
+
+Хрупкий мир между 8 Великими Империями держался на договоре (у каждой империи ровно по 3 вассальных королевства, всего 24) и общих внешних врагах: племенах дикарей и варваров, 9 Великих Кланах зверей (правивших миром в древности) и вторжениях Сумеречных демонов, которых сдерживали 10 Арфангелов.`,
+                textEn: `Checking her son's pulse, Empress Juren grew contemplative. Because Ring #138 lowers perceived cultivation by exactly one realm, the world would now see a 4-year-old at the 5th stage of True Warrior — a shocking anomaly!
+The Holy White Empire held 3rd place among the Great Powers, courted by all because the Holy White Art was the ultimate panacea: Holy Maidens could cure 98% of all wounds and ailments, regrow severed limbs, and even regenerate hearts and brains if death wasn't instantaneous.
+
+The fragile peace among the 8 Great Empires rested upon strict treaties (exactly 3 vassal kingdoms per empire, 24 in total) and shared external threats: untamable barbarians, the 9 Great Beast Clans who once ruled the planet, and Twilight Demon incursions held at bay by the 10 Arfangels.`
+            },
+            {
+                id: 9, paid: false,
+                titleRu: "ГНЕВ ИМПЕРАТРИЦЫ И УРОК О ВОЗРАСТЕ",
+                titleEn: "THE EMPRESS'S WRATH & TWO GOLDEN RULES",
+                loreRu: "Журен 523 года (Пробужденная Верховная Королева пика 3-й ступени). Шутка Баана про 'старух старше 70 лет'. Прилет 372 Святых Дев, Гекаты и Грис. Ариэн сдает Баана и переезжает во дворец матери.",
+                loreEn: "Juren is 523 years old. Baan's joke about women over 70. Arrival of all 372 Holy Maidens, Hecate, and Gris. Baan loses his monthly bonus.",
+                textRu: `Поскольку вся энергия во Дворце Звездных Облаков была иссушена во время прорыва, Журен забрала сына ночевать в свой личный дворец, заметив, что ей уже 523 года и для неё он совсем младенец. Ариэн наивно процитировал наставника Баана: «Все женщины старше 70 лет считаются старухами. Мам, получается, ты очень старая?»
+
+В ту же секунду ужасающая бело-серебристая аура Пробужденной Верховной Королевы на пике 3-й ступени взметнулась в небеса, накрыв весь императорский дворец! Мгновенно слетелись все 372 Святые Белые Девы (каждая минимум Королева 6-й ступени) во главе с Анали, Гекатой и Грис.
+Инстинкты выживания Ариэна сработали безупречно: он тут же назвал маму первой красавицей и богиней империи, на которую не влияет время, и без зазрения совести сдал своего наставника Баана, мысленно пообещав ставить свечки и хорошее вино на его мемориале.
+Святые девы мысленно вздохнули: «Бесстыдство у этих матери и сына в крови, и никакое Святое Белое Искусство это не вылечит!» Баана лишили месячных бонусов, а маленький принц навсегда усвоил два главных правила жизни: 1) Никогда не провоцировать маму; 2) Никогда не упоминать возраст женщин!`,
+                textEn: `Since the energy in the Starry Clouds Palace had been completely depleted, Juren told Arien he would sleep in her chambers, playfully noting she was 523 years old. Arien innocently quoted his mentor Baan: "Mentor Baan says all women over 70 are old hags. Mom, does that mean you're super old?"
+
+Instantly, the terrifying silver-white aura of an Awakened Supreme Queen at the peak of the 3rd stage erupted into the heavens! All 372 Holy White Maidens (each at least a 6th-stage Queen) led by Anali, Hecate, and Gris descended in formation.
+Arien's survival instincts kicked in at light speed: he proclaimed his mother the number one goddess and timeless beauty of the empire, shamelessly throwing Mentor Baan under the bus while mentally promising to pour fine wine at Baan's memorial.
+The Holy Maidens sighed inwardly: "Shamelessness runs in the blood of this mother and son; not even the Holy White Art can cure it!" Baan was stripped of his monthly bonus, and the young prince learned two immortal lessons: 1) Never provoke Mom; 2) Never mention a woman's age!`
+            },
+            {
+                id: 10, paid: false,
+                titleRu: "ГЕНИЙ №1 СВЯТОЙ БЕЛОЙ ИМПЕРИИ",
+                titleEn: "GENIUS #1 OF THE HOLY WHITE EMPIRE",
+                loreRu: "5 сентября 1020 г. Дворец Стального Света. Рост Ариэна 141 см. Спарринг со Скарлетт. Понятие Оптимизированных техник: «Святые белые ласточки» (119 шт.), «Круг щитов белого света», «Тройное пересечение».",
+                loreEn: "Sept 5, 1020. Palace of Steel Light. Arien (141 cm) defeats Scarlett in a restricted spar using Optimized Techniques: Holy White Swallows, Circle of Shields, Triple Intersection.",
+                textRu: `5-й день 1-го цикла осени 1020 года (5 сентября). Во Дворце Стального Света шел тренировочный бой. За пять месяцев Ариэн вытянулся до 141 см и достиг пика 8-й ступени Высшего Воина (скрывая это под 8-й ступенью Истинного Воина).
+Из гордости наставницы Скарлетт поспорила на желание, что победит принца, снизив свою силу до Высшего Воина 5-й ступени и используя только базовый меч и свою фирменную оптимизированную технику «Святой белый серп».
+
+В ответ Ариэн заблокировал её серп «Кругом щитов белого света» (18 гигантских щитов), затем выпустил рой из 119 маневренных «Святых белых ласточек» (оптимизированный 1-й этап), а в финале обрушил «Тройное пересечение белого света» — три 19-метровых световых разреза крест-накрест!
+Атака подавила два серпа Скарлетт, вынудив наставницу инстинктивно активировать защитную «Святую белую сферу» (6-й этап), тем самым нарушив условия спора и признав поражение. Теперь Скарлетт была должна хитрому пятилетнему ученику одно желание.`,
+                textEn: `5th day of the 1st autumn cycle, Year 1020 (September 5). Inside the Palace of Steel Light, a fierce spar echoed. Over five months, Arien had grown to 141 cm and reached the peak of the 8th stage of Higher Warrior (masked as 8th-stage True Warrior).
+Out of pride, Mentor Scarlett wagered a wish that she could defeat him while suppressing her cultivation to 5th-stage Higher Warrior and using only her signature optimized technique, "Holy White Crescent."
+
+Arien blocked her crescent slash with his "Circle of White Light Shields," swarmed her from unpredictable trajectories with 119 "Holy White Swallows" (optimized Stage 1), and unleashed "Triple Intersection of White Light" — three 19-meter cross-shaped slashes!
+Overwhelmed, Scarlett instinctively deployed a Stage 6 "Holy White Sphere" to defend herself, forfeiting the wager. She now owed the mischievous prodigy one wish.`
+            },
+            {
+                id: 11, paid: false,
+                titleRu: "ГЕНИЙ №1, ОТ КОТОРОГО БОЛИТ ГОЛОВА (ЧАСТЬ 1)",
+                titleEn: "THE HEADACHE-INDUCING GENIUS (PART 1)",
+                loreRu: "Ариэн жалуется, что каст занимает 5 секунд. Скарлетт (516 лет, Королева пика 8-й ступени) за всю жизнь создала 2 техники («Святой белый серп» и «Святые когти белого дракона»), а 5-летний принц — уже 3.",
+                loreEn: "Arien complains about a 5-second charge time. Scarlett (516 years old) reflects on her bruised self-esteem and plans to demand hazard pay from Empress Juren.",
+                textRu: `После спарринга Скарлетт спросила, что это была за последняя атака. Ариэн вздохнул и пожаловался, что вдохновился её «Святым белым серпом», но техника еще не завершена, потому что её приходится концентрировать в руке «целых пять секунд», да и вообще он расстроен, что создал всего три оптимизированные техники!
+
+У 516-летней Скарлетт, одной из 18 Королей Белого Света (Пробужденной Королевы на пике 8-й ступени), разболелась голова. За пять веков жизни она создала две оптимизированные техники — «Святой белый серп» и «Святые когти белого дракона», и лишь работала над третьей. В пять лет она играла в песочнице и ловила стрекоз!
+Скарлетт твердо решила: как только императрица Журен выйдет из закрытой тренировки, она потребует солидную моральную компенсацию и бонус за ущерб психическому здоровью от обучения этого маленького монстра.`,
+                textEn: `After the match, Scarlett asked about his final attack. Arien sighed in disappointment, complaining that it took "a whole five seconds" to condense in his hand, and lamented having created "only three" optimized techniques so far!
+
+At 516 years old and standing at the peak of the 8th stage of Awakened Queen, Scarlett felt a migraine coming on. Across five centuries, she had created two optimized techniques — "Holy White Crescent" and "Holy Claws of the White Dragon" — and was still developing her third. At five years old, she had been catching dragonflies in a sandbox!
+She vowed that the moment Empress Juren emerged from closed-door cultivation, she would demand hefty hazard pay for the psychological trauma of teaching this little monster.`
+            },
+            {
+                id: 12, paid: false,
+                titleRu: "ГЕНИЙ №1, ОТ КОТОРОГО БОЛИТ ГОЛОВА (ЧАСТЬ 2)",
+                titleEn: "THE HEADACHE-INDUCING GENIUS (PART 2)",
+                loreRu: "Завершение 3-й техники «Белые когти разрыва» (5 разрезов до 37 метров, каст 3,5 сек с обеих рук). Круговорот стометровых стальных слитков во Дворце Стального Света. Императрица 3-й месяц в закрытой тренировке.",
+                loreEn: "Arien completes 'White Rending Claws' (3.5s charge, five 37m slashes). Scarlett's existential crisis continues while Juren is in her 3rd month of seclusion.",
+                textRu: `Прямо во время раздумий Скарлетт раздался тигриный рык и скрежет металла! За 3,5 секунды Ариэн сконденсировал энергию на пяти пальцах и выпустил свою завершенную третью оптимизированную технику — «Белые когти разрыва»! На стометровом стальном слитке остались пять глубоких шрамов диаметром от 29 до 37 метров.
+
+Радостный принц тут же снова надулся: «Конденсировать 3,5 секунды — это так долго!» Скарлетт возвела глаза к небу, решив, что удерживая этого ребенка во дворце, они спасают психическое здоровье всего остального мира. Даже дикари и варвары на фронте отказались бы работать антистресс-игрушками после такого!
+Тем временем Ариэн благоразумно промолчал о житейских байках наставника Баана (про «кризис среднего возраста» и «эти дни»), чтобы любимого учителя не разжаловали в дворцовые уборщики, и спросил, когда мама выйдет из трехмесячной закрытой тренировки.`,
+                textEn: `Mid-thought, Scarlett heard a tiger's roar and screeching metal! In under 3.5 seconds, Arien condensed energy onto his fingertips and unleashed his completed third optimized technique — "White Rending Claws!" Five massive gashes spanning 29 to 37 meters tore deep into a 100-meter steel ingot.
+
+Yet the boy pouted again: "Having to condense it for 3.5 seconds is way too slow!" Scarlett looked to the heavens, concluding that keeping this child inside the palace was a public service to the sanity of the entire planet.
+Meanwhile, Arien wisely kept quiet about Baan's worldly theories ("midlife crisis" and "time of the month") to save his beloved mentor from being demoted to palace janitor, asking instead when his mother would finish her three-month seclusion.`
+            },
+            {
+                id: 13, paid: false,
+                titleRu: "КОНЕЦ ЗАКРЫТЫМ ТРЕНИРОВКАМ И ПРОРЫВ ИМПЕРАТРИЦЫ",
+                titleEn: "END OF SECLUSION & THE EMPRESS'S BREAKTHROUGH",
+                loreRu: "30 сентября 1020 г. Пруд очищения и совершенствования света (1 из 6 локаций Особой тренировочной области). Журен совершает тройной прорыв до Пробужденного Верховного Короля на пике 6-й ступени (резерв в 8,2 раза выше нормы). Резерв Ариэна уже в 17,8 раза выше нормы.",
+                loreEn: "Sept 30, 1020. Pond of Light Purification. Juren achieves a triple breakthrough to the peak of 6th-stage Awakened Supreme Queen (8.2x reserve). Summons all 30 Pillars.",
+                textRu: `30-й день 1-го цикла осени 1020 года (30 сентября). Из-за трехмесячной закрытой тренировки императрицы празднование пятилетия Ариэна (15 августа) пришлось отложить.
+Внутри Особой тренировочной области (одной из 5 тайных зон дворца, включающей 6 локаций: Пруд очищения света, Святые деревья пяти элементов, Звездную террасу, Пруд золотых карпов, Зеркальный коридор пустоты и Термальный источник пяти кристаллов) императрица Журен сидела в целебном водоеме, вымощенном святыми белыми слитками.
+
+С тремя грандиозными столбами света, пробившими облака над всей столицей, Расса Ди Журен совершила три прорыва подряд, достигнув уровня Пробужденной Верховной Королевы на пике 6-й ступени! Её запас энергии превышал норму для этого уровня в 8,2 раза (хотя она с улыбкой вспомнила, что у её сына-монстра резерв уже превышает норму в 17,8 раза).
+Выйдя из воды при поддержке святых дев Алеты и Марин, императрица приказала накрыть банкетный стол и созвать маленького принца и все 30 Столпов Святой Белой Империи.`,
+                textEn: `30th day of the 1st autumn cycle, Year 1020 (September 30). Due to the Empress's three-month seclusion, Arien's 5th birthday celebration (August 15) had been postponed.
+Within the Special Training Domain (one of the palace's 5 secret zones, featuring 6 sacred sites including the Pond of Light Purification), Empress Juren meditated amidst rare spiritual herbs and a floor paved entirely with holy white ingots.
+
+With three colossal pillars of white light piercing the clouds above the capital, Rassa D. Juren broke through three stages consecutively, reaching the peak of the 6th stage of Awakened Supreme Queen! Her energy reserve exceeded peers of her rank by 8.2 times (though still dwarfed by her monstrous son's 17.8x ratio).
+Emerging gracefully with the aid of Holy Maidens Aleta and Marin, she ordered a grand feast and summoned Prince Arien alongside the Empire's 30 Pillars.`
+            },
+            {
+                id: 14, paid: false,
+                titleRu: "БАНКЕТ И 30 СТОЛПОВ ИМПЕРИИ",
+                titleEn: "THE BANQUET AND THE EMPIRE'S 30 PILLARS",
+                loreRu: "Во Дворце Святого Белого Света собираются Столпы. Рост Ариэна 143 см, истинный уровень — Высший Воин 9-й ступени. Скарлетт пытается выбить компенсацию. В Святой Белой Империи 30 Столпов (18 Королей + 10 Дев-Хранительниц + 2 Предводительницы), тогда как у остальных империй по 24.",
+                loreEn: "Gathering at the Palace of Holy White Light. Arien is now 143 cm and 9th-stage Higher Warrior. The Holy White Empire boasts 30 Pillars compared to 24 in other Great Empires.",
+                textRu: `Во Дворце Святого Белого Света был накрыт огромный стол. Первым прибыл подросший до 143 см принц Ариэн (уже достигший 9-й ступени Высшего Воина под маскировкой Истинного Воина) в сопровождении Анали, Скарлетт, Велкадии и Тины.
+Скарлетт тут же попыталась пожаловаться императрице на чудовищный талант принца и выпросить моральную компенсацию, но Журен иронично спросила, не случилось ли у неё психическое расстройство, и отправила её заедать стресс за стол.
+
+Вскоре прибыли остальные высшие мастера. В то время как остальные семь Великих Империй опираются на 24 Столпа, Святая Белая Империя обладает колоссальным преимуществом — 30 Столпами (18 Королей Белого Света, 10 Святых Дев-Хранительниц и 2 Предводительницы Святых Дев — Геката и Грис). Подняв бокал с виноградным соком, пятилетний Ариэн уверенно поприветствовал элиту государства.`,
+                textEn: `A lavish banquet was set inside the Palace of Holy White Light. First to arrive was Prince Arien — now 143 cm tall and at the 9th stage of Higher Warrior — escorted by Anali, Scarlett, Velkadia, and Tina.
+Scarlett immediately tried to plead for psychological hazard pay due to Arien's monstrous talent, only for Juren to playfully ask if she had suffered a mental breakdown and send her to eat.
+
+Soon the rest of the supreme elite arrived. While the other seven Great Empires rely on 24 Pillars, the Holy White Empire commands 30 Pillars (18 Kings of White Light, 10 Holy Guardian Maidens, and 2 Supreme Leaders — Hecate and Gris). Raising a goblet of grape juice, five-year-old Arien greeted the pillars of the nation with royal poise.`
+            },
+            {
+                id: 15, paid: false,
+                titleRu: "ВСЕ 18 КОРОЛЕЙ БЕЛОГО СВЕТА (ЧАСТЬ 1)",
+                titleEn: "ALL 18 KINGS OF WHITE LIGHT (PART 1)",
+                loreRu: "Представление первых 8 Королей Белого Света, их дворцов (из 26 именных дворцов), возрастов, техник и скрытых уровней сил: 1) Азиль, 2) Баан, 3) Джин (рост 263 см), 4) Сэт (гибрид волков, артефакт №277), 5) Гаррисон, 6) Димария, 7) Зара, 8) Велкадия (артефакт №218).",
+                loreEn: "Introduction of the first 8 Kings of White Light, their named palaces, ages, optimized techniques, and hidden Supreme King ranks: Azil, Baan, Jin, Set, Harrison, Dimaria, Zara, Velkadia.",
+                textRu: `Императрица Журен лично представила сыну первых восемь из 18 Королей Белого Света (каждый владеет одним из 26 Именных Дворцов и скрывает свой истинный уровень развития от шпионов других стран):
+1. Азиль (329 лет) — Министр внутренних дел и наставница по наукам. Владелица Дворца Изумрудного Света, «Коварный Белый Свет». Истинный уровень: Верховная Королева на пике 2-й ступени.
+2. Баан (650 лет) — Главный военный стратег и наставник. Дворец Бронзового Света, «Белый Стратег Смерти». Истинный уровень: Верховный Король на пике 2-й ступени.
+3. Джин (650 лет, рост 263 см) — Главный кузнец империи. Дворец Стального Света, «Белый Молот Империи». Истинный уровень: Верховный Король на пике 3-й ступени.
+4. Сэт (533 года) — Глава отдела расследований и наказаний, гибрид волков Серебряной и Лазурной Луны. Дворец Серебряного Света, «Белый Охотник». Владеет 4 ледяными техниками, Глазами Звериного Начала и Артефактом №277.
+5. Гаррисон (743 года) — Главный архитектор, старший брат Гримсона и Скарлетт (гетерохромия). Дворец Янтарного Света, «Мудрая Белая Сова». Истинный уровень: Верховный Король на пике 1-й ступени. Техники: «Белые пожиратели снов».
+6. Димария (321 год) — Министр финансов. Дворец Лазурного Света, «Белый Тиран Империи».
+7. Зара (316 лет) — Глава тайных операций. Дворец Темного Света, «Демоница белого света». Истинный уровень: Верховная Королева на пике 1-й ступени.
+8. Велкадия (218 лет) — Глава дворцовой стражи и личный телохранитель принца. Дворец Золотого Света, «Святой ангел-хранитель». Владеет 5 оптимизированными техниками, Глазами Звериного Начала и Артефактом №218. Истинный уровень: Верховная Королева на пике 4-й ступени.`,
+                textEn: `Empress Juren introduced the first eight of the 18 Kings of White Light (each ruling one of the 26 Named Palaces and concealing their true cultivation from foreign spies):
+1. Azil (329 yo) — Minister of Internal Affairs & Science Mentor. Emerald Light Palace. True rank: Peak 2nd-stage Supreme Queen.
+2. Baan (650 yo) — Chief Military Strategist. Bronze Light Palace, "White Strategist of Death." True rank: Peak 2nd-stage Supreme King.
+3. Jin (650 yo, 263 cm tall) — Chief Blacksmith. Steel Light Palace, "White Hammer." True rank: Peak 3rd-stage Supreme King.
+4. Set (533 yo) — Head of Investigations & Punishments, Silver/Azure Moon Wolf Hybrid. Silver Light Palace, "White Hunter." Wields 4 ice techniques, Beast Origin Eyes, and Artifact #277.
+5. Harrison (743 yo) — Chief Architect, eldest brother of Grimson and Scarlett. Amber Light Palace. True rank: Peak 1st-stage Supreme King.
+6. Dimaria (321 yo) — Minister of Finance. Azure Light Palace, "White Tyrant."
+7. Zara (316 yo) — Head of Covert Operations. Dark Light Palace. True rank: Peak 1st-stage Supreme Queen.
+8. Velkadia (218 yo) — Captain of the Palace Guard & Arien's bodyguard. Golden Light Palace. Wields 5 angelic techniques, Beast Origin Eyes, and Artifact #218. True rank: Peak 4th-stage Supreme Queen.`
+            },
+            {
+                id: 16, paid: false,
+                titleRu: "ВСЕ 18 КОРОЛЕЙ БЕЛОГО СВЕТА (ЧАСТЬ 2)",
+                titleEn: "ALL 18 KINGS OF WHITE LIGHT (PART 2)",
+                loreRu: "Представление Королей с 9 по 18: 9) Мишель, 10) Одетта, 11) Гримсон, 12) Ясмин, 13) Ирбис (автономные Святые белые тигры с органами и меридианами из света), 14) Хорин, 15) Скарлетт (получила от Ариэна Святую Броню Белого Дракона), 16) Тина, 17) Син, 18) Декрион.",
+                loreEn: "Introduction of Kings 9 to 18: Michelle, Odetta, Grimson, Yasmin, Irbis (autonomous White Tigers with light meridians), Horin, Scarlett, Tina, Sin, Dekrion.",
+                textRu: `Императрица продолжила представлять остальных Королей Белого Света:
+9. Мишель (217 лет) — Личный телохранитель принца, «Дневной Убийца», Дворец Призрачного Света. Истинный уровень: Верховная Королева на пике 2-й ступени. Техники нитей и вуали.
+10. Одетта (328 лет) — Министр иностранных дел, «Белая Лисица», Дворец Яркого Света. Истинный уровень: Верховная Королева на пике 1-й ступени. Техники: «Белая лаванда очищения», «Святой белый терновник».
+11. Гримсон (523 года) — Главнокомандующий западными войсками, брат Гаррисона и Скарлетт. Дворец Воинственного Света, «Берсерк Взрывного Света». Истинный уровень: Верховный Король на пике 2-й ступени (4 техники белого пламени).
+12. Ясмин (509 лет) — Главнокомандующая южными войсками, Дворец Праведного Света, «Опустошитель Серебряных Песков». Истинный уровень: Верховная Королева на пике 2-й ступени.
+13. Ирбис (523 года) — Главнокомандующий северными войсками, Дворец Холодного Света, «Берсерк Холодного Света». Истинный уровень: Верховный Король на пике 1-й ступени. Создает до 8 автономных «Святых белых тигров» с внутренними органами и меридианами из света!
+14. Хорин (517 лет) — Главнокомандующая восточными войсками, Дворец Синего Света, «Святой Берсерк Востока». Истинный уровень: Верховная Королева 1-й ступени.
+15. Скарлетт (516 лет) — Наставница принца и глава 1-го мобильного дивизиона, Дворец Алого Света, «Берсерк Алого Света». Выучила у Ариэна его 4-ю технику «Святая Броня Белого Дракона».
+16. Тина (518 лет) — Глава 2-го мобильного дивизиона, Дворец Теплого Света, «Берсерк Золотого Света» (техники скелетов и мотыльков золотого пламени).
+17. Син (717 лет) — Министр торговли, боевой каллиграф, Дворец Морского Света, «Белый Странник». Истинный уровень: Верховный Король на пике 1-й ступени.
+18. Декрион (813 лет) — Главный инженер и создатель артефактов, Дворец Нефритового Света, «Белый Рукотворец Империи». Истинный уровень: Верховный Король 1-й ступени.`,
+                textEn: `Empress Juren completed the introduction of the 18 Kings of White Light:
+9. Michelle (217 yo) — Arien's bodyguard, "Daytime Assassin," Phantom Light Palace. True rank: Peak 2nd-stage Supreme Queen.
+10. Odetta (328 yo) — Minister of Foreign Affairs, "White Fox," Bright Light Palace. True rank: Peak 1st-stage Supreme Queen. Plant/Lavender purification arts.
+11. Grimson (523 yo) — Western Commander, brother to Harrison & Scarlett. Martial Light Palace. True rank: Peak 2nd-stage Supreme King.
+12. Yasmin (509 yo) — Southern Commander, Righteous Light Palace, "Ravager of Silver Sands." True rank: Peak 2nd-stage Supreme Queen.
+13. Irbis (523 yo) — Northern Commander, Cold Light Palace. True rank: Peak 1st-stage Supreme King. Creates 8 autonomous "Holy White Tigers" complete with internal organs and light meridians!
+14. Horin (517 yo) — Eastern Commander, Blue Light Palace. True rank: 1st-stage Supreme Queen.
+15. Scarlett (516 yo) — 1st Mobile Division Commander & Arien's mentor, Crimson Light Palace. Learned "Holy White Dragon Armor" from Arien.
+16. Tina (518 yo) — 2nd Mobile Division Commander, Warm Light Palace (Golden Flame Skeletons & Moths).
+17. Sin (717 yo) — Minister of Trade, combat calligrapher, Sea Light Palace. True rank: Peak 1st-stage Supreme King.
+18. Dekrion (813 yo) — Chief Engineer, Jade Light Palace, "White Artificer." True rank: 1st-stage Supreme King.`
+            },
+            {
+                id: 17, paid: false,
+                titleRu: "ВСЕ 10 СВЯТЫХ ДЕВ-ХРАНИТЕЛЬНИЦ ИМПЕРИИ",
+                titleEn: "THE 10 HOLY GUARDIAN MAIDENS OF THE EMPIRE",
+                loreRu: "Иерархия 372 Святых Белых Дев (по числу дней в году). 10 Святых Дев-Хранительниц: 1) Анали, 2) Алета, 3) Марин, 4) Рейна, 5) Сера, 6) Виктория, 7) Айиша (сестра Ясмин), 8) Дарина, 9) Лайла, 10) Ремия. Марин и Сера приносят клятву верности лично Ариэну.",
+                loreEn: "The 372 Holy White Maidens and the elite 10 Holy Guardian Maidens: Anali, Aleta, Marin, Reina, Sera, Victoria, Ayisha, Darina, Laila, Remia. Marin and Sera join Anali as Arien's personal maids.",
+                textRu: `Следом Журен представила сыну элиту из 372 Святых Белых Дев — 10 Святых Дев-Хранительниц, которым разрешено свободно покидать столицу и сражаться на фронтах вместе с Королями Белого Света:
+1. Анали (507 лет) — Личная служанка Ариэна, старшая сестра Марин. Истинный уровень: Верховная Королева на пике 1-й ступени.
+2. Алета (508 лет) — Правая рука императрицы. Истинный уровень: Верховная Королева на пике 1-й ступени.
+3. Марин (506 лет) — Родная сестра Анали, первой взяла новорожденного Ариэна на руки.
+4. Рейна (520 лет) — Опытная воительница с буйным нравом.
+5. Сера (510 лет) — Воплощение безупречного этикета и грации.`,
+                textEn: `Empress Juren then introduced the elite 10 Holy Guardian Maidens permitted to leave the capital:
+1. Anali (507 yo) — Arien's personal maid. True rank: Peak 1st-stage Supreme Queen.
+2. Aleta (508 yo) — The Empress's right hand. True rank: Peak 1st-stage Supreme Queen.
+3. Marin (506 yo) — Anali's sister.
+4. Reina (520 yo) — Battle-hardened warrior.
+5. Sera (510 yo) — Epitome of flawless etiquette.`
+            }
+        ];
+
+        // Энциклопедия (Папки лора)
+        let wikiFoldersData = [
+            { id: 'f1', nameRu: "Принц Расса Ди Ариэн", nameEn: "Prince Rassa D. Arien", cat: "white_empire", rank: "Пробужденный Король 7 ст. (15 лет)", photo: "IMG_3463_3c8864.jpg", descRu: "Наследный принц Святой Белой Империи. Обладатель Небесных Письмен, Глаз Божественного Начала и Клинка Синей Луны (Артефакт №201).", descEn: "Crown Prince of the Holy White Empire. Wielder of Heavenly Glyphs, Divine Origin Eyes, and Blue Moon Blade (Artifact #201)." },
+            { id: 'f2', nameRu: "Императрица Расса Ди Журен", nameEn: "Empress Rassa D. Juren", cat: "white_empire", rank: "Верховная Королева (пик 8 ступени)", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400", descRu: "Первая и действующая императрица. Обладательница Святых Белых Письмен и Глаз Божественного Начала.", descEn: "First and reigning Empress. Wielder of Holy White Glyphs and Divine Origin Eyes." },
+            { id: 'f3', nameRu: "Наставник Баан", nameEn: "Mentor Baan", cat: "white_empire", rank: "Верховный Король (пик 2 ступени)", photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400", descRu: "Военный стратег, владелец Дворца Бронзового Света, прозвище «Белый Стратег Смерти». Учитель Ариэна.", descEn: "Chief Military Strategist, Bronze Light Palace owner, 'White Strategist of Death'." }
+        ];
+
+        let exclusiveArts = [
+            { id: 'art1', titleRu: "Ариэн в черно-серебряном наряде (15 лет)", titleEn: "Arien in Black & Silver (15yo)", img: "IMG_3463_3c8864.jpg", locked: true },
+            { id: 'art2', titleRu: "Архангелы Михаил и Азраил", titleEn: "Archangels Mikael & Azrael", img: "IMG_3466_3c8864.jpg", locked: true },
+            { id: 'art3', titleRu: "Битва Ариэна и Принцессы Астер", titleEn: "Arien vs Princess Aster Battle", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800", locked: true }
+        ];
+
+        let commentsList = [
+            { author: "Иван (Премиум Читатель)", text: "Глава 45 после таймскипа — это нечто! Ариэн в черно-серебряном костюме выглядит потрясающе." },
+            { author: "Анна (Премиум Читатель)", text: "Сцена с Бааном и провокаторами из Изумрудного Ветра — шедевр юмора!" }
+        ];
+
+        function initApp() {
+            setAccessRole(currentRole);
+            renderChapters();
+            renderWikiFolders();
+            renderExclusiveArts();
+            renderComments();
+        }
+
+        function setAccessRole(role) {
+            currentRole = role;
+            document.body.setAttribute('data-role', role);
+
+            ['admin', 'premium', 'guest'].forEach(r => {
+                const btn = document.getElementById(`roleBtn-${r}`);
+                if (btn) {
+                    if (r === role) {
+                        btn.className = "px-3 py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 bg-amber-500 text-slate-950 shadow-md transition scale-105";
+                    } else {
+                        btn.className = "px-3 py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 bg-slate-900 text-slate-400 border border-slate-800 transition";
+                    }
+                }
+            });
+
+            const headerText = document.getElementById('roleHeaderText');
+            const roleBadge = document.getElementById('roleHeaderBadge');
+            if (role === 'admin') {
+                headerText.textContent = currentLang === 'ru' ? 'Режим: Владелец (Админ)' : 'Role: Owner (Admin)';
+                roleBadge.className = "text-[11px] font-medium text-amber-400 flex items-center gap-1 mt-0.5";
+            } else if (role === 'premium') {
+                headerText.textContent = currentLang === 'ru' ? 'Режим: Премиум-подписчик' : 'Role: Premium Subscriber';
+                roleBadge.className = "text-[11px] font-medium text-purple-400 flex items-center gap-1 mt-0.5";
+            } else {
+                headerText.textContent = currentLang === 'ru' ? 'Режим: Гость (Обычный)' : 'Role: Guest Reader';
+                roleBadge.className = "text-[11px] font-medium text-slate-400 flex items-center gap-1 mt-0.5";
+            }
+
+            renderChapters();
+            renderExclusiveArts();
+            toggleCommentAccess();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            document.getElementById('langLabel').textContent = currentLang.toUpperCase();
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (uiTranslations[currentLang][key]) {
+                    el.textContent = uiTranslations[currentLang][key];
+                }
+            });
+
+            renderChapters();
+            renderWikiFolders();
+            renderExclusiveArts();
+        }
+
+        function switchMainTab(tabId) {
+            ['chapters', 'wiki', 'arts', 'cosmology'].forEach(id => {
+                const section = document.getElementById(`view-${id}`);
+                const btn = document.getElementById(`tabBtn-${id}`);
+                if (section && btn) {
+                    if (id === tabId) {
+                        section.classList.remove('hidden');
+                        btn.className = "tab-btn active-tab shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-sky-500/20 text-sky-300 border border-sky-400/40";
+                    } else {
+                        section.classList.add('hidden');
+                        btn.className = "tab-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-400 hover:text-slate-200 bg-slate-900/60 border border-slate-800";
+                    }
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderChapters() {
+            const grid = document.getElementById('chaptersGrid');
+            const search = document.getElementById('chapterSearchInput').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const total = defaultChapters.length;
+
+            defaultChapters.forEach((ch, idx) => {
+                const isPaid = ch.paid || (idx >= total - 3);
+                const title = currentLang === 'ru' ? ch.titleRu : ch.titleEn;
+                const lore = currentLang === 'ru' ? ch.loreRu : ch.loreEn;
+
+                if (search && !title.toLowerCase().includes(search) && !String(ch.id).includes(search)) {
+                    return;
+                }
+
+                const card = document.createElement('div');
+                card.className = `glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden transition hover:border-sky-400/50`;
+                
+                let lockBadgeHTML = '';
+                if (isPaid) {
+                    lockBadgeHTML = `<span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold flex items-center gap-1 shrink-0"><i class="fa-solid fa-lock"></i> Премиум</span>`;
+                } else {
+                    lockBadgeHTML = `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shrink-0">Бесплатно</span>`;
+                }
+
+                let adminToggleBtn = '';
+                if (currentRole === 'admin') {
+                    adminToggleBtn = `<button onclick="toggleChapterPaid(${ch.id})" class="px-2.5 py-1 rounded-lg bg-slate-800 text-[10px] font-semibold text-slate-300 hover:bg-slate-700 border border-slate-600"><i class="fa-solid fa-shuffle mr-1"></i> Сменить статус</button>`;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-sky-400 font-cinzel">ГЛАВА ${ch.id}</span>
+                            <div class="flex items-center gap-1.5">${lockBadgeHTML} ${adminToggleBtn}</div>
+                        </div>
+                        <h3 class="font-cinzel text-sm sm:text-base font-bold text-white mb-2 leading-snug">${title}</h3>
+                        <p class="text-[11px] text-slate-300 leading-relaxed line-clamp-2 mb-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">${lore}</p>
+                    </div>
+                    <button onclick="openChapterReader(${ch.id})" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-sky-950/60 border border-sky-400/30 text-sky-300 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
+                        <i class="fa-solid fa-book-open-reader"></i> <span data-i18n="btnRead">Читать главу</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleChapterPaid(chId) {
+            const ch = defaultChapters.find(c => c.id === chId);
+            if (ch) {
+                ch.paid = !ch.paid;
+                showToast(currentLang === 'ru' ? `Статус главы ${chId} изменен!` : `Chapter ${chId} status updated!`);
+                renderChapters();
+                updateAdminStats();
+            }
+        }
+
+        function lockLastNChapters(n) {
+            defaultChapters.forEach((ch, idx) => {
+                ch.paid = (idx >= defaultChapters.length - n);
+            });
+            showToast(currentLang === 'ru' ? `Последние ${n} глав закрыты для Премиум` : `Last ${n} chapters locked for Premium`);
+            renderChapters();
+            updateAdminStats();
+        }
+
+        function unlockAllChapters() {
+            defaultChapters.forEach(ch => ch.paid = false);
+            showToast(currentLang === 'ru' ? `Все главы открыты для чтения!` : `All chapters unlocked!`);
+            renderChapters();
+            updateAdminStats();
+        }
+
+        function updateAdminStats() {
+            const lockedCount = defaultChapters.filter((ch, idx) => ch.paid || (idx >= defaultChapters.length - 3)).length;
+            document.getElementById('admLockedChaptersCount').textContent = `${lockedCount} глав`;
+            document.getElementById('admFoldersCount').textContent = `${wikiFoldersData.length} папок`;
+        }
+
+        // Читалка глав
+        function openChapterReader(chId) {
+            currentReadingChapterId = chId;
+            const ch = defaultChapters.find(c => c.id === chId);
+            if (!ch) return;
+
+            const isPaid = ch.paid || (chId >= 43);
+            if (isPaid && currentRole === 'guest') {
+                showToast(currentLang === 'ru' ? "🔒 Эта глава доступна только Премиум-подписчикам и Владельцу!" : "🔒 This chapter requires Premium access!");
+                return;
+            }
+
+            document.getElementById('readerChapterNum').textContent = `ГЛАВА ${ch.id}`;
+            document.getElementById('readerChapterTitle').textContent = currentLang === 'ru' ? ch.titleRu : ch.titleEn;
+            document.getElementById('readerLoreSummary').textContent = currentLang === 'ru' ? ch.loreRu : ch.loreEn;
+            document.getElementById('readerBodyText').textContent = currentLang === 'ru' ? ch.textRu : ch.textEn;
+            
+            document.getElementById('chapterReaderModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            window.scrollTo(0,0);
+        }
+
+        function closeChapterReader() {
+            document.getElementById('chapterReaderModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function navigateChapter(direction) {
+            const newId = currentReadingChapterId + direction;
+            if (newId >= 1 && newId <= defaultChapters.length) {
+                openChapterReader(newId);
+            } else {
+                showToast(currentLang === 'ru' ? "Это крайняя глава в списке." : "This is the edge chapter.");
+            }
+        }
+
+        function changeFontSize(delta) {
+            readerFontSize = Math.max(12, Math.min(24, readerFontSize + delta));
+            document.getElementById('readerBodyText').style.fontSize = readerFontSize + 'px';
+        }
+
+        // Рендер папок Вики / Лора
+        function renderWikiFolders() {
+            const grid = document.getElementById('wikiFoldersGrid');
+            grid.innerHTML = '';
+
+            wikiFoldersData.forEach(folder => {
+                if (currentWikiFilter !== 'all' && folder.cat !== currentWikiFilter) return;
+
+                const name = currentLang === 'ru' ? folder.nameRu : folder.nameEn;
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl p-3 flex flex-col items-center text-center cursor-pointer hover:border-amber-400/60 active:scale-95 transition folder-icon-wrapper group relative";
+                card.onclick = () => openFolderDetail(folder.id);
+
+                let lockIcon = folder.locked ? '<span class="absolute top-2 right-2 text-amber-400 text-xs"><i class="fa-solid fa-lock"></i></span>' : '';
+
+                card.innerHTML = `
+                    ${lockIcon}
+                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-sky-400/40 group-hover:border-amber-400 shadow-xl mb-2.5 bg-slate-900">
+                        <img src="${folder.photo}" onerror="this.src='https://placehold.co/300x300/090d1c/38bdf8?text=Folder'" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                    <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-0.5">${folder.rank || 'Лор'}</span>
+                    <h4 class="font-cinzel font-bold text-xs sm:text-sm text-white line-clamp-1">${name}</h4>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterWiki(cat) {
+            currentWikiFilter = cat;
+            document.querySelectorAll('.wiki-cat-btn').forEach(btn => {
+                if (btn.getAttribute('data-cat') === cat) {
+                    btn.className = "wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-sky-500 text-slate-950 shrink-0";
+                } else {
+                    btn.className = "wiki-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 shrink-0";
+                }
+            });
+            renderWikiFolders();
+        }
+
+        function openFolderDetail(folderId) {
+            const folder = wikiFoldersData.find(f => f.id === folderId);
+            if (!folder) return;
+            currentOpenedFolderId = folderId;
+
+            if (folder.locked && currentRole === 'guest') {
+                showToast(currentLang === 'ru' ? "🔒 Эта папка доступна только для Премиум-подписчиков!" : "🔒 This folder is for Premium members only!");
+                return;
+            }
+
+            document.getElementById('detailFolderName').textContent = currentLang === 'ru' ? folder.nameRu : folder.nameEn;
+            document.getElementById('detailFolderCat').textContent = folder.cat.toUpperCase();
+            document.getElementById('detailFolderRank').textContent = folder.rank || '';
+            document.getElementById('detailFolderImg').src = folder.photo;
+            document.getElementById('detailFolderDesc').textContent = currentLang === 'ru' ? folder.descRu : folder.descEn;
+
+            const adminControls = document.getElementById('detailAdminControls');
+            const lockBtn = document.getElementById('detailToggleLockBtn');
+            const uploadBtn = document.getElementById('detailUploadBtn');
+
+            if (currentRole === 'admin') {
+                adminControls.classList.remove('hidden');
+                uploadBtn.classList.remove('hidden');
+                if (folder.locked) {
+                    lockBtn.textContent = currentLang === 'ru' ? 'Разблокировать (сделать общим)' : 'Unlock (Make Public)';
+                    lockBtn.className = "px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-bold";
+                } else {
+                    lockBtn.textContent = currentLang === 'ru' ? 'Закрыть под Премиум замок' : 'Lock under Premium';
+                    lockBtn.className = "px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-bold";
+                }
+            } else {
+                adminControls.classList.add('hidden');
+                uploadBtn.classList.add('hidden');
+            }
+
+            document.getElementById('folderDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFolderDetailModal() {
+            document.getElementById('folderDetailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function toggleOpenedFolderLock() {
+            const folder = wikiFoldersData.find(f => f.id === currentOpenedFolderId);
+            if (folder) {
+                folder.locked = !folder.locked;
+                openFolderDetail(currentOpenedFolderId);
+                renderWikiFolders();
+                showToast(currentLang === 'ru' ? "Статус папки обновлен!" : "Folder access updated!");
+            }
+        }
+
+        function uploadPhotoToOpenedFolder(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const folder = wikiFoldersData.find(f => f.id === currentOpenedFolderId);
+                if (folder) {
+                    folder.photo = e.target.result;
+                    document.getElementById('detailFolderImg').src = e.target.result;
+                    renderWikiFolders();
+                    showToast(currentLang === 'ru' ? "Фото успешно загружено с iPhone!" : "Photo successfully uploaded from iPhone!");
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Рендер галереи эксклюзивных артов
+        function renderExclusiveArts() {
+            const grid = document.getElementById('exclusiveArtsGrid');
+            grid.innerHTML = '';
+
+            exclusiveArts.forEach(art => {
+                const isLocked = art.locked && (currentRole === 'guest');
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl overflow-hidden border border-amber-500/30 flex flex-col justify-between relative";
+                
+                let badgeHTML = art.locked 
+                    ? `<span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold flex items-center gap-1"><i class="fa-solid fa-lock"></i> Премиум-Арт</span>`
+                    : `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">Открыто</span>`;
+
+                card.innerHTML = `
+                    <div class="relative aspect-video bg-slate-900 overflow-hidden group">
+                        <img src="${art.img}" onerror="this.src='https://placehold.co/600x400/090d1c/38bdf8?text=Exclusive+Art'" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute top-2 right-2">${badgeHTML}</div>
+                    </div>
+                    <div class="p-4 flex flex-col justify-between flex-1">
+                        <h4 class="font-cinzel font-bold text-sm text-white mb-3">${currentLang === 'ru' ? art.titleRu : art.titleEn}</h4>
+                        <div class="flex items-center justify-between gap-2">
+                            <button onclick="viewArtModal('${art.img}', ${isLocked})" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-sky-400/30 text-sky-300 font-bold text-xs w-full flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-eye"></i> ${isLocked ? (currentLang === 'ru' ? 'Только для Премиум' : 'Premium Only') : (currentLang === 'ru' ? 'Просмотр арта' : 'View Art')}
+                            </button>
+                            ${currentRole === 'admin' ? `<button onclick="toggleArtLock('${art.id}')" class="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-300 font-bold text-xs"><i class="fa-solid fa-shuffle"></i></button>` : ''}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleArtLock(artId) {
+            const art = exclusiveArts.find(a => a.id === artId);
+            if (art) {
+                art.locked = !art.locked;
+                renderExclusiveArts();
+                showToast(currentLang === 'ru' ? "Статус доступа к арту изменен!" : "Art access status changed!");
+            }
+        }
+
+        function viewArtModal(imgSrc, isLocked) {
+            if (isLocked) {
+                showToast(currentLang === 'ru' ? "🔒 Этот эксклюзивный арт доступен только Премиум-подписчикам!" : "🔒 Exclusive art requires Premium membership!");
+                return;
+            }
+            // Открыть картинку во весь экран (простое окно)
+            const win = window.open("");
+            win.document.write(`<body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100vh;"><img src="${imgSrc}" style="max-width:100%;max-height:100%;object-fit:contain;"></body>`);
+        }
+
+        // Модалки папок и глав для админа
+        function openFolderModal() {
+            document.getElementById('createFolderModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeFolderModal() {
+            document.getElementById('createFolderModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function saveNewFolder() {
+            const nameRu = document.getElementById('newFolderNameRu').value;
+            const nameEn = document.getElementById('newFolderNameEn').value || nameRu;
+            const cat = document.getElementById('newFolderCat').value;
+            const rank = document.getElementById('newFolderRank').value;
+            const descRu = document.getElementById('newFolderDescRu').value;
+            const descEn = document.getElementById('newFolderDescEn').value || descRu;
+            const locked = document.getElementById('newFolderLocked').checked;
+            const fileInput = document.getElementById('newFolderFile');
+
+            if (!nameRu) {
+                showToast(currentLang === 'ru' ? "Введите название папки!" : "Enter folder name!");
+                return;
+            }
+
+            const newId = 'folder_' + Date.now();
+            let photoUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400";
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoUrl = e.target.result;
+                    pushNewFolder(newId, nameRu, nameEn, cat, rank, descRu, descEn, locked, photoUrl);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                pushNewFolder(newId, nameRu, nameEn, cat, rank, descRu, descEn, locked, photoUrl);
+            }
+        }
+
+        function pushNewFolder(id, nameRu, nameEn, cat, rank, descRu, descEn, locked, photo) {
+            wikiFoldersData.unshift({
+                id: id,
+                nameRu: nameRu,
+                nameEn: nameEn,
+                cat: cat,
+                rank: rank,
+                photo: photo,
+                descRu: descRu,
+                descEn: descEn,
+                locked: locked
+            });
+            renderWikiFolders();
+            updateAdminStats();
+            closeFolderModal();
+            showToast(currentLang === 'ru' ? "Новая папка успешно создана с вашего iPhone!" : "New folder created successfully from iPhone!");
+        }
+
+        function openNewChapterModal() {
+            document.getElementById('newChapterModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeNewChapterModal() {
+            document.getElementById('newChapterModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function saveNewChapter() {
+            const titleRu = document.getElementById('addChTitleRu').value;
+            const titleEn = document.getElementById('addChTitleEn').value || titleRu;
+            const textRu = document.getElementById('addChTextRu').value;
+            const textEn = document.getElementById('addChTextEn').value || textRu;
+            const paid = document.getElementById('addChPaid').checked;
+
+            if (!titleRu || !textRu) {
+                showToast(currentLang === 'ru' ? "Заполните заголовок и текст главы!" : "Fill title and chapter text!");
+                return;
+            }
+
+            const newId = defaultChapters.length + 1;
+            defaultChapters.push({
+                id: newId,
+                paid: paid,
+                titleRu: titleRu,
+                titleEn: titleEn,
+                loreRu: "Новая глава новеллы 18 000 + 1 Eternity.",
+                loreEn: "New chapter of 18,000 + 1 Eternity.",
+                textRu: textRu,
+                textEn: textEn
+            });
+
+            renderChapters();
+            updateAdminStats();
+            closeNewChapterModal();
+            showToast(currentLang === 'ru' ? `Глава ${newId} успешно опубликована!` : `Chapter ${newId} published successfully!`);
+        }
+
+        // Обложки новеллы (IMG_3463 и IMG_3466)
+        function switchCover(imgSrc) {
+            document.getElementById('heroCoverImg').src = imgSrc;
+            showToast(currentLang === 'ru' ? "Обложка переключена!" : "Cover switched!");
+        }
+
+        function uploadHeroCover(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('heroCoverImg').src = e.target.result;
+                showToast(currentLang === 'ru' ? "Обложка успешно загружена!" : "Cover uploaded!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Комментарии
+        function renderComments() {
+            const container = document.getElementById('commentsContainer');
+            container.innerHTML = '';
+            commentsList.forEach(c => {
+                container.innerHTML += `
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+                        <div class="font-bold text-sky-400 mb-1">${c.author}</div>
+                        <div class="text-slate-200">${c.text}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function submitComment() {
+            if (currentRole === 'guest') {
+                showToast(currentLang === 'ru' ? "Гости не могут комментировать!" : "Guests cannot comment!");
+                return;
+            }
+            const txt = document.getElementById('newCommentText').value;
+            if (!txt.trim()) return;
+
+            let authorName = currentRole === 'admin' ? 'Владелец (Админ)' : (currentRole === 'premium' ? 'Премиум Подписчик' : 'Читатель');
+            commentsList.unshift({ author: authorName, text: txt });
+            document.getElementById('newCommentText').value = '';
+            renderComments();
+            showToast(currentLang === 'ru' ? "Комментарий опубликован!" : "Comment published!");
+        }
+
+        function toggleCommentAccess() {
+            const guestBox = document.getElementById('guestCommentLockBox');
+            const formBox = document.getElementById('commentFormBox');
+            if (currentRole === 'guest') {
+                guestBox.classList.remove('hidden');
+                formBox.classList.add('hidden');
+            } else {
+                guestBox.classList.add('hidden');
+                formBox.classList.remove('hidden');
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastMessage');
+            document.getElementById('toastText').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        window.onload = function() {
+            initApp();
+            updateAdminStats();
+        };
+    </script>
+</body>
+</html>
