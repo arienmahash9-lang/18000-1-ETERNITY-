@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18.000 + 1 Eternity — Веб-новелла</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            900: '#07090E',
+                            800: '#0F1523',
+                            700: '#1A2338',
+                            600: '#2A3655',
+                        },
+                        magic: {
+                            blue: '#38BDF8',
+                            purple: '#A855F7',
+                            gold: '#FBBF24',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #07090E; color: #E2E8F0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .glass-panel { background: rgba(15, 21, 35, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.15); }
+        .glass-card { background: rgba(26, 35, 56, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(168, 85, 247, 0.2); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-magic-blue selection:text-black">
+
+    <!-- Навигация и панель симуляции ролей (для Администратора) -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-magic-blue/20 px-4 py-3">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-xl font-bold bg-gradient-to-r from-magic-blue via-purple-300 to-magic-gold bg-clip-text text-transparent">
+                    18.000 + 1 Eternity
+                </span>
+            </div>
+            
+            <!-- Переключатель ролей для демонстрации монетизации и прав -->
+            <div class="flex items-center space-x-2">
+                <span class="text-xs text-slate-400 hidden sm:inline">Роль:</span>
+                <select id="roleSelector" onchange="changeRole(this.value)" class="bg-space-700 text-xs text-magic-blue border border-magic-blue/30 rounded-lg px-2 py-1.5 focus:outline-none">
+                    <option value="admin">👑 Админ (Вы)</option>
+                    <option value="premium">⭐ Премиум</option>
+                    <option value="user">👤 Юзер</option>
+                    <option value="guest">👁️ Гость</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 space-y-6">
+
+        <!-- Переключатель вкладок сайта -->
+        <div class="flex space-x-2 overflow-x-auto pb-2 border-b border-slate-800">
+            <button onclick="switchTab('home')" id="tab-home" class="px-4 py-2 rounded-xl text-sm font-medium bg-magic-blue text-slate-950 transition">Главная</button>
+            <button onclick="switchTab('chapters')" id="tab-chapters" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-space-700 transition">Главы</button>
+            <button onclick="switchTab('reader')" id="tab-reader" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-space-700 transition">Чтение</button>
+            <button onclick="switchTab('encyclopedia')" id="tab-encyclopedia" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-space-700 transition">Энциклопедия</button>
+            <button id="adminTabBtn" onclick="switchTab('admin')" class="px-4 py-2 rounded-xl text-sm font-medium text-magic-gold hover:bg-space-700 transition hidden"><i class="fa-solid fa-gear mr-1"></i> Админка</button>
+        </div>
+
+        <!-- ВКЛАДКА 1: ГЛАВНАЯ -->
+        <div id="section-home" class="space-y-6">
+            <div class="glass-panel rounded-2xl p-5 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-magic-purple/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="grid md:grid-cols-3 gap-6 items-center">
+                    <div class="aspect-[3/4] rounded-xl bg-space-700 overflow-hidden border border-magic-blue/30 shadow-2xl relative flex items-center justify-center text-center p-4">
+                        <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-transparent to-transparent"></div>
+                        <i class="fa-solid fa-book-open text-4xl text-magic-blue mb-2"></i>
+                        <span class="text-xs text-slate-300 relative z-10">Обложка новеллы (Космос / Фэнтези)</span>
+                    </div>
+                    <div class="md:col-span-2 space-y-4">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-magic-blue/20 text-magic-blue border border-magic-blue/30">Фэнтези</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">Космос & Магия</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">Ранний доступ</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">18.000 + 1 Eternity</h1>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Эпическая история о мирах, пересекающих грани вечности, архангелах, древних демонах и звездных странниках. Погрузитесь в уникальную вселенную с авторскими иллюстрациями и глубоким лором.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button onclick="switchTab('reader')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-magic-blue to-purple-600 text-slate-950 font-semibold text-sm shadow-lg shadow-magic-blue/20 hover:opacity-90 transition">
+                                <i class="fa-solid fa-play mr-2"></i> Читать с начала
+                            </button>
+                            <button onclick="switchTab('chapters')" class="px-5 py-2.5 rounded-xl glass-card text-slate-200 font-medium text-sm hover:bg-space-600 transition">
+                                Список глав
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА 2: СПИСОК ГЛАВ -->
+        <div id="section-chapters" class="space-y-3 hidden">
+            <h2 class="text-lg font-bold text-white mb-4">Список глав</h2>
+            <div class="space-y-2">
+                <div onclick="switchTab('reader')" class="glass-card p-4 rounded-xl flex items-center justify-between cursor-pointer hover:border-magic-blue/50 transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-lg bg-space-700 flex items-center justify-center text-xs font-bold text-magic-blue">1</span>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white">Глава 1: Пробуждение среди звезд</h4>
+                            <span class="text-xs text-slate-400">Бесплатно • 12 минут чтения</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-lock-open text-emerald-400 text-sm"></i>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl flex items-center justify-between opacity-80">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-lg bg-space-700 flex items-center justify-center text-xs font-bold text-magic-blue">15</span>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white">Глава 15: Дыхание Бездны</h4>
+                            <span class="text-xs text-amber-400">⚡ Ранний доступ (Требуется Premium)</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-lock text-amber-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА 3: СТРАНИЦА ЧТЕНИЯ -->
+        <div id="section-reader" class="space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl space-y-6">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                    <span class="text-xs text-magic-blue font-semibold uppercase tracking-wider">Глава 1</span>
+                    <div class="flex items-center space-x-2 text-xs text-slate-400">
+                        <button onclick="adjustFontSize(1)" class="px-2 py-1 bg-space-700 rounded hover:text-white">A+</button>
+                        <button onclick="adjustFontSize(-1)" class="px-2 py-1 bg-space-700 rounded hover:text-white">A-</button>
+                    </div>
+                </div>
+
+                <div id="readerText" class="text-slate-200 text-base leading-relaxed space-y-4">
+                    <p>Холодный свет далеких созвездий падал на каменные плиты террасы, отражаясь в глазах юноши. Время в этом мире измерялось не секундами, а ударами пульса самой вечности.</p>
+                    <p>— Ты уверен в своем выборе? — раздался голос из тени, сотканный из шепота звездного ветра.</p>
+                    
+                    <!-- Место под вставку арта между абзацами (настраивается админом) -->
+                    <div class="my-6 p-3 rounded-xl bg-space-900/80 border border-magic-purple/30 text-center">
+                        <div class="aspect-[16/9] rounded-lg bg-space-800 flex flex-col items-center justify-center text-slate-400 text-xs mb-2">
+                            <i class="fa-solid fa-image text-2xl text-magic-purple mb-1"></i>
+                            Слот для сюжетной иллюстрации (Арт между абзацами)
+                        </div>
+                        <span class="text-xs text-magic-purple font-medium">Зари Диазура • Сцена на звездной палубе</span>
+                    </div>
+
+                    <p>Острие клинка слегка заискрилось, отгоняя наступающую тьму. Впереди лежало еще 18 000 миров, и каждый шаг приближал разгадку.</p>
+                </div>
+
+                <!-- Блок комментариев (скрыт для Гостей) -->
+                <div id="commentsSection" class="pt-6 border-t border-slate-800 space-y-4">
+                    <h3 class="text-sm font-bold text-white"><i class="fa-regular fa-comments mr-2 text-magic-blue"></i> Комментарии читателей</h3>
+                    <div class="space-y-3">
+                        <div class="bg-space-900/60 p-3 rounded-xl text-xs space-y-1">
+                            <span class="font-semibold text-magic-blue">Алексей</span>
+                            <p class="text-slate-300">Великолепная атмосфера! С нетерпением жду продолжения.</p>
+                        </div>
+                    </div>
+                    <div id="commentInputBox" class="flex gap-2 pt-2">
+                        <input type="text" placeholder="Написать комментарий..." class="flex-1 bg-space-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-magic-blue">
+                        <button class="px-4 py-2 bg-magic-blue text-slate-950 font-semibold text-xs rounded-xl">Отправить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА 4: ЭНЦИКЛОПЕДИЯ И ПАПКИ ПЕРСОНАЖЕЙ -->
+        <div id="section-encyclopedia" class="space-y-6 hidden">
+            <h2 class="text-lg font-bold text-white">Энциклопедия персонажей и лора</h2>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <!-- Карточка персонажа 1 -->
+                <div class="glass-card rounded-2xl p-4 space-y-3 border border-magic-blue/20">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-14 h-14 rounded-xl bg-space-700 flex items-center justify-center text-magic-blue font-bold text-lg overflow-hidden border border-magic-blue/30">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white">Зари Диазура</h3>
+                            <span class="text-xs text-magic-blue">Архангел • Главный персонаж</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Одна из высших архангелов небесной стражи. Хранительница древних ключей и космических путей.
+                    </p>
+                    <button onclick="openCharacterFolder('Зари Диазура')" class="w-full py-2 bg-space-700 hover:bg-space-600 text-xs font-semibold text-magic-blue rounded-xl transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-folder-open"></i> <span>Открыть папку артов персонажа</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА 5: ПАНЕЛЬ АДМИНИСТРАТОРА (Видна только вам при роли Admin) -->
+        <div id="section-admin" class="space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl space-y-4 border border-magic-gold/30">
+                <div class="flex items-center space-x-2 text-magic-gold">
+                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                    <h2 class="text-base font-bold">Панель управления администратора</h2>
+                </div>
+                <p class="text-xs text-slate-300">Здесь вы можете управлять контентом, загружать новые главы, арты и настраивать монетизацию.</p>
+                
+                <div class="grid sm:grid-cols-2 gap-4 pt-2">
+                    <div class="glass-card p-4 rounded-xl space-y-2">
+                        <h4 class="text-xs font-bold text-white"><i class="fa-solid fa-plus mr-1 text-magic-blue"></i> Публикация новой главы</h4>
+                        <input type="text" placeholder="Название главы" class="w-full bg-space-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white">
+                        <select class="w-full bg-space-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300">
+                            <option>Бесплатная глава</option>
+                            <option>Ранний доступ (Премиум)</option>
+                        </select>
+                        <button class="w-full py-2 bg-magic-blue text-slate-950 font-semibold text-xs rounded-lg">Опубликовать</button>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-xl space-y-2">
+                        <h4 class="text-xs font-bold text-white"><i class="fa-solid fa-folder-plus mr-1 text-magic-gold"></i> Создать папку персонажа</h4>
+                        <input type="text" placeholder="Имя персонажа" class="w-full bg-space-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white">
+                        <button class="w-full py-2 bg-magic-gold text-slate-950 font-semibold text-xs rounded-lg">Создать папку на Диске</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Модальное окно папки персонажа с платной блокировкой артов -->
+    <div id="folderModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel max-w-lg w-full p-6 rounded-2xl space-y-4 relative border border-magic-blue/30">
+            <div class="flex justify-between items-center">
+                <h3 id="modalTitle" class="text-base font-bold text-white">Папка артов</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="grid grid-cols-2 gap-3" id="modalArtGrid">
+                <!-- Динамические арты -->
+                <div class="aspect-square bg-space-900 rounded-xl border border-slate-700 flex flex-col items-center justify-center p-2 text-center relative overflow-hidden">
+                    <i class="fa-solid fa-image text-xl text-magic-blue mb-1"></i>
+                    <span class="text-[10px] text-slate-300">Арт 01 (Открытый)</span>
+                </div>
+                <div id="lockedArtCard" class="aspect-square bg-space-900 rounded-xl border border-amber-500/40 flex flex-col items-center justify-center p-2 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-space-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-lg mb-1"></i>
+                        <span class="text-[10px] text-amber-300 font-medium">Эксклюзив (Paywall)</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500">Секретный арт</span>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400 text-center">Администратор может в один клик закрывать или открывать арты для подписчиков.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = 'admin';
+
+        function switchTab(tabId) {
+            ['home', 'chapters', 'reader', 'encyclopedia', 'admin'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).classList.remove('bg-magic-blue', 'text-slate-950');
+                document.getElementById(`tab-${t}`).classList.add('text-slate-300');
+            });
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('bg-magic-blue', 'text-slate-950');
+            document.getElementById(`tab-${tabId}`).classList.remove('text-slate-300');
+        }
+
+        function changeRole(role) {
+            currentRole = role;
+            const adminTabBtn = document.getElementById('adminTabBtn');
+            const commentInputBox = document.getElementById('commentInputBox');
+            
+            if (role === 'admin') {
+                adminTabBtn.classList.remove('hidden');
+            } else {
+                adminTabBtn.classList.add('hidden');
+                if(document.getElementById('section-admin').classList.contains('hidden') === false) {
+                    switchTab('home');
+                }
+            }
+
+            if (role === 'guest') {
+                commentInputBox.style.display = 'none';
+            } else {
+                commentInputBox.style.display = 'flex';
+            }
+        }
+
+        function openCharacterFolder(charName) {
+            document.getElementById('modalTitle').innerText = `Папка персонажа: ${charName}`;
+            document.getElementById('folderModal').classList.remove('hidden');
+            
+            // Если гость или юзер открывает, проверяем права на платный арт
+            const lockedCard = document.getElementById('lockedArtCard');
+            if (currentRole === 'guest' || currentRole === 'user') {
+                lockedCard.innerHTML = `
+                    <div class="absolute inset-0 bg-space-950/90 backdrop-blur-md flex flex-col items-center justify-center p-2 text-center cursor-pointer" onclick="alert('Это платный арт! Оформите Премиум-подписку для просмотра.')">
+                        <i class="fa-solid fa-lock text-amber-400 text-lg mb-1"></i>
+                        <span class="text-[10px] text-amber-300 font-bold">🔒 Только для Premium</span>
+                        <span class="text-[9px] text-slate-400 mt-1 underline">Разблокировать</span>
+                    </div>
+                `;
+            } else {
+                lockedCard.innerHTML = `
+                    <div class="absolute inset-0 bg-space-950/40 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-unlock text-emerald-400 text-lg mb-1"></i>
+                        <span class="text-[10px] text-emerald-300 font-medium">Открыто вам (Admin/Prem)</span>
+                    </div>
+                `;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('folderModal').classList.add('hidden');
+        }
+
+        let currentFontSize = 16;
+        function adjustFontSize(delta) {
+            currentFontSize += delta;
+            document.getElementById('readerText').style.fontSize = currentFontSize + 'px';
+        }
+    </script>
+</body>
+</html>
