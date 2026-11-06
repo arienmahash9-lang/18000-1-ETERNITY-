@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>18.000 + 1 Вечность | 18,000 + 1 Eternity — Official Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07070c;
+      --card-dark: #11111a;
+      --accent-gold: #d4af37;
+      --accent-crimson: #991b1b;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: #e4e4e7;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-serif-title { font-family: 'Cinzel', serif; }
+    .font-reader { font-family: 'Lora', serif; }
+    .gold-gradient {
+      background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa7c11 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gold-border { border-color: rgba(212, 175, 55, 0.35); }
+    .glass {
+      background: rgba(17, 17, 26, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #07070c; }
+    ::-webkit-scrollbar-thumb { background: #27273a; border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-500/30 selection:text-amber-200 pb-20 md:pb-0">
+
+  <!-- ВЕРХНЯЯ НАВИГАЦИЯ -->
+  <header class="sticky top-0 z-40 glass border-b border-zinc-800/80 px-4 py-3">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Логотип -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 via-amber-700 to-red-900 flex items-center justify-center font-serif-title font-bold text-black shadow-lg shadow-amber-500/10">
+          18K
+        </div>
+        <div>
+          <h1 class="font-serif-title text-base md:text-lg font-bold tracking-wider gold-gradient leading-none">
+            18.000 + 1 ВЕЧНОСТЬ
+          </h1>
+          <span class="text-[11px] text-zinc-400 tracking-widest uppercase block mt-0.5" id="header-subtitle">
+            Архив Арагона • Официальная Платформа
+          </span>
+        </div>
+      </div>
+
+      <!-- Панель переключателей: Язык + Уровень доступа -->
+      <div class="flex items-center gap-2 ml-auto">
+        <!-- Переключатель языка -->
+        <button onclick="toggleLang()" id="lang-btn" class="px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-xs font-semibold text-amber-400 hover:border-amber-500/50 transition">
+          RU / EN
+        </button>
+
+        <!-- Селектор роли (Тестирование доступа + Вход) -->
+        <select id="role-select" onchange="changeRole(this.value)" class="px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-xs font-medium text-zinc-200 focus:outline-none focus:border-amber-500">
+          <option value="guest">👤 Гость (Guest)</option>
+          <option value="premium">💎 Премиум (VIP)</option>
+          <option value="admin">👑 Админ (Арагон)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Десктопное меню -->
+    <nav class="hidden md:flex max-w-6xl mx-auto mt-3 pt-2 border-t border-zinc-800/60 gap-6 text-sm">
+      <button onclick="switchTab('home')" id="nav-home" class="nav-btn text-amber-400 font-medium">Главная</button>
+      <button onclick="switchTab('chapters')" id="nav-chapters" class="nav-btn text-zinc-400 hover:text-white transition">Главы</button>
+      <button onclick="switchTab('lore')" id="nav-lore" class="nav-btn text-zinc-400 hover:text-white transition">Библия Лора</button>
+      <button onclick="switchTab('gallery')" id="nav-gallery" class="nav-btn text-zinc-400 hover:text-white transition">Галерея Артов</button>
+      <button onclick="switchTab('community')" id="nav-community" class="nav-btn text-zinc-400 hover:text-white transition">Обсуждение</button>
+      <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn text-red-400 font-semibold hidden ml-auto">⚙ Админ-панель</button>
+    </nav>
+  </header>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+
+    <!-- 1. ВКЛАДКА: ГЛАВНАЯ -->
+    <section id="tab-home" class="space-y-8">
+      <!-- Hero Блок -->
+      <div class="relative rounded-2xl overflow-hidden border gold-border bg-gradient-to-b from-zinc-900/90 via-zinc-950 to-black p-6 md:p-10 shadow-2xl">
+        <div class="max-w-3xl space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium">
+            <span>✦ Авторская тёмная фэнтези-сага</span>
+          </div>
+          <h2 class="font-serif-title text-3xl md:text-5xl font-bold gold-gradient leading-tight" id="hero-title">
+            18.000 + 1 Вечность
+          </h2>
+          <p class="text-zinc-300 text-sm md:text-base leading-relaxed" id="hero-desc">
+            За пределами восемнадцати тысяч смертных и божественных измерений лежит Первородная Бездна и Высший Престол. История о падении и возвышении сквозь катаклизмы эпох, где 30 Столпов и Высшие Архангелы ведут войну за право переписать саму Вечность.
+          </p>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button onclick="openReader(0)" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold text-sm shadow-lg shadow-amber-500/20 hover:brightness-110 active:scale-95 transition" id="btn-start-reading">
+              📖 Читать с 1 главы
+            </button>
+            <button onclick="switchTab('lore')" class="px-5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200 font-medium text-sm hover:border-amber-500/50 transition" id="btn-open-lore">
+              📜 Открыть Библию Лора
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Статистика мира -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="p-4 rounded-xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-2xl font-serif-title font-bold text-amber-400">18 001</div>
+          <div class="text-xs text-zinc-400 mt-1" data-i18n="stat_worlds">Миров и Измерений</div>
+        </div>
+        <div class="p-4 rounded-xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-2xl font-serif-title font-bold text-amber-400" id="stat-chapters-count">45</div>
+          <div class="text-xs text-zinc-400 mt-1" data-i18n="stat_chapters">Глав в Архиве</div>
+        </div>
+        <div class="p-4 rounded-xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-2xl font-serif-title font-bold text-amber-400">30</div>
+          <div class="text-xs text-zinc-400 mt-1" data-i18n="stat_pillars">Высших Столпов</div>
+        </div>
+        <div class="p-4 rounded-xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-2xl font-serif-title font-bold text-amber-400">RU / EN</div>
+          <div class="text-xs text-zinc-400 mt-1" data-i18n="stat_bilingual">Двуязычное издание</div>
+        </div>
+      </div>
+
+      <!-- Карточка статуса доступа -->
+      <div class="p-5 rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-900 to-amber-950/30 border border-amber-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base font-semibold text-white flex items-center gap-2">
+            <span id="access-badge-title">Текущий статус: Гость</span>
+          </h3>
+          <p class="text-xs text-zinc-400 mt-1" id="access-badge-desc">
+            Переключите роль в правом верхнем углу («Гость», «Премиум» или «Админ»), чтобы протестировать закрытые VIP-главы, эксклюзивные арты и панель управления Арагона.
+          </p>
+        </div>
+        <button onclick="changeRole('premium')" class="px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold hover:bg-amber-500/30 transition shrink-0">
+          💎 Включить Премиум-режим
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. ВКЛАДКА: СПИСОК ГЛАВ И ЧИТАЛКА -->
+    <section id="tab-chapters" class="hidden space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-serif-title text-2xl font-bold text-white" data-i18n="chapters_heading">Оглавление Саги</h2>
+          <p class="text-xs text-zinc-400">Бесплатные и ранние Премиум-главы</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="filterChapters('all')" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-xs text-white">Все</button>
+          <button onclick="filterChapters('free')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300">Бесплатные</button>
+          <button onclick="filterChapters('premium')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-amber-500/30 text-xs text-amber-300">💎 VIP</button>
+        </div>
+      </div>
+
+      <!-- Список глав -->
+      <div id="chapters-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+      <!-- Окно Читалки (скрыто по умолчанию) -->
+      <div id="reader-modal" class="hidden rounded-2xl bg-zinc-950 border border-zinc-800 p-5 md:p-8 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-zinc-800">
+          <button onclick="closeReader()" class="text-xs text-zinc-400 hover:text-white flex items-center gap-1">
+            ← Назад к списку глав
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="adjustFontSize(-2)" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-700 text-xs">A-</button>
+            <button onclick="adjustFontSize(2)" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-700 text-xs">A+</button>
+          </div>
+        </div>
+        <div>
+          <span id="reader-tier-badge" class="text-[11px] uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20"></span>
+          <h3 id="reader-title" class="font-serif-title text-2xl md:text-3xl font-bold text-white mt-2"></h3>
+        </div>
+        <article id="reader-content" class="font-reader text-zinc-200 leading-relaxed space-y-4 text-base md:text-lg whitespace-pre-line"></article>
+        <div class="flex items-center justify-between pt-6 border-t border-zinc-800">
+          <button id="prev-chap-btn" class="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-zinc-300">← Предыдущая</button>
+          <button id="next-chap-btn" class="px-4 py-2 rounded-lg bg-amber-500 text-black font-semibold text-xs">Следующая →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. ВКЛАДКА: БИБЛИЯ ЛОРА -->
+    <section id="tab-lore" class="hidden space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-serif-title text-2xl font-bold gold-gradient">Библия Лора • 18 001 Мир</h2>
+          <p class="text-xs text-zinc-400">Космология, Архангелы, 30 Столпов и Божественные Техники</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterLore('all')" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-xs text-white">Все</button>
+          <button onclick="filterLore('archangel')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-amber-300">Архангелы</button>
+          <button onclick="filterLore('pillar')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-red-400">30 Столпов</button>
+          <button onclick="filterLore('cosmology')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-sky-400">Космология и Техники</button>
+        </div>
+      </div>
+
+      <div id="lore-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- 4. ВКЛАДКА: ГАЛЕРЕЯ АРТОВ -->
+    <section id="tab-gallery" class="hidden space-y-6">
+      <div>
+        <h2 class="font-serif-title text-2xl font-bold text-white">Галерея Концепт-Артов</h2>
+        <p class="text-xs text-zinc-400">Официальные визуализации персонажей и эксклюзивные иллюстрации для VIP-читателей</p>
+      </div>
+      <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- 5. ВКЛАДКА: ОБСУЖДЕНИЕ (КОММЕНТАРИИ) -->
+    <section id="tab-community" class="hidden space-y-6">
+      <div>
+        <h2 class="font-serif-title text-2xl font-bold text-white">Зал Обсуждений Читателей</h2>
+        <p class="text-xs text-zinc-400">Делитесь теориями о Столпах, Архангелах и тайнах 18 001-го мира</p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-zinc-900/90 border border-zinc-800 space-y-3">
+        <input id="comment-author" type="text" placeholder="Ваше имя или никнейм..." class="w-full px-3.5 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-white focus:outline-none focus:border-amber-500">
+        <textarea id="comment-text" rows="3" placeholder="Напишите ваш отзыв или теорию по главам..." class="w-full px-3.5 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-white focus:outline-none focus:border-amber-500"></textarea>
+        <button onclick="addComment()" class="px-4 py-2 rounded-lg bg-amber-500 text-black font-semibold text-xs hover:brightness-110 transition">
+          Отправить комментарий
+        </button>
+      </div>
+
+      <div id="comments-list" class="space-y-3"></div>
+    </section>
+
+    <!-- 6. ВКЛАДКА: АДМИН-ПАНЕЛЬ (ТОЛЬКО ДЛЯ АРАГОНА) -->
+    <section id="tab-admin" class="hidden space-y-8">
+      <div class="p-5 rounded-2xl bg-gradient-to-r from-red-950/40 via-zinc-900 to-zinc-900 border border-red-500/30 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="font-serif-title text-2xl font-bold text-white">👑 Панель Управления Автора (Арагон)</h2>
+          <p class="text-xs text-zinc-300 mt-1">
+            Добавляйте новые главы, карточки лора и арты прямо с iPhone. После добавления нажмите «Скачать обновлённый index.html», чтобы выгрузить свежую версию сайта для всех читателей.
+          </p>
+        </div>
+        <button onclick="exportUpdatedHTML()" class="px-4 py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs shadow-lg hover:brightness-110 transition">
+          ⬇ Скачать обновлённый index.html
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Форма добавления новой главы -->
+        <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-3">
+          <h3 class="font-semibold text-amber-400 text-base">➕ Добавить новую главу</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="adm-chap-num" type="number" placeholder="Номер главы (напр. 46)" class="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+            <select id="adm-chap-tier" class="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+              <option value="free">Открытая (Free)</option>
+              <option value="premium">💎 Премиум (VIP)</option>
+            </select>
+          </div>
+          <input id="adm-chap-title-ru" type="text" placeholder="Название главы (RU)" class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+          <input id="adm-chap-title-en" type="text" placeholder="Chapter Title (EN)" class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+          <textarea id="adm-chap-content-ru" rows="5" placeholder="Текст главы на русском..." class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white"></textarea>
+          <textarea id="adm-chap-content-en" rows="4" placeholder="Chapter text in English (необязательно)..." class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white"></textarea>
+          <button onclick="adminAddChapter()" class="w-full py-2.5 rounded-lg bg-amber-500 text-black font-semibold text-xs hover:brightness-110 transition">
+            Опубликовать главу
+          </button>
+        </div>
+
+        <!-- Форма добавления карточки Лора / Персонажа -->
+        <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-3">
+          <h3 class="font-semibold text-amber-400 text-base">📜 Добавить персонажа / запись в Библию Лора</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="adm-lore-name-ru" type="text" placeholder="Имя / Название (RU)" class="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+            <input id="adm-lore-name-en" type="text" placeholder="Name / Title (EN)" class="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <select id="adm-lore-cat" class="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+              <option value="archangel">Архангел</option>
+              <option value="pillar">Столп (Pillar)</option>
+              <option value="cosmology">Космология / Техника</option>
+            </select>
+            <input id="adm-lore-rank" type="text" placeholder="Титул / Ранг (напр. 1-й Архангел)" class="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white">
+          </div>
+          <textarea id="adm-lore-desc-ru" rows="4" placeholder="Описание внешности, способностей и истории (RU)..." class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white"></textarea>
+          <textarea id="adm-lore-desc-en" rows="3" placeholder="Lore description (EN)..." class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white"></textarea>
+          <button onclick="adminAddLore()" class="w-full py-2.5 rounded-lg bg-zinc-800 border border-amber-500/40 text-amber-300 font-semibold text-xs hover:bg-zinc-700 transition">
+            Сохранить в Библию Лора
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- НИЖНЯЯ МОБИЛЬНАЯ НАВИГАЦИЯ (ДЛЯ IPHONE) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-zinc-800 px-2 py-2 flex justify-around items-center text-[11px]">
+    <button onclick="switchTab('home')" id="mnav-home" class="flex flex-col items-center gap-0.5 text-amber-400 font-medium">
+      <span>🏛</span><span>Главная</span>
+    </button>
+    <button onclick="switchTab('chapters')" id="mnav-chapters" class="flex flex-col items-center gap-0.5 text-zinc-400">
+      <span>📖</span><span>Главы</span>
+    </button>
+    <button onclick="switchTab('lore')" id="mnav-lore" class="flex flex-col items-center gap-0.5 text-zinc-400">
+      <span>📜</span><span>Лор</span>
+    </button>
+    <button onclick="switchTab('gallery')" id="mnav-gallery" class="flex flex-col items-center gap-0.5 text-zinc-400">
+      <span>🎨</span><span>Арты</span>
+    </button>
+    <button onclick="switchTab('community')" id="mnav-community" class="flex flex-col items-center gap-0.5 text-zinc-400">
+      <span>💬</span><span>Чат</span>
+    </button>
+    <button onclick="switchTab('admin')" id="mnav-admin" class="hidden flex-col items-center gap-0.5 text-red-400 font-semibold">
+      <span>⚙</span><span>Админ</span>
+    </button>
+  </nav>
+
+  <!-- БАЗА ДАННЫХ И ЛОГИКА ПЛАТФОРМЫ -->
+  <script id="app-data-script">
+    // Начальная база данных (Автоматически сохраняется при экспорте)
+    const INITIAL_STATE = {
+      lang: 'ru',
+      role: 'guest',
+      readerFontSize: 17,
+      chapters: [
+        {
+          id: 1,
+          num: 1,
+          tier: 'free',
+          title_ru: 'Глава 1. Пепел Восемнадцати Тысяч Небес',
+          title_en: 'Chapter 1. Ashes of Eighteen Thousand Heavens',
+          content_ru: `На границе восемнадцати тысяч миров даже свет теряет право на существование. Здесь, у врат Первородной Бездны, время не течёт рекой — оно застывает осколками разбитых эпох.\n\nКогда печать Седьмого Престола дала трещину, древние Столпы ощутили вибрацию, способную стереть целые созвездия. Но ни один из тридцати владык не знал, что пробуждение уже началось в самой глубокой тени мироздания...`,
+          content_en: `At the boundary of eighteen thousand worlds, even light loses its right to exist. Here, at the gates of the Primordial Abyss, time does not flow like a river—it freezes into shards of shattered epochs.\n\nWhen the seal of the Seventh Throne cracked, the ancient Pillars felt a vibration capable of erasing entire constellations. Yet none of the thirty sovereigns knew that the awakening had already begun in the deepest shadow of creation...`
+        },
+        {
+          id: 2,
+          num: 2,
+          tier: 'free',
+          title_ru: 'Глава 2. Крылья Зари Диазуры',
+          title_en: 'Chapter 2. Wings of Zari Diazura',
+          content_ru: `Небесный купол раскололся беззвучно. Сквозь золотисто-багровое сияние спустилась фигура, чьё присутствие заставляло замирать саму гравитацию.\n\nЗари Диазура — одна из Высших Архангелов. Её взгляд хранил холод вечности и геометрию небесных печатей, способных судить как падших демонов Соломонова круга, так и смертных, осмелившихся взглянуть за предел 18 000 измерений.`,
+          content_en: `The celestial dome split in silence. Through the crimson-gold radiance descended a figure whose very presence forced gravity itself to halt.\n\nZari Diazura—one of the Supreme Archangels. Her gaze held the chill of eternity and the geometry of celestial seals capable of judging both fallen demons and mortals who dared look beyond the 18,000 dimensions.`
+        },
+        {
+          id: 3,
+          num: 45,
+          tier: 'premium',
+          title_ru: 'Глава 45. Приговор Тридцати Столпов (+1 Вечность)',
+          title_en: 'Chapter 45. Verdict of the Thirty Pillars (+1 Eternity)',
+          content_ru: `[ЭКСКЛЮЗИВНАЯ ГЛАВА РАННЕГО ДОСТУПА]\n\nВ Зале Пустоты собрались те, чьи имена запрещено произносить в низших мирах: Баал, Асмодей, Белиал, Агарес и хранители древних печатей. Напротив них стояли небесные легионы.\n\n«Восемнадцать тысяч миров — лишь клетка, — прозвучал голос, рассекающий реальность. — Истинная битва всегда шла за Плюс Одну Вечность».`,
+          content_en: `[EARLY ACCESS VIP CHAPTER]\n\nIn the Hall of the Void gathered those whose names are forbidden in the lower realms: Baal, Asmodeus, Belial, Agares, and the keepers of ancient seals. Opposite them stood the celestial legions.\n\n"Eighteen thousand worlds are merely a cage," a voice echoed, cleaving reality. "The true war has always been waged for the Plus One Eternity."`
+        }
+      ],
+      lore: [
+        {
+          id: 'zari',
+          cat: 'archangel',
+          rank: 'Высший Архангел / Небесный Судья',
+          name_ru: 'Зари Диазура (Zari Diazura)',
+          name_en: 'Zari Diazura',
+          desc_ru: 'Одна из ключевых Архангелов Высшего Престола. Обладает уникальным узором радужки глаз, отражающим небесные сферы, и властью над божественным светом отсечения. Не путать с вампирскими лордами низших миров — её природа целиком принадлежит высшей иерархии Архангелов.',
+          desc_en: 'One of the key Archangels of the Supreme Throne. Possesses a unique iris pattern reflecting celestial spheres and authority over divine severing light.'
+        },
+        {
+          id: 'pillars',
+          cat: 'pillar',
+          rank: 'Иерархия 30 Столпов',
+          name_ru: 'Тридцать Столпов Бездны и Соломонова Круга',
+          name_en: 'The Thirty Pillars of the Abyss',
+          desc_ru: 'Древние сущности, удерживающие баланс и хаос между мирами (среди высших концептов — Абаддон, Азазель, Асмодей, Левиафан, Баал, Белиал, Агарес, Ронове). Каждый Столп владеет собственным Доменом и правом переписывать законы физики в своём секторе.',
+          desc_en: 'Ancient entities holding balance and chaos across worlds (including Abaddon, Azazel, Asmodeus, Leviathan, Baal, Belial, Agares, Ronove). Each Pillar commands a personal Domain.'
+        },
+        {
+          id: 'cosmology',
+          cat: 'cosmology',
+          rank: 'Фундаментальный Закон',
+          name_ru: 'Космология «18.000 + 1 Вечность»',
+          name_en: 'Cosmology of "18,000 + 1 Eternity"',
+          desc_ru: 'Мироздание разделено на 18 000 слоёв реальности — от смертных континентов до астральных тронов. Но над всеми ними существует «+1 Вечность» — сингулярное измерение вне времени, куда способны шагнуть лишь те, кто превзошёл печать судьбы.',
+          desc_en: 'Creation is divided into 18,000 layers of reality. Above them all exists the "+1 Eternity"—a singular timeless dimension accessible only to those who transcend fate.'
+        }
+      ],
+      gallery: [
+        {
+          id: 1,
+          tier: 'free',
+          title_ru: 'Зари Диазура — Концепт Архангела',
+          title_en: 'Zari Diazura — Archangel Concept',
+          tag: 'Официальный Арт',
+          gradient: 'from-amber-500/30 via-red-900/40 to-zinc-950',
+          desc_ru: 'Детальный концепт-арт: уникальная геометрия зрачков, золотисто-багровая палитра и регалии Небесного Престола.',
+          desc_en: 'Detailed character visual: unique iris pattern, crimson-gold palette, and Celestial Throne regalia.'
+        },
+        {
+          id: 2,
+          tier: 'premium',
+          title_ru: 'Совет Тридцати Столпов (VIP Art)',
+          title_en: 'Council of the Thirty Pillars (VIP Art)',
+          tag: '💎 Эксклюзив Премиум',
+          gradient: 'from-purple-900/40 via-red-950/60 to-black',
+          desc_ru: 'Закрытая иллюстрация высокого разрешения: тронный зал Первородной Бездны и печати древних владык.',
+          desc_en: 'High-resolution VIP illustration: throne room of the Primordial Abyss and seals of the ancient lords.'
+        }
+      ],
+      comments: [
+        { author: 'Kaelen_V', date: 'Сегодня', text: 'Атмосфера 18 000 миров и лор Архангелов просто космос! Жду продолжения 46 главы.' },
+        { author: 'SeraphimReader', date: 'Вчера', text: 'Зари Диазура сразу стала любимым персонажем, дизайн и характер прописаны шикарно.' }
+      ]
+    };
+
+    // Загрузка из localStorage или INITIAL_STATE
+    let state = JSON.parse(localStorage.getItem('aragon_18001_db')) || INITIAL_STATE;
+    let currentChapterFilter = 'all';
+    let currentLoreFilter = 'all';
+
+    function saveState() {
+      localStorage.setItem('aragon_18001_db', JSON.stringify(state));
+      renderAll();
+    }
+
+    function switchTab(tabId) {
+      ['home', 'chapters', 'lore', 'gallery', 'community', 'admin'].forEach(id => {
+        document.getElementById('tab-' + id).classList.add('hidden');
+        const dBtn = document.getElementById('nav-' + id);
+        const mBtn = document.getElementById('mnav-' + id);
+        if (dBtn) dBtn.classList.replace('text-amber-400', 'text-zinc-400');
+        if (mBtn) mBtn.classList.replace('text-amber-400', 'text-zinc-400');
+      });
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      const activeD = document.getElementById('nav-' + tabId);
+      const activeM = document.getElementById('mnav-' + tabId);
+      if (activeD) activeD.classList.replace('text-zinc-400', 'text-amber-400');
+      if (activeM) activeM.classList.replace('text-zinc-400', 'text-amber-400');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleLang() {
+      state.lang = state.lang === 'ru' ? 'en' : 'ru';
+      saveState();
+    }
+
+    function changeRole(newRole) {
+      state.role = newRole;
+      document.getElementById('role-select').value = newRole;
+      const adminNav = document.getElementById('nav-admin');
+      const adminMNav = document.getElementById('mnav-admin');
+      if (newRole === 'admin') {
+        adminNav.classList.remove('hidden');
+        adminMNav.classList.remove('hidden');
+        adminMNav.classList.add('flex');
+      } else {
+        adminNav.classList.add('hidden');
+        adminMNav.classList.add('hidden');
+        adminMNav.classList.remove('flex');
+      }
+      saveState();
+    }
+
+    function renderChapters() {
+      const container = document.getElementById('chapters-list');
+      container.innerHTML = '';
+      const filtered = state.chapters
+        .slice()
+        .sort((a, b) => a.num - b.num)
+        .filter(c => currentChapterFilter === 'all' || c.tier === currentChapterFilter);
+
+      filtered.forEach((ch, idx) => {
+        const isLocked = ch.tier === 'premium' && state.role === 'guest';
+        const title = state.lang === 'ru' ? ch.title_ru : (ch.title_en || ch.title_ru);
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/40 transition flex items-center justify-between gap-3 cursor-pointer';
+        card.onclick = () => openReaderById(ch.id);
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-zinc-400">#${ch.num}</span>
+              ${ch.tier === 'premium'
+                ? '<span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">💎 VIP</span>'
+                : '<span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">FREE</span>'}
+            </div>
+            <h4 class="font-medium text-sm md:text-base text-white mt-1">${title}</h4>
+          </div>
+          <div class="text-xs ${isLocked ? 'text-amber-400' : 'text-zinc-400'} shrink-0">
+            ${isLocked ? '🔒 VIP' : 'Читать →'}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterChapters(f) {
+      currentChapterFilter = f;
+      renderChapters();
+    }
+
+    function openReaderById(id) {
+      const ch = state.chapters.find(c => c.id === id);
+      if (!ch) return;
+      if (ch.tier === 'premium' && state.role === 'guest') {
+        alert(state.lang === 'ru'
+          ? '💎 Эта глава доступна для Премиум-читателей и Автора. Переключите роль вверху экрана на «Премиум» или «Админ»!'
+          : '💎 This chapter requires Premium or Admin access. Switch your role at the top right!');
+        return;
+      }
+      switchTab('chapters');
+      document.getElementById('chapters-list').classList.add('hidden');
+      const modal = document.getElementById('reader-modal');
+      modal.classList.remove('hidden');
+
+      document.getElementById('reader-tier-badge').textContent = ch.tier === 'premium' ? '💎 VIP EARLY ACCESS' : 'PUBLIC ARCHIVE';
+      document.getElementById('reader-title').textContent = state.lang === 'ru' ? ch.title_ru : (ch.title_en || ch.title_ru);
+      const contentEl = document.getElementById('reader-content');
+      contentEl.style.fontSize = state.readerFontSize + 'px';
+      contentEl.textContent = state.lang === 'ru' ? ch.content_ru : (ch.content_en || ch.content_ru);
+
+      const sorted = state.chapters.slice().sort((a, b) => a.num - b.num);
+      const currentIndex = sorted.findIndex(c => c.id === id);
+      const prevBtn = document.getElementById('prev-chap-btn');
+      const nextBtn = document.getElementById('next-chap-btn');
+
+      prevBtn.disabled = currentIndex <= 0;
+      prevBtn.style.opacity = currentIndex <= 0 ? '0.4' : '1';
+      prevBtn.onclick = () => currentIndex > 0 && openReaderById(sorted[currentIndex - 1].id);
+
+      nextBtn.disabled = currentIndex >= sorted.length - 1;
+      nextBtn.style.opacity = currentIndex >= sorted.length - 1 ? '0.4' : '1';
+      nextBtn.onclick = () => currentIndex < sorted.length - 1 && openReaderById(sorted[currentIndex + 1].id);
+    }
+
+    function openReader(index) {
+      const sorted = state.chapters.slice().sort((a, b) => a.num - b.num);
+      if (sorted[index]) openReaderById(sorted[index].id);
+    }
+
+    function closeReader() {
+      document.getElementById('reader-modal').classList.add('hidden');
+      document.getElementById('chapters-list').classList.remove('hidden');
+    }
+
+    function adjustFontSize(delta) {
+      state.readerFontSize = Math.min(26, Math.max(14, state.readerFontSize + delta));
+      document.getElementById('reader-content').style.fontSize = state.readerFontSize + 'px';
+      saveState();
+    }
+
+    function renderLore() {
+      const grid = document.getElementById('lore-grid');
+      grid.innerHTML = '';
+      state.lore
+        .filter(item => currentLoreFilter === 'all' || item.cat === currentLoreFilter)
+        .forEach(item => {
+          const name = state.lang === 'ru' ? item.name_ru : (item.name_en || item.name_ru);
+          const desc = state.lang === 'ru' ? item.desc_ru : (item.desc_en || item.desc_ru);
+          const div = document.createElement('div');
+          div.className = 'p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex flex-col justify-between space-y-3';
+          div.innerHTML = `
+            <div>
+              <span class="text-[11px] uppercase tracking-wider text-amber-400 font-semibold">${item.rank}</span>
+              <h3 class="font-serif-title text-lg font-bold text-white mt-1">${name}</h3>
+              <p class="text-xs text-zinc-300 leading-relaxed mt-2">${desc}</p>
+            </div>
+          `;
+          grid.appendChild(div);
+        });
+    }
+
+    function filterLore(cat) {
+      currentLoreFilter = cat;
+      renderLore();
+    }
+
+    function renderGallery() {
+      const grid = document.getElementById('gallery-grid');
+      grid.innerHTML = '';
+      state.gallery.forEach(art => {
+        const isLocked = art.tier === 'premium' && state.role === 'guest';
+        const title = state.lang === 'ru' ? art.title_ru : (art.title_en || art.title_ru);
+        const desc = state.lang === 'ru' ? art.desc_ru : (art.desc_en || art.desc_ru);
+        const card = document.createElement('div');
+        card.className = 'rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 flex flex-col';
+        card.innerHTML = `
+          <div class="h-48 bg-gradient-to-br ${art.gradient} relative flex items-center justify-center p-4 text-center">
+            ${isLocked
+              ? `<div class="p-4 rounded-xl bg-black/75 border border-amber-500/30">
+                   <div class="text-amber-400 text-sm font-semibold">🔒 Эксклюзив VIP</div>
+                   <div class="text-[11px] text-zinc-300 mt-1">Включите Премиум-доступ вверху страницы</div>
+                 </div>`
+              : `<div class="font-serif-title text-lg font-bold text-amber-200/90 tracking-wide">${title}</div>`
+            }
+            <span class="absolute top-3 right-3 text-[10px] px-2.5 py-1 rounded-full bg-black/70 text-amber-300 border border-amber-500/30">${art.tag}</span>
+          </div>
+          <div class="p-4 space-y-1.5">
+            <h4 class="font-semibold text-white text-sm">${title}</h4>
+            <p class="text-xs text-zinc-400 leading-relaxed">${desc}</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderComments() {
+      const list = document.getElementById('comments-list');
+      list.innerHTML = '';
+      state.comments.slice().reverse().forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'p-4 rounded-xl bg-zinc-900/70 border border-zinc-800 space-y-1';
+        item.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-amber-400">${c.author}</span>
+            <span class="text-[10px] text-zinc-500">${c.date}</span>
+          </div>
+          <p class="text-xs text-zinc-200 leading-relaxed">${c.text}</p>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function addComment() {
+      const author = document.getElementById('comment-author').value.trim() || 'Читатель';
+      const text = document.getElementById('comment-text').value.trim();
+      if (!text) return;
+      state.comments.push({ author, date: 'Только что', text });
+      document.getElementById('comment-text').value = '';
+      saveState();
+    }
+
+    function adminAddChapter() {
+      const num = parseInt(document.getElementById('adm-chap-num').value) || (state.chapters.length + 1);
+      const tier = document.getElementById('adm-chap-tier').value;
+      const title_ru = document.getElementById('adm-chap-title-ru').value.trim();
+      const title_en = document.getElementById('adm-chap-title-en').value.trim() || title_ru;
+      const content_ru = document.getElementById('adm-chap-content-ru').value.trim();
+      const content_en = document.getElementById('adm-chap-content-en').value.trim() || content_ru;
+
+      if (!title_ru || !content_ru) {
+        alert('Заполните заголовок и текст главы на русском!');
+        return;
+      }
+      state.chapters.push({
+        id: Date.now(),
+        num,
+        tier,
+        title_ru,
+        title_en,
+        content_ru,
+        content_en
+      });
+      document.getElementById('adm-chap-title-ru').value = '';
+      document.getElementById('adm-chap-title-en').value = '';
+      document.getElementById('adm-chap-content-ru').value = '';
+      document.getElementById('adm-chap-content-en').value = '';
+      saveState();
+      alert('Глава успешно опубликована!');
+    }
+
+    function adminAddLore() {
+      const name_ru = document.getElementById('adm-lore-name-ru').value.trim();
+      const name_en = document.getElementById('adm-lore-name-en').value.trim() || name_ru;
+      const cat = document.getElementById('adm-lore-cat').value;
+      const rank = document.getElementById('adm-lore-rank').value.trim() || 'Архив Мира';
+      const desc_ru = document.getElementById('adm-lore-desc-ru').value.trim();
+      const desc_en = document.getElementById('adm-lore-desc-en').value.trim() || desc_ru;
+
+      if (!name_ru || !desc_ru) {
+        alert('Введите имя и описание для карточки Лора!');
+        return;
+      }
+      state.lore.push({ id: 'lore_' + Date.now(), cat, rank, name_ru, name_en, desc_ru, desc_en });
+      document.getElementById('adm-lore-name-ru').value = '';
+      document.getElementById('adm-lore-name-en').value = '';
+      document.getElementById('adm-lore-desc-ru').value = '';
+      document.getElementById('adm-lore-desc-en').value = '';
+      saveState();
+      alert('Карточка добавлена в Библию Лора!');
+    }
+
+    // Генерация готового обновлённого файла index.html для выгрузки на хостинг
+    function exportUpdatedHTML() {
+      const exportState = Object.assign({}, state, { role: 'guest' });
+      let fullHTML = document.documentElement.outerHTML;
+      const regex = /const INITIAL_STATE = [\s\S]*?;\n\s*\/\/ Загрузка из localStorage/;
+      const replacement = `const INITIAL_STATE = ${JSON.stringify(exportState, null, 2)};\n    // Загрузка из localStorage`;
+      fullHTML = '<!DOCTYPE html>\n' + fullHTML.replace(regex, replacement);
+
+      const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function renderUIForLang() {
+      const isEn = state.lang === 'en';
+      document.getElementById('hero-title').textContent = isEn ? '18,000 + 1 Eternity' : '18.000 + 1 Вечность';
+      document.getElementById('hero-desc').textContent = isEn
+        ? 'Beyond eighteen thousand mortal and divine dimensions lies the Primordial Abyss and the Supreme Throne. A dark fantasy saga where 30 Pillars and Supreme Archangels wage war to rewrite Eternity itself.'
+        : 'За пределами восемнадцати тысяч смертных и божественных измерений лежит Первородная Бездна и Высший Престол. История о падении и возвышении сквозь катаклизмы эпох, где 30 Столпов и Высшие Архангелы ведут войну за право переписать саму Вечность.';
+      document.getElementById('btn-start-reading').textContent = isEn ? '📖 Read from Chapter 1' : '📖 Читать с 1 главы';
+      document.getElementById('btn-open-lore').textContent = isEn ? '📜 Open Lore Bible' : '📜 Открыть Библию Лора';
+
+      const roleNames = {
+        guest: isEn ? 'Current Tier: Guest Reader' : 'Текущий статус: Гость',
+        premium: isEn ? 'Current Tier: 💎 VIP Premium' : 'Текущий статус: 💎 Премиум-читатель',
+        admin: isEn ? 'Current Tier: 👑 Author / Admin (Aragon)' : 'Текущий статус: 👑 Админ (Арагон)'
+      };
+      document.getElementById('access-badge-title').textContent = roleNames[state.role];
+    }
+
+    function renderAll() {
+      renderUIForLang();
+      renderChapters();
+      renderLore();
+      renderGallery();
+      renderComments();
+    }
+
+    // Инициализация при запуске
+    changeRole(state.role);
+    renderAll();
+  </script>
+</body>
+</html>
