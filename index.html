@@ -1,0 +1,643 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  BookOpen, Image as ImageIcon, Lock, Unlock, MessageSquare, 
+  ChevronLeft, Crown, Settings, User, LogIn, Plus, Send, 
+  Menu, X, ImagePlus, FolderPlus
+} from 'lucide-react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, collection, onSnapshot, doc } from 'firebase/firestore';
+
+// --- MOCK DATA ---
+const MOCK_CHAPTERS = [
+  { id: 1, title: "Глава 1: Пробуждение в пустоте", isPremium: false, content: [
+    "Тьма была абсолютной. Она не давила, не пугала, она просто была. Я не чувствовал своего тела, не ощущал дыхания. Только бесконечный поток мыслей, растянутый во времени на то, что казалось вечностью.",
+    "ART_INSERT:character_awakening",
+    "Сколько прошло? Сто лет? Тысячелетие? Я сбился со счета после первых десяти тысяч. Мой разум балансировал на грани безумия, цепляясь лишь за одно воспоминание — яркую вспышку света, поглотившую мой мир.",
+    "Внезапно, ткань пустоты дрогнула. Это было похоже на легкую рябь на поверхности мертвого озера. Искорка бирюзового света, крошечная, но невыносимо яркая в этой абсолютной черноте, вспыхнула где-то в невообразимой дали."
+  ]},
+  { id: 2, title: "Глава 2: Первый шаг за грань", isPremium: false, content: [
+    "Свет приближался. Или я приближался к нему? В пустоте не было ориентиров. По мере его роста, я начал ощущать фантомные покалывания там, где должны были быть мои руки.",
+    "ART_INSERT:ability_manifestation",
+    "Свет оказался не просто источником освещения. Это была энергия. Чистая, первозданная, пульсирующая в такт с сердцебиением, которого у меня еще не было. Я потянулся к ней своим сознанием, и она ответила.",
+    "Вспышка ослепила меня. Когда зрение вернулось — настоящее зрение, физическое — я обнаружил себя лежащим на холодном, гладком камне под небом, усыпанным чужими, агрессивно-красными звездами."
+  ]},
+  { id: 3, title: "Глава 3: Руины забытой эпохи", isPremium: true, content: [
+    "Камень подо мной оказался обсидиановой плитой, испещренной символами, которые мой разум отказывался воспринимать. Каждая попытка сфокусироваться на них отдавалась острой болью в висках.",
+    "ART_INSERT:ancient_ruins",
+    "Я поднялся на ноги. Гравитация здесь была немного слабее привычной. Вокруг простирались руины колоссального города. Шпили из неизвестного черного металла вонзались в багровое небо, многие из них были сломаны или оплавлены.",
+    "Я был не один. Инстинкты, спавшие тысячелетия, взвыли сиреной. В тенях между обломками что-то двигалось. Что-то быстрое и невероятно голодное."
+  ]},
+  { id: 4, title: "Глава 4: Цена вечности (Ранний доступ)", isPremium: true, content: [
+    "Тень обрела форму. Это было существо, сотканное из самого мрака, с глазами, горящими тем же багровым светом, что и звезды над головой. Оно не издавало ни звука.",
+    "ART_INSERT:shadow_beast",
+    "Я инстинктивно вскинул руку. К моему удивлению, бирюзовая энергия, которую я поглотил в пустоте, отозвалась. Она вырвалась из моей ладони концентрированным лучом, разрезая тень надвое.",
+    "Существо распалось, не оставив ни следа. Но я знал, что это только начало. Это мир не терпел слабаков, и моя долгая изоляция была лишь подготовкой к настоящему испытанию."
+  ]},
+];
+
+const MOCK_CHARACTERS = [
+  { 
+    id: 'c1', 
+    name: "Главный Герой (Безымянный)", 
+    shortDesc: "Провел 18 000 лет в пустоте. Носитель бирюзового пламени.", 
+    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=400&h=400",
+    arts: [
+      { id: 'a1', url: "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?auto=format&fit=crop&q=80&w=800", isPremium: false, desc: "Базовый концепт" },
+      { id: 'a2', url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=800", isPremium: true, desc: "Пробуждение силы (Детализированный арт)" },
+    ]
+  },
+  { 
+    id: 'c2', 
+    name: "Элия", 
+    shortDesc: "Хранительница руин обсидианового города. Знает тайны древних.", 
+    cover: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400&h=400",
+    arts: [
+      { id: 'a3', url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800", isPremium: false, desc: "Портрет" },
+      { id: 'a4', url: "https://images.unsplash.com/photo-1515023115689-589c33041d3c?auto=format&fit=crop&q=80&w=800", isPremium: true, desc: "Элия в боевой форме (Секретный лор)" },
+      { id: 'a5', url: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=800", isPremium: true, desc: "Альтернативный наряд (Ранний доступ)" },
+    ]
+  }
+];
+
+// --- MAIN COMPONENT ---
+export default function App() {
+  const [view, setView] = useState('home'); // home, chapters, reader, encyclopedia, character
+  const [activeChapter, setActiveChapter] = useState(null);
+  const [activeCharacter, setActiveCharacter] = useState(null);
+  
+  // ROLE SYSTEM SIMULATION
+  const [role, setRole] = useState('user'); // admin, premium, user, guest
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Firebase Setup (Boilerplate to satisfy requirements, though using mock data for demo speed/reliability)
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    try {
+      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+      if (Object.keys(firebaseConfig).length === 0) return;
+      
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      
+      const initAuth = async () => {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      };
+      initAuth();
+      const unsubscribe = onAuthStateChanged(auth, setUser);
+      return () => unsubscribe();
+    } catch (e) {
+      console.log("Firebase init skipped in dev environment");
+    }
+  }, []);
+
+  // Helpers
+  const canAccessPremium = role === 'admin' || role === 'premium';
+  const isAdmin = role === 'admin';
+  const isGuest = role === 'guest';
+
+  const navigateTo = (newView, data = null) => {
+    setView(newView);
+    if (newView === 'reader') setActiveChapter(data);
+    if (newView === 'character') setActiveCharacter(data);
+    setMobileMenuOpen(false);
+    window.scrollTo(0, 0);
+  };
+
+  // --- SUB-COMPONENTS (VIEWS) ---
+
+  const Header = () => (
+    <header className="sticky top-0 z-50 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-800">
+      <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigateTo('home')}>
+          <BookOpen className="text-cyan-500 w-6 h-6" />
+          <span className="text-lg font-bold text-neutral-100 hidden sm:block tracking-wider">18 000 + 1 ETERNITY</span>
+        </div>
+
+        {/* Dev Role Switcher */}
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 bg-neutral-900 rounded-full px-3 py-1 border border-neutral-800">
+             <Settings className="w-4 h-4 text-neutral-500" />
+             <select 
+               value={role} 
+               onChange={(e) => setRole(e.target.value)}
+               className="bg-transparent text-xs text-neutral-300 outline-none cursor-pointer"
+             >
+               <option value="guest">Гость</option>
+               <option value="user">Пользователь</option>
+               <option value="premium">Premium</option>
+               <option value="admin">Админ</option>
+             </select>
+          </div>
+
+          {!canAccessPremium && (
+            <button 
+              onClick={() => setShowPremiumModal(true)}
+              className="hidden sm:flex items-center gap-1 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black text-xs font-bold px-3 py-1.5 rounded-full transition-all shadow-[0_0_10px_rgba(234,179,8,0.3)]"
+            >
+              <Crown className="w-3.5 h-3.5" />
+              Купить Premium
+            </button>
+          )}
+
+          <button className="sm:hidden text-neutral-300" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden absolute top-16 left-0 w-full bg-neutral-950 border-b border-neutral-800 py-4 px-4 flex flex-col gap-4 shadow-xl">
+          <div className="flex items-center gap-2 bg-neutral-900 rounded-lg p-3 border border-neutral-800">
+             <Settings className="w-5 h-5 text-neutral-500" />
+             <div className="flex flex-col">
+               <span className="text-xs text-neutral-500">Режим разработчика (Роль):</span>
+               <select 
+                 value={role} 
+                 onChange={(e) => setRole(e.target.value)}
+                 className="bg-transparent text-sm text-neutral-200 outline-none w-full mt-1"
+               >
+                 <option value="guest">Гость (Без регистрации)</option>
+                 <option value="user">Пользователь (Базовый)</option>
+                 <option value="premium">Premium (Ранний доступ)</option>
+                 <option value="admin">Администратор (Автор)</option>
+               </select>
+             </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2 mt-2">
+             <button onClick={() => navigateTo('home')} className={`p-3 rounded-lg text-center font-medium ${view === 'home' ? 'bg-cyan-900/30 text-cyan-400' : 'bg-neutral-900 text-neutral-300'}`}>Главная</button>
+             <button onClick={() => navigateTo('chapters')} className={`p-3 rounded-lg text-center font-medium ${view === 'chapters' ? 'bg-cyan-900/30 text-cyan-400' : 'bg-neutral-900 text-neutral-300'}`}>Главы</button>
+             <button onClick={() => navigateTo('encyclopedia')} className={`p-3 rounded-lg text-center font-medium col-span-2 ${view === 'encyclopedia' ? 'bg-cyan-900/30 text-cyan-400' : 'bg-neutral-900 text-neutral-300'}`}>Энциклопедия (Лор)</button>
+          </div>
+
+          {!canAccessPremium && (
+            <button 
+              onClick={() => setShowPremiumModal(true)}
+              className="mt-2 w-full flex justify-center items-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold p-3 rounded-lg shadow-lg"
+            >
+              <Crown className="w-5 h-5" />
+              Оформить Premium
+            </button>
+          )}
+        </div>
+      )}
+    </header>
+  );
+
+  const Navigation = () => (
+    <nav className="hidden sm:flex max-w-4xl mx-auto px-4 py-4 gap-6 text-sm font-medium border-b border-neutral-800/50">
+      <button onClick={() => navigateTo('home')} className={`hover:text-cyan-400 transition-colors ${view === 'home' ? 'text-cyan-500' : 'text-neutral-400'}`}>Главная</button>
+      <button onClick={() => navigateTo('chapters')} className={`hover:text-cyan-400 transition-colors ${view === 'chapters' ? 'text-cyan-500' : 'text-neutral-400'}`}>Оглавление</button>
+      <button onClick={() => navigateTo('encyclopedia')} className={`hover:text-cyan-400 transition-colors ${view === 'encyclopedia' || view === 'character' ? 'text-cyan-500' : 'text-neutral-400'}`}>Энциклопедия</button>
+    </nav>
+  );
+
+  const HomeView = () => (
+    <div className="max-w-4xl mx-auto px-4 py-8 animate-in fade-in duration-500">
+      <div className="relative aspect-[3/4] sm:aspect-[21/9] rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 shadow-2xl mb-8 group">
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent z-10" />
+        {/* Placeholder Cover - Dark/Sci-fi aesthetic */}
+        <img 
+          src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=1200" 
+          alt="Обложка" 
+          className="w-full h-full object-cover opacity-60 group-hover:opacity-70 transition-opacity duration-700 mix-blend-luminosity"
+        />
+        
+        {isAdmin && (
+          <div className="absolute top-4 right-4 z-20">
+            <button className="bg-neutral-950/80 text-neutral-300 hover:text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 border border-neutral-700 backdrop-blur-sm">
+              <ImageIcon className="w-4 h-4" />
+              Сменить обложку
+            </button>
+          </div>
+        )}
+
+        <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 z-20">
+          <h1 className="text-4xl sm:text-6xl font-black text-white mb-4 tracking-tight" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.8)' }}>
+            18 000 + 1 ETERNITY
+          </h1>
+          <p className="text-neutral-300 text-sm sm:text-base max-w-2xl leading-relaxed mb-6">
+            Когда вечность становится тюрьмой, единственный выход — разрушить саму концепцию времени. Темное фэнтези / Sci-Fi новелла о человеке, чье сознание пережило вселенную.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button 
+              onClick={() => navigateTo('reader', MOCK_CHAPTERS[0])}
+              className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_15px_rgba(8,145,178,0.4)] flex justify-center items-center gap-2"
+            >
+              <BookOpen className="w-5 h-5" />
+              Начать чтение
+            </button>
+            <button 
+              onClick={() => navigateTo('chapters')}
+              className="bg-neutral-800/80 hover:bg-neutral-700 text-neutral-200 font-medium py-3 px-8 rounded-full backdrop-blur-sm border border-neutral-700 transition-all flex justify-center items-center"
+            >
+              Оглавление
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid sm:grid-cols-3 gap-6 mb-12">
+        <div className="bg-neutral-900/50 border border-neutral-800 p-5 rounded-xl">
+          <h3 className="text-neutral-400 text-xs font-bold uppercase tracking-wider mb-1">Статус</h3>
+          <p className="text-cyan-400 font-medium">В процессе (Выпуск еженедельно)</p>
+        </div>
+        <div className="bg-neutral-900/50 border border-neutral-800 p-5 rounded-xl">
+          <h3 className="text-neutral-400 text-xs font-bold uppercase tracking-wider mb-1">Жанры</h3>
+          <p className="text-neutral-200">Дарк Фэнтези, Сай-Фай, Экшен</p>
+        </div>
+        <div className="bg-neutral-900/50 border border-neutral-800 p-5 rounded-xl">
+          <h3 className="text-neutral-400 text-xs font-bold uppercase tracking-wider mb-1">Доступ</h3>
+          <p className="text-neutral-200">
+            {role === 'guest' ? 'Только бесплатные главы' : 
+             role === 'user' ? 'Бесплатные главы + Комментарии' : 
+             role === 'premium' ? 'Полный доступ (Ранний доступ + Лор)' : 'Режим Автора (Полный контроль)'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const ChaptersView = () => (
+    <div className="max-w-3xl mx-auto px-4 py-8 animate-in slide-in-from-bottom-4 duration-300">
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-2">Оглавление</h2>
+          <p className="text-neutral-400 text-sm">Доступно {MOCK_CHAPTERS.length} глав</p>
+        </div>
+        {isAdmin && (
+          <button className="bg-neutral-800 hover:bg-neutral-700 text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-neutral-700 transition-colors">
+            <Plus className="w-4 h-4" />
+            Добавить главу
+          </button>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {MOCK_CHAPTERS.map(chapter => {
+          const isLocked = chapter.isPremium && !canAccessPremium;
+          return (
+            <div 
+              key={chapter.id} 
+              onClick={() => {
+                if (isLocked) setShowPremiumModal(true);
+                else navigateTo('reader', chapter);
+              }}
+              className={`p-4 rounded-xl border flex items-center justify-between transition-all ${
+                isLocked 
+                  ? 'bg-neutral-900/30 border-neutral-800/50 cursor-pointer hover:border-yellow-900/50 hover:bg-neutral-900/50' 
+                  : 'bg-neutral-900 border-neutral-800 cursor-pointer hover:border-cyan-900/50 hover:bg-neutral-800/80'
+              }`}
+            >
+              <div className="flex flex-col gap-1">
+                <span className={`font-medium ${isLocked ? 'text-neutral-500' : 'text-neutral-200'}`}>
+                  {chapter.title}
+                </span>
+                <span className="text-xs text-neutral-500">Опубликовано: Вчера</span>
+              </div>
+              
+              <div>
+                {chapter.isPremium ? (
+                   isLocked ? (
+                     <div className="flex items-center gap-1 text-yellow-600 bg-yellow-950/30 px-2 py-1 rounded text-xs font-bold border border-yellow-900/30">
+                       <Lock className="w-3 h-3" />
+                       Платная
+                     </div>
+                   ) : (
+                     <div className="flex items-center gap-1 text-yellow-500 bg-yellow-950/30 px-2 py-1 rounded text-xs font-bold border border-yellow-900/50">
+                       <Unlock className="w-3 h-3" />
+                       Открыто (Premium)
+                     </div>
+                   )
+                ) : (
+                  <span className="text-neutral-400 text-xs bg-neutral-800 px-2 py-1 rounded border border-neutral-700">
+                    Бесплатно
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const ReaderView = () => {
+    if (!activeChapter) return null;
+    
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-8 animate-in fade-in duration-500">
+        <button 
+          onClick={() => navigateTo('chapters')}
+          className="flex items-center gap-2 text-neutral-400 hover:text-cyan-400 mb-8 transition-colors text-sm"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Назад к оглавлению
+        </button>
+
+        <h1 className="text-3xl sm:text-4xl font-bold text-neutral-100 mb-12 leading-tight">
+          {activeChapter.title}
+        </h1>
+
+        <div className="space-y-6 text-lg text-neutral-300 leading-relaxed font-serif tracking-wide">
+          {activeChapter.content.map((block, index) => {
+            if (block.startsWith("ART_INSERT")) {
+              const artId = block.split(":")[1];
+              return (
+                <div key={index} className="my-10 relative group">
+                  {/* Заглушка под арт - Место для графики автора */}
+                  <div className="w-full aspect-[16/9] sm:aspect-[21/9] bg-neutral-900 border-y border-neutral-800 flex flex-col items-center justify-center overflow-hidden relative">
+                     <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay"></div>
+                     <ImageIcon className="w-10 h-10 text-neutral-600 mb-3" />
+                     <span className="text-sm font-medium text-neutral-500 uppercase tracking-widest">[ Иллюстрация: {artId} ]</span>
+                     <span className="text-xs text-neutral-600 mt-1">Место под вставку арта</span>
+                  </div>
+                  
+                  {isAdmin && (
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg flex items-center gap-1">
+                        <ImagePlus className="w-3.5 h-3.5" />
+                        Загрузить арт
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+            return <p key={index} className="indent-6">{block}</p>;
+          })}
+        </div>
+
+        {/* Раздел Комментариев */}
+        <div className="mt-20 pt-8 border-t border-neutral-800">
+          <div className="flex items-center gap-2 mb-6">
+            <MessageSquare className="w-5 h-5 text-cyan-500" />
+            <h3 className="text-xl font-bold text-white">Комментарии</h3>
+          </div>
+
+          {isGuest ? (
+            <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 text-center">
+              <User className="w-8 h-8 text-neutral-600 mx-auto mb-3" />
+              <p className="text-neutral-400 mb-4">Только зарегистрированные пользователи могут оставлять комментарии.</p>
+              <button className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
+                <LogIn className="w-4 h-4" />
+                Войти в аккаунт
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-3">
+                <div className="w-10 h-10 rounded-full bg-cyan-900/50 border border-cyan-800 flex flex-shrink-0 items-center justify-center text-cyan-500 font-bold uppercase">
+                  {role[0]}
+                </div>
+                <div className="flex-1 relative">
+                  <textarea 
+                    placeholder="Поделитесь своими мыслями о главе..."
+                    className="w-full bg-neutral-900 border border-neutral-700 rounded-xl p-4 text-neutral-200 focus:outline-none focus:border-cyan-500 min-h-[100px] resize-none transition-colors"
+                  ></textarea>
+                  <button className="absolute bottom-3 right-3 bg-cyan-600 hover:bg-cyan-500 p-2 rounded-lg text-white transition-colors">
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              {/* Пример комментария */}
+              <div className="flex gap-3 mt-4 opacity-70">
+                <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs">U</div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-bold text-neutral-300">Читатель42</span>
+                    <span className="text-xs text-neutral-600">2 часа назад</span>
+                  </div>
+                  <p className="text-sm text-neutral-400">Отличное начало! Жду продолжения.</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const EncyclopediaView = () => (
+    <div className="max-w-5xl mx-auto px-4 py-8 animate-in fade-in duration-300">
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-2">Энциклопедия</h2>
+          <p className="text-neutral-400 text-sm">Персонажи, лор и арты</p>
+        </div>
+        {isAdmin && (
+          <button className="bg-neutral-800 hover:bg-neutral-700 text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-neutral-700 transition-colors">
+            <FolderPlus className="w-4 h-4" />
+            Создать папку
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {MOCK_CHARACTERS.map(char => (
+          <div 
+            key={char.id}
+            onClick={() => navigateTo('character', char)}
+            className="group bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden cursor-pointer hover:border-cyan-900/50 transition-all hover:shadow-[0_0_20px_rgba(8,145,178,0.1)]"
+          >
+            <div className="aspect-[4/3] overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent z-10" />
+              <img 
+                src={char.cover} 
+                alt={char.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale-[0.2]"
+              />
+              <div className="absolute bottom-3 left-3 z-20 flex gap-2">
+                <span className="bg-neutral-950/80 text-neutral-300 text-xs px-2 py-1 rounded backdrop-blur-sm border border-neutral-700 flex items-center gap-1">
+                  <ImageIcon className="w-3 h-3" /> {char.arts.length}
+                </span>
+                {char.arts.some(a => a.isPremium) && (
+                  <span className="bg-yellow-950/80 text-yellow-500 text-xs px-2 py-1 rounded backdrop-blur-sm border border-yellow-900/50 flex items-center gap-1">
+                    <Crown className="w-3 h-3" /> Секреты
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="p-5">
+              <h3 className="text-lg font-bold text-neutral-100 mb-2 group-hover:text-cyan-400 transition-colors">{char.name}</h3>
+              <p className="text-sm text-neutral-400 line-clamp-2">{char.shortDesc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const CharacterDetailView = () => {
+    if (!activeCharacter) return null;
+
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-8 animate-in slide-in-from-right-4 duration-300">
+        <button 
+          onClick={() => navigateTo('encyclopedia')}
+          className="flex items-center gap-2 text-neutral-400 hover:text-cyan-400 mb-6 transition-colors text-sm"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Назад к энциклопедии
+        </button>
+
+        <div className="flex flex-col sm:flex-row gap-8 mb-12">
+          <div className="w-32 h-32 sm:w-48 sm:h-48 flex-shrink-0 rounded-2xl overflow-hidden border-2 border-neutral-800">
+            <img src={activeCharacter.cover} alt={activeCharacter.name} className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-1 flex flex-col justify-center">
+            <h1 className="text-3xl sm:text-5xl font-bold text-white mb-4">{activeCharacter.name}</h1>
+            <p className="text-neutral-300 text-lg leading-relaxed max-w-2xl">{activeCharacter.shortDesc}</p>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-end mb-6 border-b border-neutral-800 pb-4">
+          <h2 className="text-2xl font-bold text-white">Галерея & Лор</h2>
+          {isAdmin && (
+            <button className="bg-cyan-950/50 hover:bg-cyan-900 text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-cyan-800/50 transition-colors">
+              <ImagePlus className="w-4 h-4" />
+              Добавить арт в папку
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {activeCharacter.arts.map(art => {
+            const isLocked = art.isPremium && !canAccessPremium;
+            
+            return (
+              <div key={art.id} className="relative group bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800">
+                <div className={`aspect-[16/9] overflow-hidden relative ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                  {/* Изображение */}
+                  <img 
+                    src={art.url} 
+                    alt={art.desc}
+                    className={`w-full h-full object-cover transition-all duration-500 ${isLocked ? 'blur-xl grayscale opacity-40 scale-110' : 'group-hover:scale-105'}`}
+                  />
+                  
+                  {/* Оверлей блокировки */}
+                  {isLocked && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 z-10">
+                       <div className="bg-neutral-900/80 backdrop-blur-md p-4 rounded-full mb-3 border border-yellow-900/30 text-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.2)]">
+                         <Lock className="w-8 h-8" />
+                       </div>
+                       <span className="text-sm font-bold text-yellow-500 uppercase tracking-wider">Доступно с Premium</span>
+                       <button 
+                         onClick={() => setShowPremiumModal(true)}
+                         className="mt-4 bg-yellow-600 hover:bg-yellow-500 text-black text-xs font-bold px-4 py-2 rounded-full"
+                       >
+                         Открыть
+                       </button>
+                    </div>
+                  )}
+
+                  {/* Значок премиума для тех у кого есть доступ */}
+                  {art.isPremium && canAccessPremium && !isAdmin && (
+                    <div className="absolute top-3 left-3 bg-yellow-950/80 text-yellow-500 text-xs px-2 py-1 rounded backdrop-blur-sm border border-yellow-900/50 flex items-center gap-1 z-10">
+                      <Crown className="w-3 h-3" /> Эксклюзив
+                    </div>
+                  )}
+
+                  {/* Элементы управления Админа */}
+                  {isAdmin && (
+                    <div className="absolute top-3 right-3 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="bg-neutral-950/90 hover:bg-neutral-800 text-white p-2 rounded border border-neutral-700 tooltip">
+                        {art.isPremium ? <Lock className="w-4 h-4 text-yellow-500" /> : <Unlock className="w-4 h-4 text-neutral-400" />}
+                      </button>
+                      <button className="bg-red-950/90 hover:bg-red-900 text-red-400 p-2 rounded border border-red-900/50">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 bg-neutral-900">
+                  <p className={`text-sm ${isLocked ? 'text-neutral-600 blur-[2px] select-none' : 'text-neutral-300'}`}>
+                    {isLocked ? "Скрытая информация лора..." : art.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const PremiumModal = () => (
+    <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-300 ${showPremiumModal ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowPremiumModal(false)}></div>
+      <div className="bg-neutral-950 border border-neutral-800 w-full max-w-md rounded-3xl p-8 relative z-10 shadow-2xl transform transition-transform duration-300 scale-100">
+        <button onClick={() => setShowPremiumModal(false)} className="absolute top-4 right-4 text-neutral-500 hover:text-white">
+          <X className="w-6 h-6" />
+        </button>
+        
+        <div className="w-16 h-16 bg-yellow-950/30 rounded-2xl border border-yellow-900/50 flex items-center justify-center mx-auto mb-6">
+          <Crown className="w-8 h-8 text-yellow-500" />
+        </div>
+        
+        <h3 className="text-2xl font-bold text-center text-white mb-2">Откройте все тайны</h3>
+        <p className="text-center text-neutral-400 text-sm mb-8">
+          Поддержите автора и получите полный доступ к контенту «18 000 + 1 Eternity».
+        </p>
+
+        <ul className="space-y-4 mb-8">
+          <li className="flex items-center gap-3 text-neutral-200">
+            <Unlock className="w-5 h-5 text-cyan-500 flex-shrink-0" />
+            <span>Ранний доступ ко всем новым главам</span>
+          </li>
+          <li className="flex items-center gap-3 text-neutral-200">
+            <ImageIcon className="w-5 h-5 text-cyan-500 flex-shrink-0" />
+            <span>Доступ к секретным артам персонажей</span>
+          </li>
+          <li className="flex items-center gap-3 text-neutral-200">
+            <MessageSquare className="w-5 h-5 text-cyan-500 flex-shrink-0" />
+            <span>Выделение комментариев цветом</span>
+          </li>
+        </ul>
+
+        <button 
+          onClick={() => {
+            setRole('premium');
+            setShowPremiumModal(false);
+          }}
+          className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(234,179,8,0.3)] flex justify-center items-center gap-2"
+        >
+          [Мок: Оплатить и стать Premium]
+        </button>
+        
+        <p className="text-xs text-center text-neutral-600 mt-4">
+          Это окно демонстрационное. Клик по кнопке выше переключит вашу тестовую роль на Premium.
+        </p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-neutral-950 text-neutral-200 font-sans selection:bg-cyan-900 selection:text-cyan-50 pb-20">
+      <Header />
+      <Navigation />
+      
+      <main className="min-h-[calc(100vh-200px)]">
+        {view === 'home' && <HomeView />}
+        {view === 'chapters' && <ChaptersView />}
+        {view === 'reader' && <ReaderView />}
+        {view === 'encyclopedia' && <EncyclopediaView />}
+        {view === 'character' && <CharacterDetailView />}
+      </main>
+
+      <footer className="border-t border-neutral-900 mt-12 py-8 text-center text-neutral-500 text-sm">
+        <p>© 2026 18 000 + 1 ETERNITY.</p>
+        <p className="mt-2 text-xs opacity-50">Дизайн прототипа для тестирования платформы чтения.</p>
+      </footer>
+
+      <PremiumModal />
+    </div>
+  );
+}
