@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>18 000 + 1 Eternity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            900: '#050508',
+                            800: '#0B1021',
+                            700: '#121936',
+                            600: '#1E295C',
+                        },
+                        accent: {
+                            blue: '#4A90E2',
+                            purple: '#7B4C9A',
+                            pink: '#FF2A85',
+                            silver: '#D1D5DB'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050508;
+            color: #F4F6F9;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100dvh;
+        }
+        .glass {
+            background: rgba(11, 16, 33, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(18, 25, 54, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .cosmic-gradient {
+            background: linear-gradient(135deg, #0b1021 0%, #1e295c 50%, #7b4c9a 100%);
+        }
+        input, textarea, select {
+            font-size: 16px !important; /* Защита от авто-зума на iPhone */
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050508;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e295c;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accent-purple selection:text-white pb-24">
+
+    <!-- Top Header Bar -->
+    <header class="sticky top-0 z-50 glass border-b border-white/10 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <button onclick="router.navigate('home')" class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full cosmic-gradient flex items-center justify-center border border-white/20 shadow-lg shadow-purple-900/30">
+                    <span class="text-xs font-bold text-white">∞</span>
+                </div>
+                <span id="header-site-title" class="font-bold text-sm tracking-wide bg-gradient-to-r from-white via-accent-silver to-accent-blue bg-clip-text text-transparent">18K + 1 Eternity</span>
+            </button>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <!-- Language Switcher -->
+            <button onclick="appState.toggleLang()" class="px-2.5 py-1 rounded-full text-xs font-semibold glass-card border border-white/10 hover:border-accent-blue transition">
+                <span id="lang-label">RU</span>
+            </button>
+
+            <!-- User Auth Profile Button -->
+            <button onclick="router.navigate('profile')" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium glass-card border border-white/10 hover:border-accent-purple transition">
+                <span id="user-badge-icon">👤</span>
+                <span id="user-badge-name" class="max-w-[90px] truncate">Гость</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Container -->
+    <main id="app-container" class="flex-1 max-w-lg w-full mx-auto px-4 pt-4">
+        <div class="text-center py-20 text-xs text-gray-400">Загрузка вселенной 18 000 + 1 Eternity...</div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 glass border-t border-white/10 px-4 py-2 flex justify-around items-center max-w-lg mx-auto">
+        <button onclick="router.navigate('home')" id="nav-home" class="flex flex-col items-center py-1 px-3 text-accent-blue transition">
+            <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span class="text-[10px] font-medium">Главная</span>
+        </button>
+        <button onclick="router.navigate('chapters')" id="nav-chapters" class="flex flex-col items-center py-1 px-3 text-gray-400 hover:text-white transition">
+            <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <span class="text-[10px] font-medium">Главы</span>
+        </button>
+        <button onclick="router.navigate('lore')" id="nav-lore" class="flex flex-col items-center py-1 px-3 text-gray-400 hover:text-white transition">
+            <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            <span class="text-[10px] font-medium">Лор</span>
+        </button>
+        <button onclick="router.navigate('profile')" id="nav-profile" class="flex flex-col items-center py-1 px-3 text-gray-400 hover:text-white transition">
+            <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span class="text-[10px] font-medium">Профиль</span>
+        </button>
+        <!-- Admin Tab ONLY for Guardian_Angel_15 -->
+        <button id="nav-admin" onclick="router.navigate('admin')" class="hidden flex flex-col items-center py-1 px-3 text-accent-pink transition">
+            <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span class="text-[10px] font-medium">Админ</span>
+        </button>
+    </nav>
+
+    <!-- Modals Container -->
+    <div id="modal-container"></div>
+
+    <!-- Firebase SDKs & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            onSnapshot,
+            query,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Твоя конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD76PKRBNYbzgET8BZj-eX2MhaqDFPaI2E",
+            authDomain: "eternity-6bfdc.firebaseapp.com",
+            projectId: "eternity-6bfdc",
+            storageBucket: "eternity-6bfdc.firebasestorage.app",
+            messagingSenderId: "989994031914",
+            appId: "1:989994031914:web:f0f2b485d9d3a0c1009c53",
+            measurementId: "G-GJHQLF6DJD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Имя главного администратора
+        const ADMIN_USERNAME = "Guardian_Angel_15";
+
+        // Глобальное состояние сайта (по умолчанию любой посетитель по ссылке — ГОСТЬ!)
+        window.appState = {
+            lang: 'RU',
+            user: { uid: null, name: "Гость", email: null, role: "guest", tokens: 0 },
+            currentView: 'home',
+            activeChapterId: null,
+            activeCharId: null,
+            siteConfig: {
+                title: "18 000 + 1 Eternity",
+                bannerUrl: "IMG_3464_c97ee2.jpg",
+                adminAvatar: "IMG_3463_c97ee2.jpg"
+            },
+            chapters: [],
+            characters: [],
+            comments: [],
+
+            toggleLang() {
+                this.lang = this.lang === 'RU' ? 'EN' : 'RU';
+                document.getElementById('lang-label').innerText = this.lang;
+                router.render();
+            }
+        };
+
+        // --- 1. СИНХРОНИЗАЦИЯ С БАЗОЙ ДАННЫХ FIREBASE В РЕАЛЬНОМ ВРЕМЕНИ ---
+        function initRealtimeDatabase() {
+            // Слушаем настройки сайта
+            onSnapshot(doc(db, "settings", "siteConfig"), (docSnap) => {
+                if (docSnap.exists()) {
+                    window.appState.siteConfig = docSnap.data();
+                    document.getElementById('header-site-title').innerText = window.appState.siteConfig.title;
+                    router.render();
+                } else {
+                    // Если база пустая — создаем стартовый конфиг
+                    setDoc(doc(db, "settings", "siteConfig"), window.appState.siteConfig).catch(()=>{});
+                }
+            });
+
+            // Слушаем список глав
+            onSnapshot(collection(db, "chapters"), (snapshot) => {
+                const loadedChapters = [];
+                snapshot.forEach(doc => loadedChapters.push({ id: doc.id, ...doc.data() }));
+                loadedChapters.sort((a, b) => (a.number || 1) - (b.number || 1));
+
+                if (loadedChapters.length === 0) {
+                    seedInitialData();
+                } else {
+                    window.appState.chapters = loadedChapters;
+                    router.render();
+                }
+            });
+
+            // Слушаем папки персонажей (Энциклопедия)
+            onSnapshot(collection(db, "characters"), (snapshot) => {
+                const loadedChars = [];
+                snapshot.forEach(doc => loadedChars.push({ id: doc.id, ...doc.data() }));
+                window.appState.characters = loadedChars;
+                router.render();
+            });
+
+            // Слушаем комментарии
+            onSnapshot(collection(db, "comments"), (snapshot) => {
+                const loadedComments = [];
+                snapshot.forEach(doc => loadedComments.push({ id: doc.id, ...doc.data() }));
+                loadedComments.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                window.appState.comments = loadedComments;
+                if (window.appState.currentView === 'reader') router.render();
+            });
+        }
+
+        // Заполнение стартовыми данными, если база Firebase еще пустая
+        async function seedInitialData() {
+            try {
+                await setDoc(doc(db, "chapters", "ch-1"), {
+                    number: 1,
+                    titleRu: "Глава 1: Пробуждение среди звезд",
+                    titleEn: "Chapter 1: Awakening Among Stars",
+                    date: "2026-11-07",
+                    isEarly: false,
+                    contentRu: [
+                        "Бесконечные коридоры космоса простирались за гранью человеческого понимания. Пыль мириадов миров оседала на плечах одинокого странника.",
+                        "IMG_3463_c97ee2.jpg",
+                        "Каждый шаг отзывался эхом в вечности, будто сама вселенная вела счет его дыханию."
+                    ]
+                });
+                await setDoc(doc(db, "characters", "char-1"), {
+                    name: "Главный Герой",
+                    folder: "Ключевые персонажи",
+                    bioRu: "Идущий сквозь 18 000 миров с клинком звездного света.",
+                    avatar: "IMG_3464_c97ee2.jpg",
+                    gallery: [
+                        { url: "IMG_3464_c97ee2.jpg", isPremium: false },
+                        { url: "IMG_3466_c97ee2.jpg", isPremium: true }
+                    ]
+                });
+            } catch (e) {
+                console.warn("Seed skipped:", e);
+            }
+        }
+
+        // --- 2. АВТОРИЗАЦИЯ И РАЗДЕЛЕНИЕ РОЛЕЙ (ГОСТЬ / ЮЗЕР / ПРЕМИУМ / АДМИН) ---
+        onAuthStateChanged(auth, async (firebaseUser) => {
+            if (firebaseUser) {
+                // Проверяем профиль пользователя в коллекции users
+                const userRef = doc(db, "users", firebaseUser.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    // Если имя пользователя Guardian_Angel_15, гарантируем роль admin
+                    const assignedRole = (data.name === ADMIN_USERNAME) ? "admin" : (data.role || "user");
+                    window.appState.user = {
+                        uid: firebaseUser.uid,
+                        email: firebaseUser.email,
+                        name: data.name,
+                        role: assignedRole,
+                        tokens: data.tokens || 0
+                    };
+                } else {
+                    // Если документа еще нет
+                    const defaultName = firebaseUser.email.split('@')[0];
+                    const assignedRole = (defaultName === ADMIN_USERNAME) ? "admin" : "user";
+                    const newUser = {
+                        name: defaultName,
+                        email: firebaseUser.email,
+                        role: assignedRole,
+                        tokens: 50
+                    };
+                    await setDoc(userRef, newUser);
+                    window.appState.user = { uid: firebaseUser.uid, ...newUser };
+                }
+            } else {
+                // Если не вошел — строго ГОСТЬ (без прав админа и комментирования)
+                window.appState.user = { uid: null, name: "Гость", email: null, role: "guest", tokens: 0 };
+            }
+            updateUserBadge();
+            router.render();
+        });
+
+        function updateUserBadge() {
+            const user = window.appState.user;
+            const badgeIcon = document.getElementById('user-badge-icon');
+            const badgeName = document.getElementById('user-badge-name');
+            const adminBtn = document.getElementById('nav-admin');
+
+            badgeName.innerText = user.name;
+            if (user.role === 'admin') {
+                badgeIcon.innerText = '⚡';
+                adminBtn.classList.remove('hidden');
+            } else if (user.role === 'premium') {
+                badgeIcon.innerText = '💎';
+                adminBtn.classList.add('hidden');
+            } else if (user.role === 'user') {
+                badgeIcon.innerText = '🛡️';
+                adminBtn.classList.add('hidden');
+            } else {
+                badgeIcon.innerText = '👤';
+                adminBtn.classList.add('hidden');
+            }
+        }
+
+        // Регистрация и вход через Email + Пароль
+        window.handleAuthSubmit = async function(mode) {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-pass').value.trim();
+            const usernameInput = document.getElementById('auth-username');
+            const username = usernameInput ? usernameInput.value.trim() : '';
+
+            if (!email || !password) {
+                return alertCustom("Заполните Email и пароль!");
+            }
+
+            try {
+                if (mode === 'register') {
+                    if (!username) return alertCustom("Укажите ваш никнейм!");
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    // Если регистрируется Guardian_Angel_15 — даем права админа, иначе обычный user
+                    const assignedRole = (username === ADMIN_USERNAME) ? 'admin' : 'user';
+                    await setDoc(doc(db, "users", cred.user.uid), {
+                        name: username,
+                        email: email,
+                        role: assignedRole,
+                        tokens: assignedRole === 'admin' ? 9999 : 50
+                    });
+                    alertCustom(assignedRole === 'admin' ? "⚡ Вы вошли как Администратор Guardian_Angel_15!" : "Регистрация успешна! Вы вошли как читатель.");
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    alertCustom("Вы успешно вошли в аккаунт!");
+                }
+                router.navigate('home');
+            } catch (err) {
+                alertCustom("Ошибка авторизации: " + err.message);
+            }
+        };
+
+        window.logoutUser = async function() {
+            await signOut(auth);
+            alertCustom("Вы вышли из аккаунта. Теперь вы в режиме Гостя.");
+            router.navigate('home');
+        };
+
+        // --- 3. НАВИГАЦИЯ И ОТРИСОВКА ЭКРАНОВ ---
+        window.router = {
+            navigate(view, param = null) {
+                window.appState.currentView = view;
+                if (view === 'reader') window.appState.activeChapterId = param;
+                if (view === 'character_detail') window.appState.activeCharId = param;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                this.render();
+                this.updateNavHighlight(view);
+            },
+
+            updateNavHighlight(view) {
+                ['home', 'chapters', 'lore', 'profile', 'admin'].forEach(v => {
+                    const btn = document.getElementById(`nav-${v}`);
+                    if (btn) {
+                        if (v === view) {
+                            btn.classList.add('text-accent-blue');
+                            btn.classList.remove('text-gray-400');
+                        } else {
+                            btn.classList.remove('text-accent-blue');
+                            btn.classList.add('text-gray-400');
+                        }
+                    }
+                });
+            },
+
+            render() {
+                const container = document.getElementById('app-container');
+                const view = window.appState.currentView;
+                const state = window.appState;
+
+                if (view === 'home') {
+                    container.innerHTML = `
+                        <div class="space-y-6 pb-12">
+                            <div class="relative rounded-2xl overflow-hidden glass shadow-2xl border border-white/10">
+                                <img src="${state.siteConfig.bannerUrl}" class="w-full h-96 object-cover object-center" alt="Cover" onerror="this.src='https://placehold.co/800x1200/0b1021/4a90e2?text=18+000+1+Eternity'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-space-900/40 to-transparent flex flex-col justify-end p-6">
+                                    <div class="inline-block px-3 py-1 rounded-full bg-accent-purple/30 border border-accent-purple/50 text-accent-silver text-xs font-medium mb-2 w-max">Автор: Guardian_Angel_15</div>
+                                    <h1 class="text-3xl font-bold tracking-tight text-white mb-2">${state.siteConfig.title}</h1>
+                                    <p class="text-xs text-gray-300 mb-4 leading-relaxed">
+                                        Сквозь восемнадцать тысяч миров и одну вечность лежит путь того, кто бросил вызов самим богам звездного неба.
+                                    </p>
+                                    <button onclick="openChapter('${state.chapters[0]?.id || ''}')" class="w-full py-3 px-6 rounded-xl cosmic-gradient text-white font-semibold shadow-lg shadow-purple-900/50 border border-white/20 active:scale-95 transition">
+                                        ✨ Читать с первой главы
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h2 class="text-lg font-bold text-white">Последние главы</h2>
+                                    <button onclick="router.navigate('chapters')" class="text-xs text-accent-blue font-medium">Все главы →</button>
+                                </div>
+                                <div class="space-y-2">
+                                    ${state.chapters.map(ch => `
+                                        <div onclick="openChapter('${ch.id}')" class="glass-card p-4 rounded-xl flex items-center justify-between cursor-pointer hover:border-accent-blue/50 transition">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-10 h-10 rounded-lg cosmic-gradient flex items-center justify-center font-bold text-sm text-white">#${ch.number}</div>
+                                                <div>
+                                                    <h3 class="text-sm font-semibold text-white">${ch.titleRu}</h3>
+                                                    <p class="text-[11px] text-gray-400">${ch.date || ''}</p>
+                                                </div>
+                                            </div>
+                                            ${ch.isEarly ? '<span class="px-2.5 py-1 rounded-full bg-accent-pink/20 text-accent-pink text-[10px] font-bold border border-accent-pink/30">🔒 Premium</span>' : '<span class="px-2.5 py-1 rounded-full bg-green-500/20 text-green-400 text-[10px] font-medium">Бесплатно</span>'}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (view === 'chapters') {
+                    container.innerHTML = `
+                        <div class="space-y-4 pb-12">
+                            <h2 class="text-xl font-bold text-white">Оглавление новеллы</h2>
+                            <div class="space-y-3">
+                                ${state.chapters.map(ch => `
+                                    <div onclick="openChapter('${ch.id}')" class="glass-card p-4 rounded-xl flex items-center justify-between cursor-pointer hover:border-accent-purple/50 transition">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-lg cosmic-gradient flex items-center justify-center font-bold text-sm text-white">${ch.number}</div>
+                                            <div>
+                                                <h3 class="text-sm font-semibold text-white">${ch.titleRu}</h3>
+                                                <p class="text-[11px] text-gray-400">Дата: ${ch.date || ''}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            ${ch.isEarly ? '<span class="px-2.5 py-1 rounded-full bg-accent-pink/20 text-accent-pink text-[10px] font-bold border border-accent-pink/30">🔒 Ранний доступ</span>' : '<span class="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-medium">Бесплатно</span>'}
+                                            ${state.user.role === 'admin' ? `<button onclick="event.stopPropagation(); deleteChapter('${ch.id}')" class="text-red-400 text-xs px-2">🗑️</button>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (view === 'reader') {
+                    const ch = state.chapters.find(c => c.id === state.activeChapterId) || state.chapters[0];
+                    if (!ch) return;
+
+                    // ПРОВЕРКА ДОСТУПА: ранний доступ видят только admin и premium
+                    const isAllowed = !ch.isEarly || state.user.role === 'admin' || state.user.role === 'premium';
+                    const chapterComments = state.comments.filter(c => c.chapterId === ch.id);
+
+                    container.innerHTML = `
+                        <div class="space-y-6 pb-16">
+                            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                                <button onclick="router.navigate('chapters')" class="text-xs text-accent-blue font-medium">← К списку глав</button>
+                                <span class="text-xs font-bold text-gray-400">Глава ${ch.number}</span>
+                            </div>
+
+                            <h1 class="text-2xl font-bold text-white">${ch.titleRu}</h1>
+
+                            ${isAllowed ? `
+                                <div class="space-y-5 leading-relaxed text-gray-200 text-base">
+                                    ${(ch.contentRu || []).map(block => {
+                                        if (block.startsWith('http') || block.endsWith('.jpg') || block.endsWith('.png') || block.endsWith('.webp')) {
+                                            return `<div class="my-4 rounded-xl overflow-hidden border border-white/10 glass-card"><img src="${block}" class="w-full object-cover rounded-xl" alt="Art"></div>`;
+                                        }
+                                        return `<p>${block}</p>`;
+                                    }).join('')}
+                                </div>
+                            ` : `
+                                <div class="glass-card p-8 rounded-2xl text-center space-y-4 my-8 border border-accent-pink/30">
+                                    <div class="w-12 h-12 rounded-full bg-accent-pink/20 text-accent-pink flex items-center justify-center mx-auto text-xl">🔒</div>
+                                    <h3 class="text-lg font-bold text-white">Глава в раннем доступе</h3>
+                                    <p class="text-xs text-gray-300">Эта глава доступна только подписчикам уровня <b>Premium</b> и автору <b>Guardian_Angel_15</b>.</p>
+                                    <button onclick="openPaymentModal()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white text-xs font-bold shadow-lg">Оформить Premium за 299 ₽</button>
+                                </div>
+                            `}
+
+                            <!-- Комментарии (Гостям запрещено, Юзерам/Премиум/Админу разрешено) -->
+                            <div class="pt-6 border-t border-white/10 space-y-4">
+                                <h3 class="text-md font-bold text-white">💬 Комментарии (${chapterComments.length})</h3>
+                                
+                                ${state.user.role !== 'guest' ? `
+                                    <div class="flex space-x-2">
+                                        <input type="text" id="comment-input" placeholder="Написать комментарий..." class="flex-1 glass-card px-4 py-2.5 rounded-xl text-xs text-white focus:outline-none focus:border-accent-blue">
+                                        <button onclick="addComment('${ch.id}')" class="px-4 py-2.5 rounded-xl bg-accent-blue text-white text-xs font-bold">Отправить</button>
+                                    </div>
+                                ` : `
+                                    <div class="glass-card p-3 rounded-xl text-center">
+                                        <p class="text-xs text-gray-400">🔒 Гости не могут оставлять комментарии. <button onclick="router.navigate('profile')" class="text-accent-blue underline">Войдите или зарегистрируйтесь</button>.</p>
+                                    </div>
+                                `}
+
+                                <div class="space-y-3">
+                                    ${chapterComments.map(c => `
+                                        <div class="glass-card p-3 rounded-xl space-y-1">
+                                            <div class="flex justify-between items-center text-[11px] text-gray-400">
+                                                <span class="font-semibold ${c.user === ADMIN_USERNAME ? 'text-accent-pink' : 'text-accent-blue'}">
+                                                    ${c.user === ADMIN_USERNAME ? '⚡ ' + c.user + ' (Автор)' : c.user}
+                                                </span>
+                                                <div class="flex items-center space-x-2">
+                                                    <span>${c.date}</span>
+                                                    ${state.user.role === 'admin' ? `<button onclick="deleteComment('${c.id}')" class="text-red-400">✕</button>` : ''}
+                                                </div>
+                                            </div>
+                                            <p class="text-xs text-gray-200">${c.text}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (view === 'lore') {
+                    container.innerHTML = `
+                        <div class="space-y-4 pb-12">
+                            <h2 class="text-xl font-bold text-white">Энциклопедия персонажей</h2>
+                            <p class="text-xs text-gray-400">Папки персонажей и эксклюзивные арты.</p>
+                            <div class="grid grid-cols-1 gap-3 mt-4">
+                                ${state.characters.map(char => `
+                                    <div onclick="router.navigate('character_detail', '${char.id}')" class="glass-card p-4 rounded-xl flex items-center justify-between cursor-pointer hover:border-accent-purple/50 transition">
+                                        <div class="flex items-center space-x-4">
+                                            <img src="${char.avatar}" class="w-16 h-16 rounded-xl object-cover border border-white/10" alt="${char.name}" onerror="this.src='https://placehold.co/200x200/121936/4a90e2?text=Char'">
+                                            <div>
+                                                <span class="text-[10px] text-accent-pink uppercase font-bold tracking-wider">📁 ${char.folder || 'Персонаж'}</span>
+                                                <h3 class="text-sm font-bold text-white">${char.name}</h3>
+                                                <p class="text-xs text-gray-400 line-clamp-1">${char.bioRu || ''}</p>
+                                                <span class="text-[10px] text-gray-500">Артов в папке: ${(char.gallery || []).length}</span>
+                                            </div>
+                                        </div>
+                                        ${state.user.role === 'admin' ? `<button onclick="event.stopPropagation(); deleteCharacter('${char.id}')" class="text-red-400 text-xs px-2">🗑️</button>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (view === 'character_detail') {
+                    const char = state.characters.find(c => c.id === state.activeCharId) || state.characters[0];
+                    if (!char) return;
+                    const isPremiumUser = state.user.role === 'admin' || state.user.role === 'premium';
+
+                    container.innerHTML = `
+                        <div class="space-y-6 pb-12">
+                            <button onclick="router.navigate('lore')" class="text-xs text-accent-blue font-medium">← Назад к папкам персонажей</button>
+                            
+                            <div class="glass-card p-5 rounded-2xl flex flex-col items-center text-center space-y-3 border border-white/10">
+                                <img src="${char.avatar}" class="w-32 h-32 rounded-2xl object-cover border-2 border-accent-purple/50 shadow-xl" alt="${char.name}">
+                                <span class="text-[10px] text-accent-pink uppercase font-bold">${char.folder}</span>
+                                <h1 class="text-xl font-bold text-white">${char.name}</h1>
+                                <p class="text-xs text-gray-300 leading-relaxed">${char.bioRu}</p>
+                            </div>
+
+                            ${state.user.role === 'admin' ? `
+                                <div class="glass-card p-4 rounded-2xl space-y-2 border border-accent-pink/40">
+                                    <h4 class="text-xs font-bold text-accent-pink">⚡ Админ: Добавить арт в папку «${char.name}»</h4>
+                                    <input type="text" id="new-char-art-url" placeholder="Ссылка на фото или имя файла (IMG_3464_c97ee2.jpg)" class="w-full glass-card p-2 rounded-xl text-xs text-white">
+                                    <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                        <input type="checkbox" id="new-char-art-lock">
+                                        <span>🔒 Сделать арт платным (только для Premium)</span>
+                                    </label>
+                                    <button onclick="addArtToCharacter('${char.id}')" class="w-full py-2 rounded-xl bg-accent-pink text-white text-xs font-bold">Загрузить арт в папку</button>
+                                </div>
+                            ` : ''}
+
+                            <div class="space-y-3">
+                                <h3 class="text-sm font-bold text-white">📁 Арты в папке (${(char.gallery || []).length})</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    ${(char.gallery || []).map((art, idx) => {
+                                        const locked = art.isPremium && !isPremiumUser;
+                                        return `
+                                            <div class="relative rounded-xl overflow-hidden glass-card aspect-[3/4] border border-white/10">
+                                                <img src="${art.url}" class="w-full h-full object-cover ${locked ? 'filter blur-xl scale-110' : ''}" alt="Art">
+                                                ${locked ? `
+                                                    <div class="absolute inset-0 bg-space-900/75 flex flex-col items-center justify-center p-3 text-center space-y-2">
+                                                        <span class="text-2xl">🔒</span>
+                                                        <span class="text-[11px] text-accent-pink font-bold">Платный арт</span>
+                                                        <button onclick="openPaymentModal()" class="px-3 py-1.5 rounded-lg bg-accent-pink text-white text-[10px] font-bold">Открыть с Premium</button>
+                                                    </div>
+                                                ` : ''}
+                                                ${state.user.role === 'admin' ? `
+                                                    <button onclick="toggleCharacterArtLock('${char.id}', ${idx})" class="absolute top-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded-md border border-white/20">
+                                                        ${art.isPremium ? '🔒 Платный' : '🔓 Открыт'}
+                                                    </button>
+                                                ` : ''}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (view === 'profile') {
+                    const isGuest = state.user.role === 'guest';
+                    container.innerHTML = `
+                        <div class="space-y-6 pb-12">
+                            <!-- Карточка текущего пользователя -->
+                            <div class="glass-card p-6 rounded-2xl text-center space-y-3 border border-white/10">
+                                <div class="w-20 h-20 rounded-full cosmic-gradient mx-auto flex items-center justify-center text-2xl border-2 border-accent-blue shadow-xl">
+                                    ${state.user.role === 'admin' ? '⚡' : state.user.role === 'premium' ? '💎' : state.user.role === 'user' ? '🛡️' : '👤'}
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-bold text-white">${state.user.name}</h2>
+                                    <p class="text-xs text-accent-pink font-semibold uppercase tracking-wider mt-0.5">
+                                        Роль: ${state.user.role === 'admin' ? 'Админ (Автор)' : state.user.role === 'premium' ? 'Премиум-читатель' : state.user.role === 'user' ? 'Зарегистрированный юзер' : 'Гость (только чтение)'}
+                                    </p>
+                                </div>
+                                ${!isGuest ? `
+                                    <button onclick="logoutUser()" class="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold">Выйти из аккаунта</button>
+                                ` : ''}
+                            </div>
+
+                            ${isGuest ? `
+                                <!-- Форма входа и регистрации для гостей и автора -->
+                                <div class="glass-card p-5 rounded-2xl space-y-4 border border-accent-blue/30">
+                                    <h3 class="text-base font-bold text-white">🔐 Вход или Регистрация</h3>
+                                    <p class="text-xs text-gray-400">Войдите, чтобы комментировать главы и оформлять подписку. Для входа в панель автора используйте никнейм <b>Guardian_Angel_15</b>.</p>
+                                    <div class="space-y-3">
+                                        <input type="text" id="auth-username" placeholder="Ваш никнейм (для регистрации)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                                        <input type="email" id="auth-email" placeholder="Ваш Email" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                                        <input type="password" id="auth-pass" placeholder="Пароль (минимум 6 символов)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                                        <div class="grid grid-cols-2 gap-2 pt-1">
+                                            <button onclick="handleAuthSubmit('login')" class="py-3 rounded-xl bg-accent-blue text-white text-xs font-bold">Войти</button>
+                                            <button onclick="handleAuthSubmit('register')" class="py-3 rounded-xl cosmic-gradient text-white text-xs font-bold border border-white/20">Создать аккаунт</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : `
+                                <!-- Управление подпиской для авторизованных пользователей -->
+                                <div class="space-y-3">
+                                    <h3 class="text-sm font-bold text-white">💎 Монетизация и доступ</h3>
+                                    <button onclick="openPaymentModal()" class="w-full py-3.5 px-4 rounded-xl cosmic-gradient text-white text-xs font-bold shadow-lg flex items-center justify-between border border-white/20">
+                                        <span>🌟 Активировать статус Premium (299 ₽)</span>
+                                        <span>→</span>
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                    `;
+                } else if (view === 'admin') {
+                    // Защита: только Guardian_Angel_15 с ролью admin видит эту панель
+                    if (state.user.role !== 'admin') {
+                        container.innerHTML = `<div class="p-8 text-center text-red-400 text-xs">Доступ закрыт. Эта панель доступна только автору Guardian_Angel_15.</div>`;
+                        return;
+                    }
+
+                    container.innerHTML = `
+                        <div class="space-y-6 pb-16">
+                            <h2 class="text-xl font-bold text-white">⚡ Админ-панель (${ADMIN_USERNAME})</h2>
+
+                            <!-- 1. Публикация новой главы в Firebase -->
+                            <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-blue/40">
+                                <h3 class="text-sm font-bold text-white">📖 Опубликовать новую главу (сохраняется в Firebase)</h3>
+                                <input type="number" id="pub-num" placeholder="Номер главы (например: 2)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input type="text" id="pub-title-ru" placeholder="Название главы" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <textarea id="pub-text-ru" rows="5" placeholder="Вставьте текст главы. Чтобы вставить арт между абзацами, напишите ссылку на фото (или имя файла IMG_3464_c97ee2.jpg) с новой строки!" class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
+                                <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                    <input type="checkbox" id="pub-early">
+                                    <span>🔒 Ранний доступ (только для Premium)</span>
+                                </label>
+                                <button onclick="publishNewChapter()" class="w-full py-3 rounded-xl cosmic-gradient text-white text-xs font-bold shadow-lg">Опубликовать в базу данных</button>
+                            </div>
+
+                            <!-- 2. Создание папки персонажа в Энциклопедии -->
+                            <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-purple/40">
+                                <h3 class="text-sm font-bold text-white">📁 Создать папку персонажа (Лор)</h3>
+                                <input type="text" id="char-name" placeholder="Имя персонажа" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input type="text" id="char-folder" placeholder="Категория / папка (например: Боги Вечности)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input type="text" id="char-avatar" placeholder="Ссылка на аватар персонажа (или IMG_3463_c97ee2.jpg)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <textarea id="char-bio" rows="3" placeholder="Описание и лор персонажа..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
+                                <button onclick="createCharacterFolder()" class="w-full py-3 rounded-xl bg-accent-purple text-white text-xs font-bold shadow-lg">Создать папку персонажа</button>
+                            </div>
+
+                            <!-- 3. Настройка обложки сайта -->
+                            <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-pink/30">
+                                <h3 class="text-sm font-bold text-white">🎨 Обложка и название сайта</h3>
+                                <input type="text" id="cfg-title" value="${state.siteConfig.title}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input type="text" id="cfg-banner" value="${state.siteConfig.bannerUrl}" placeholder="URL главной обложки" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <button onclick="saveSiteConfig()" class="w-full py-2.5 rounded-xl bg-accent-pink text-white text-xs font-bold">Обновить обложку у всех</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // --- 4. ФУНКЦИИ ЗАПИСИ В FIREBASE FIRESTORE ---
+        window.openChapter = function(id) {
+            if (!id && window.appState.chapters.length > 0) id = window.appState.chapters[0].id;
+            router.navigate('reader', id);
+        };
+
+        window.saveSiteConfig = async function() {
+            const title = document.getElementById('cfg-title').value.trim();
+            const bannerUrl = document.getElementById('cfg-banner').value.trim();
+            await setDoc(doc(db, "settings", "siteConfig"), {
+                title,
+                bannerUrl,
+                adminAvatar: window.appState.siteConfig.adminAvatar
+            });
+            alertCustom("✅ Обложка и название сохранены в Firebase!");
+        };
+
+        window.publishNewChapter = async function() {
+            const num = parseInt(document.getElementById('pub-num').value) || (window.appState.chapters.length + 1);
+            const titleRu = document.getElementById('pub-title-ru').value.trim();
+            const textRu = document.getElementById('pub-text-ru').value.trim();
+            const isEarly = document.getElementById('pub-early').checked;
+
+            if (!titleRu || !textRu) return alertCustom("Введите название и текст главы!");
+
+            const contentBlocks = textRu.split('\n').map(s => s.trim()).filter(Boolean);
+
+            await addDoc(collection(db, "chapters"), {
+                number: num,
+                titleRu: titleRu,
+                titleEn: titleRu,
+                date: new Date().toLocaleDateString('ru-RU'),
+                isEarly: isEarly,
+                contentRu: contentBlocks
+            });
+
+            alertCustom("🎉 Глава сохранена в Firebase и доступна читателям!");
+            router.navigate('chapters');
+        };
+
+        window.deleteChapter = async function(chapterId) {
+            if (!confirm("Удалить эту главу из базы Firebase?")) return;
+            await deleteDoc(doc(db, "chapters", chapterId));
+        };
+
+        window.createCharacterFolder = async function() {
+            const name = document.getElementById('char-name').value.trim();
+            const folder = document.getElementById('char-folder').value.trim() || "Персонажи";
+            const avatar = document.getElementById('char-avatar').value.trim() || "IMG_3464_c97ee2.jpg";
+            const bioRu = document.getElementById('char-bio').value.trim();
+
+            if (!name) return alertCustom("Укажите имя персонажа!");
+
+            await addDoc(collection(db, "characters"), {
+                name,
+                folder,
+                avatar,
+                bioRu,
+                gallery: [{ url: avatar, isPremium: false }]
+            });
+
+            alertCustom("📁 Папка персонажа создана в Firebase!");
+            router.navigate('lore');
+        };
+
+        window.deleteCharacter = async function(charId) {
+            if (!confirm("Удалить папку персонажа?")) return;
+            await deleteDoc(doc(db, "characters", charId));
+        };
+
+        window.addArtToCharacter = async function(charId) {
+            const url = document.getElementById('new-char-art-url').value.trim();
+            const isPremium = document.getElementById('new-char-art-lock').checked;
+            if (!url) return alertCustom("Вставьте ссылку на арт или имя файла!");
+
+            const char = window.appState.characters.find(c => c.id === charId);
+            if (!char) return;
+
+            const updatedGallery = [...(char.gallery || []), { url, isPremium }];
+            await updateDoc(doc(db, "characters", charId), { gallery: updatedGallery });
+            alertCustom("🎨 Арт добавлен в папку персонажа!");
+        };
+
+        window.toggleCharacterArtLock = async function(charId, artIndex) {
+            const char = window.appState.characters.find(c => c.id === charId);
+            if (!char || !char.gallery[artIndex]) return;
+
+            const updatedGallery = [...char.gallery];
+            updatedGallery[artIndex].isPremium = !updatedGallery[artIndex].isPremium;
+            await updateDoc(doc(db, "characters", charId), { gallery: updatedGallery });
+        };
+
+        window.addComment = async function(chapterId) {
+            const input = document.getElementById('comment-input');
+            if (!input || !input.value.trim()) return;
+
+            await addDoc(collection(db, "comments"), {
+                chapterId: chapterId,
+                user: window.appState.user.name,
+                text: input.value.trim(),
+                date: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+                timestamp: Date.now()
+            });
+            input.value = '';
+        };
+
+        window.deleteComment = async function(commentId) {
+            await deleteDoc(doc(db, "comments", commentId));
+        };
+
+        // Монетизация и повышение до Premium в Firebase
+        window.openPaymentModal = function() {
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 z-50 bg-space-900/80 backdrop-blur-md flex items-center justify-center p-4">
+                    <div class="glass-card p-6 rounded-2xl w-full max-w-sm space-y-4 border border-accent-pink/50">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-base font-bold text-white">💎 Подписка Premium</h3>
+                            <button onclick="closeModal()" class="text-gray-400 hover:text-white">✕</button>
+                        </div>
+                        <p class="text-xs text-gray-300">Откройте все главы раннего доступа и закрытые платные арты персонажей.</p>
+                        <div class="space-y-2">
+                            <button onclick="activatePremiumStatus()" class="w-full py-3 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white text-xs font-bold shadow-lg">
+                                💳 Оплатить 299 ₽ (ЮKassa / Карта / СБП)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.activatePremiumStatus = async function() {
+            closeModal();
+            if (!window.appState.user.uid) {
+                alertCustom("Сначала войдите или создайте аккаунт в разделе «Профиль», чтобы подписка закрепилась за вами!");
+                router.navigate('profile');
+                return;
+            }
+            await updateDoc(doc(db, "users", window.appState.user.uid), { role: 'premium' });
+            window.appState.user.role = 'premium';
+            updateUserBadge();
+            router.render();
+            alertCustom("🎉 Статус Premium активирован и сохранен в вашем аккаунте Firebase!");
+        };
+
+        window.closeModal = function() {
+            document.getElementById('modal-container').innerHTML = '';
+        };
+
+        window.alertCustom = function(msg) {
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 z-50 bg-space-900/80 backdrop-blur-md flex items-center justify-center p-4">
+                    <div class="glass-card p-6 rounded-2xl w-full max-w-xs text-center space-y-4 border border-white/20">
+                        <p class="text-xs text-white font-medium leading-relaxed">${msg}</p>
+                        <button onclick="closeModal()" class="w-full py-2.5 rounded-xl bg-accent-blue text-white text-xs font-bold">ОК</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        // Запуск при старте
+        window.onload = function() {
+            initRealtimeDatabase();
+            router.navigate('home');
+        };
+    </script>
+</body>
+</html>
