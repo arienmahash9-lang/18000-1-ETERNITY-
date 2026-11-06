@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18.000 + 1 Eternity — Веб-новелла</title>
+    <style>
+        :root {
+            --bg-color: #07090E;
+            --card-bg: rgba(22, 27, 38, 0.75);
+            --border-color: rgba(96, 165, 250, 0.2);
+            --accent-blue: #3B82F6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --gold: #F59E0B;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(42, 27, 61, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(30, 58, 138, 0.3) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #60A5FA;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .role-selector {
+            background: #1E293B;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        main {
+            flex: 1;
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 80px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Hero / Home */
+        .hero-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+        }
+
+        .hero-content {
+            padding: 20px;
+        }
+
+        .hero-title {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #60A5FA, #C084FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93C5FD;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .badge.gold {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #FCD34D;
+        }
+
+        .synopsis {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            transition: 0.2s;
+            margin-bottom: 10px;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+        }
+
+        /* Chapters List */
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chapter-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chapter-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .chapter-info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .chapter-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Reader */
+        .reader-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .reader-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #E5E7EB;
+            margin-bottom: 20px;
+        }
+
+        .inline-art {
+            width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+        }
+
+        /* Encyclopedia / Characters */
+        .chars-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .char-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .char-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .char-card h4 {
+            padding: 10px;
+            font-size: 0.95rem;
+        }
+
+        /* Paywall Modal / Overlay */
+        .paywall-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+        }
+
+        .paywall-box h3 {
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .paywall-box p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* Comments */
+        .comments-section {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .comment-input {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            margin-bottom: 10px;
+            resize: none;
+            outline: none;
+        }
+
+        .comment-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .comment-item b {
+            color: #60A5FA;
+        }
+
+        /* Admin Dashboard */
+        .admin-panel {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px dashed var(--gold);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .admin-panel h3 {
+            color: var(--gold);
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 8px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        /* Navigation Bar */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(7, 9, 14, 0.9);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-item.active {
+            color: #60A5FA;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">18.000 + 1 Eternity</div>
+        <select id="roleSelect" class="role-selector" onchange="changeRole()">
+            <option value="admin">👑 Админ (Вы)</option>
+            <option value="premium">💎 Премиум</option>
+            <option value="user">👤 Юзер</option>
+            <option value="guest">👀 Гость</option>
+        </select>
+    </header>
+
+    <main>
+        <!-- SCREEN 1: HOME -->
+        <div id="screen-home" class="screen active">
+            <div id="adminHomeTools" class="admin-panel" style="display:none;">
+                <h3>🛠 Панель Администратора</h3>
+                <input type="text" id="newChapterTitle" class="admin-input" placeholder="Название новой главы...">
+                <button class="btn" onclick="addChapter()" style="padding: 8px; font-size: 0.85rem;">+ Опубликовать главу</button>
+            </div>
+
+            <div class="hero-card">
+                <img src="https://fdn.gsmarena.com/imgroot/reviews/19/xiaomi-mi-note-10/-728x314/thumb7.jpg" id="heroCover" class="hero-img" alt="Обложка">
+                <div class="hero-content">
+                    <div class="badges">
+                        <span class="badge">Фэнтези / Космос</span>
+                        <span class="badge gold">Ранний доступ</span>
+                    </div>
+                    <h1 class="hero-title">18.000 + 1 Eternity</h1>
+                    <p class="synopsis">Глубокий космический эпос, переплетение мифологии, демонологии и судеб архангелов. Путь сквозь звёзды, где каждое решение меняет вечность.</p>
+                    <button class="btn" onclick="switchScreen('chapters')">📖 Список глав</button>
+                    <button class="btn btn-secondary" onclick="switchScreen('encyclopedia')">✨ Энциклопедия мира</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: CHAPTERS LIST -->
+        <div id="screen-chapters" class="screen">
+            <div class="section-title">
+                <span>Список глав</span>
+                <span id="chapterCount" style="font-size: 0.85rem; color: var(--text-muted);">Всего: 2</span>
+            </div>
+            <div id="chaptersListContainer">
+                <!-- Динамический список глав -->
+            </div>
+        </div>
+
+        <!-- SCREEN 3: READER -->
+        <div id="screen-reader" class="screen">
+            <div class="reader-header">
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; margin:0;" onclick="switchScreen('chapters')">← Назад</button>
+                <h3 id="readerTitle" style="font-size: 1rem;">Глава 1</h3>
+                <div style="width: 60px;"></div>
+            </div>
+
+            <div id="readerContentContainer">
+                <!-- Текст и арты -->
+            </div>
+
+            <!-- Секция комментариев -->
+            <div class="comments-section" id="commentsSection">
+                <h4 style="margin-bottom: 10px; font-size: 1rem;">💬 Комментарии</h4>
+                <div id="commentBoxWrapper">
+                    <textarea id="commentInput" class="comment-input" placeholder="Написать комментарий..."></textarea>
+                    <button class="btn" onclick="postComment()" style="padding: 8px; font-size: 0.85rem;">Отправить</button>
+                </div>
+                <div id="commentsList" style="margin-top: 15px;">
+                    <!-- Комментарии -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: ENCYCLOPEDIA -->
+        <div id="screen-encyclopedia" class="screen">
+            <div id="adminCharTools" class="admin-panel" style="display:none;">
+                <h3>📁 Управление персонажами</h3>
+                <input type="text" id="newCharName" class="admin-input" placeholder="Имя персонажа (например, Зари Диазура)...">
+                <button class="btn" onclick="addCharacter()" style="padding: 8px; font-size: 0.85rem;">+ Создать папку персонажа</button>
+            </div>
+
+            <div class="section-title">
+                <span>Энциклопедия персонажей</span>
+            </div>
+            <div class="chars-grid" id="charsGrid">
+                <!-- Карточки персонажей -->
+            </div>
+        </div>
+
+        <!-- SCREEN 5: CHARACTER DETAIL / FOLDER -->
+        <div id="screen-chardetail" class="screen">
+            <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; margin-bottom: 15px;" onclick="switchScreen('encyclopedia')">← К списку</button>
+            <h2 id="charDetailName" style="margin-bottom: 10px; color: #60A5FA;">Имя персонажа</h2>
+            <p id="charDetailDesc" class="synopsis" style="margin-bottom: 15px;">Папка персонажа и личные арты.</p>
+            
+            <div id="adminArtTools" class="admin-panel" style="display:none;">
+                <input type="text" id="artUrlInput" class="admin-input" placeholder="URL изображения арта...">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; margin-bottom: 8px; color: var(--gold);">
+                    <input type="checkbox" id="artPaywallCheck"> Закрыть арт (Только для Премиума / Платный)
+                </label>
+                <button class="btn" onclick="addArtToChar()" style="padding: 8px; font-size: 0.85rem;">+ Загрузить арт в папку</button>
+            </div>
+
+            <div class="chars-grid" id="charArtsGrid">
+                <!-- Арты конкретного персонажа -->
+            </div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchScreen('home')" id="nav-home">
+            <span>🏠</span>Главная
+        </button>
+        <button class="nav-item" onclick="switchScreen('chapters')" id="nav-chapters">
+            <span>📖</span>Главы
+        </button>
+        <button class="nav-item" onclick="switchScreen('encyclopedia')" id="nav-encyclopedia">
+            <span>✨</span>Лор
+        </button>
+    </nav>
+
+    <script>
+        // Состояние приложения и база данных (в памяти)
+        let currentUser = 'admin'; // admin, premium, user, guest
+
+        let chapters = [
+            { id: 1, title: "Глава 1: Пробуждение в космосе", early: false, text: "Звёздный свет падал на холодные плиты цитадели. Зари Диазура сделал шаг вперед, чувствуя, как древняя магия отзывается в каждой клетке его сущности." },
+            { id: 2, title: "Глава 2: Ранний доступ (Премиум)", early: true, text: "Эксклюзивная глава для премиум-читателей. Секреты пандэмониума и небесных сфер раскрываются здесь впервые." }
+        ];
+
+        let characters = [
+            { 
+                id: 1, 
+                name: "Зари Диазура", 
+                cover: "https://fdn.gsmarena.com/imgroot/reviews/19/xiaomi-mi-note-10/-728x314/thumb7.jpg",
+                arts: [
+                    { url: "https://fdn.gsmarena.com/imgroot/reviews/19/xiaomi-mi-note-10/-728x314/thumb7.jpg", locked: false },
+                    { url: "https://fdn.gsmarena.com/imgroot/reviews/19/xiaomi-mi-note-10/-728x314/thumb7.jpg", locked: true }
+                ]
+            }
+        ];
+
+        let comments = [
+            { user: "Алексей", text: "Великолепная атмосфера! Жду продолжения." }
+        ];
+
+        let activeCharacterId = null;
+
+        function changeRole() {
+            currentUser = document.getElementById('roleSelect').value;
+            
+            // Показ/скрытие админ-панелей
+            const isAdmin = currentUser === 'admin';
+            document.getElementById('adminHomeTools').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('adminCharTools').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('adminArtTools').style.display = isAdmin ? 'block' : 'none';
+
+            // Права комментирования для гостей
+            const commInput = document.getElementById('commentBoxWrapper');
+            if (currentUser === 'guest') {
+                commInput.style.display = 'none';
+            } else {
+                commInput.style.display = 'block';
+            }
+
+            renderChapters();
+            renderCharacters();
+            if(document.getElementById('screen-chardetail').classList.contains('active')) {
+                openCharFolder(activeCharacterId);
+            }
+        }
+
+        function switchScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById('screen-' + screenName).classList.add('active');
+            if(document.getElementById('nav-' + screenName)) {
+                document.getElementById('nav-' + screenName).classList.add('active');
+            }
+            window.scrollTo(0, 0);
+
+            if(screenName === 'chapters') renderChapters();
+            if(screenName === 'encyclopedia') renderCharacters();
+        }
+
+        function renderChapters() {
+            const container = document.getElementById('chaptersListContainer');
+            container.innerHTML = '';
+            document.getElementById('chapterCount').innerText = `Всего: ${chapters.length}`;
+
+            chapters.forEach(ch => {
+                let canRead = true;
+                let lockIcon = '🔓';
+
+                if (ch.early && currentUser === 'guest' || ch.early && currentUser === 'user') {
+                    canRead = false;
+                    lockIcon = '🔒 [Premium]';
+                }
+
+                const item = document.createElement('div');
+                item.className = 'chapter-item';
+                item.innerHTML = `
+                    <div class="chapter-info">
+                        <h4>${ch.title}</h4>
+                        <p>${ch.early ? '💎 Ранний доступ' : '✨ Публичная глава'}</p>
+                    </div>
+                    <div>${lockIcon}</div>
+                `;
+                item.onclick = () => openChapter(ch.id, canRead);
+                container.appendChild(item);
+            });
+        }
+
+        function openChapter(id, canRead) {
+            const ch = chapters.find(c => c.id === id);
+            document.getElementById('readerTitle').innerText = ch.title;
+            const contentContainer = document.getElementById('readerContentContainer');
+
+            if (!canRead) {
+                contentContainer.innerHTML = `
+                    <div class="paywall-box">
+                        <h3>🔒 Требуется Премиум-доступ</h3>
+                        <p>Эта глава находится в раннем доступе. Оформите подписку второго уровня или выше, чтобы прочитать её прямо сейчас.</p>
+                        <button class="btn" onclick="alert('Переход на страницу оплаты подписки...')">Оформить Премиум</button>
+                    </div>
+                `;
+                document.getElementById('commentsSection').style.display = 'none';
+            } else {
+                document.getElementById('commentsSection').style.display = 'block';
+                contentContainer.innerHTML = `
+                    <div class="reader-text">${ch.text}</div>
+                    <img src="https://fdn.gsmarena.com/imgroot/reviews/19/xiaomi-mi-note-10/-728x314/thumb7.jpg" class="inline-art" alt="Сюжетный арт">
+                    <div class="reader-text">Продолжение сцены разворачивается под бесконечными аркадами звёздного неба...</div>
+                `;
+                renderComments();
+            }
+            switchScreen('reader');
+        }
+
+        function renderCharacters() {
+            const grid = document.getElementById('charsGrid');
+            grid.innerHTML = '';
+
+            characters.forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'char-card';
+                card.innerHTML = `
+                    <img src="${char.cover}" alt="${char.name}">
+                    <h4>${char.name}</h4>
+                `;
+                card.onclick = () => openCharFolder(char.id);
+                grid.appendChild(card);
+            });
+        }
+
+        function openCharFolder(charId) {
+            activeCharacterId = charId;
+            const char = characters.find(c => c.id === charId);
+            document.getElementById('charDetailName').innerText = char.name;
+            
+            const artsGrid = document.getElementById('charArtsGrid');
+            artsGrid.innerHTML = '';
+
+            char.arts.forEach(art => {
+                const artCard = document.createElement('div');
+                artCard.className = 'char-card';
+
+                let isLockedForMe = art.locked && (currentUser === 'guest' || currentUser === 'user');
+
+                if (isLockedForMe) {
+                    artCard.innerHTML = `
+                        <div style="height: 180px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#111; color: var(--gold); padding:10px;">
+                            <span style="font-size:2rem; margin-bottom:5px;">🔒</span>
+                            <span style="font-size:0.75rem;">Эксклюзивный арт (Paywall)</span>
+                        </div>
+                    `;
+                    artCard.onclick = () => alert('Этот арт доступен только для Администраторов и Премиум-подписчиков!');
+                } else {
+                    artCard.innerHTML = `
+                        <img src="${art.url}" alt="Арт персонажа">
+                        ${art.locked ? '<span style="font-size:0.75rem; color:var(--gold);">💎 Премиум арт</span>' : ''}
+                    `;
+                }
+                artsGrid.appendChild(artCard);
+            });
+
+            switchScreen('chardetail');
+        }
+
+        // Админ-функции добавления
+        function addChapter() {
+            const title = document.getElementById('newChapterTitle').value;
+            if(!title) return alert('Введите название главы');
+            chapters.push({ id: chapters.length + 1, title: title, early: true, text: "Текст новой главы..." });
+            document.getElementById('newChapterTitle').value = '';
+            renderChapters();
+            alert('Глава успешно опубликована!');
+        }
+
+        function addCharacter() {
+            const name = document.getElementById('newCharName').value;
+            if(!name) return alert('Введите имя персонажа');
+            characters.push({
+                id: characters.length + 1,
+                name: name,
+                cover: "https://fdn.gsmarena.com/imgroot/reviews/19/xiaomi-mi-note-10/-728x314/thumb7.jpg",
+                arts: []
+            });
+            document.getElementById('newCharName').value = '';
+            renderCharacters();
+            alert('Папка персонажа создана!');
+        }
+
+        function addArtToChar() {
+            const url = document.getElementById('artUrlInput').value;
+            const locked = document.getElementById('artPaywallCheck').checked;
+            if(!url) return alert('Введите URL изображения');
+
+            const char = characters.find(c => c.id === activeCharacterId);
+            char.arts.push({ url: url, locked: locked });
+            document.getElementById('artUrlInput').value = '';
+            document.getElementById('artPaywallCheck').checked = false;
+            openCharFolder(activeCharacterId);
+            alert('Арт успешно добавлен в папку персонажа!');
+        }
+
+        function renderComments() {
+            const list = document.getElementById('commentsList');
+            list.innerHTML = '';
+            comments.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.innerHTML = `<b>${c.user}:</b> ${c.text}`;
+                list.appendChild(item);
+            });
+        }
+
+        function postComment() {
+            const text = document.getElementById('commentInput').value;
+            if(!text) return;
+            comments.unshift({ user: currentUser.toUpperCase(), text: text });
+            document.getElementById('commentInput').value = '';
+            renderComments();
+        }
+    </script>
+</body>
+</html>
