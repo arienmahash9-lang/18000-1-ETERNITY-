@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18 000 + 1 Eternity | Official Novel Site</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #030712;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --accent-glow: rgba(56, 189, 248, 0.35);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --gold: #f59e0b;
+            --border: rgba(56, 189, 248, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(29, 78, 216, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.12) 0%, transparent 40%),
+                url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.2)"/></svg>');
+            background-size: cover, cover, 100px 100px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(3, 7, 18, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 3rem;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.4);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 100px auto 50px;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin: 3rem 0 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Сетка глав */
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chapter-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .chapter-card.locked::after {
+            content: '🔒 Premium';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(217, 119, 6, 0.2);
+            color: var(--gold);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(217, 119, 6, 0.4);
+        }
+
+        .chapter-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Энциклопедия / Персонажи */
+        .wiki-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .wiki-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .wiki-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .wiki-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+            background: #1e293b;
+        }
+
+        /* Админ панель */
+        .admin-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+        }
+
+        /* Комментарии */
+        .comments-section {
+            margin-top: 4rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .comment-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        /* Симулятор смены ролей внизу */
+        .role-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(3, 7, 18, 0.95);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .role-switcher select {
+            background: #1e293b;
+            color: white;
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body data-role="guest">
+
+    <header>
+        <div class="logo">18,000 + 1 Eternity</div>
+        <nav>
+            <a onclick="switchTab('chapters')" class="active" data-ru="Главная / Главы" data-en="Home / Chapters">Главная / Главы</a>
+            <a onclick="switchTab('wiki')" data-ru="Энциклопедия мира" data-en="World Wiki">Энциклопедия мира</a>
+            <a onclick="switchTab('gallery')" data-ru="Эксклюзивные Арты" data-en="Exclusive Arts">Эксклюзивные Арты</a>
+        </nav>
+        <div class="controls">
+            <button class="btn" onclick="toggleLang()" id="lang-btn">EN / RU</button>
+            <button class="btn btn-gold" id="auth-btn">Войти</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Панель администратора (видна только владельцу) -->
+        <div class="admin-panel" id="adminPanel">
+            <h2 style="font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 1rem;" data-ru="🛠 Панель Владельца (Админа)" data-ru="🛠 Owner Admin Panel">🛠 Панель Владельца (Админа)</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div>
+                    <h3 style="margin-bottom: 1rem;" data-ru="Добавить персонажа / артефакт" data-en="Add Character / Artifact">Добавить персонажа / артефакт</h3>
+                    <div class="form-group">
+                        <label data-ru="Имя персонажа / Название" data-en="Name">Имя персонажа / Название</label>
+                        <input type="text" id="wikiName" placeholder="Расса Ди Журен / Кольцо №138">
+                    </div>
+                    <div class="form-group">
+                        <label data-ru="Категория" data-en="Category">Категория</label>
+                        <select id="wikiCategory">
+                            <option value="character">Персонаж (Character)</option>
+                            <option value="artifact">Артефакт (Artifact)</option>
+                            <option value="technique">Техника (Technique)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-ru="Ссылка на фото (URL)" data-en="Photo URL">Ссылка на фото (URL)</label>
+                        <input type="text" id="wikiPhoto" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label data-ru="Подробное описание" data-en="Detailed Description">Подробное описание</label>
+                        <textarea id="wikiDesc" rows="3"></textarea>
+                    </div>
+                    <button class="btn" onclick="addWikiItem()" data-ru="Создать папку/карточку" data-en="Create Card">Создать папку/карточку</button>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem;" data-ru="Управление главами (Платные / Премиум)" data-en="Manage Chapters">Управление главами</h3>
+                    <div class="form-group">
+                        <label data-ru="Сделать последние главы платными (Кол-во с конца):" data-en="Lock last N chapters:">Сделать последние главы платными (Кол-во с конца):</label>
+                        <input type="number" id="lockCount" value="3" min="0" max="10" onchange="updateLockedChapters()">
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;" data-ru="Все созданные папки персонажей автоматически генерируют красивый лор на русском и улучшенном английском языке." data-en="All created character folders automatically generate lore in RU and EN.">Все созданные папки персонажей автоматически генерируют красивый лор на русском и улучшенном английском языке.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Секция Глав -->
+        <div id="tab-chapters">
+            <div class="hero">
+                <h1 data-ru="18 000 + 1 Вечность" data-en="18,000 + 1 Eternity">18 000 + 1 Вечность</h1>
+                <p data-ru="Эпическое фэнтези о богах, артефактах Энпатуара, святых девах и пути наследного принца Ариэна." data-en="An epic fantasy about gods, Enpatuar's artifacts, holy maidens, and Crown Prince Arien's journey.">Эпическое фэнтези о богах, артефактах Энпатуара, святых девах и пути наследного принца Ариэна.</p>
+            </div>
+
+            <div class="section-title">
+                <span data-ru="Все Главы Новеллы" data-en="All Novel Chapters">Все Главы Новеллы</span>
+            </div>
+            <div class="chapters-grid" id="chaptersGrid">
+                <!-- Динамически заполняется через JS -->
+            </div>
+        </div>
+
+        <!-- Секция Энциклопедии (Персонажи, артефакты, техники) -->
+        <div id="tab-wiki" style="display: none;">
+            <div class="section-title">
+                <span data-ru="Энциклопедия Мира и Персонажей" data-en="World & Characters Wiki">Энциклопедия Мира и Персонажей</span>
+            </div>
+            <div class="wiki-grid" id="wikiGrid">
+                <!-- Карточки персонажей из лора (Ариэн, Журен, Скарлет, Баан, Артефакты и т.д.) -->
+            </div>
+        </div>
+
+        <!-- Секция Эксклюзивных Артов -->
+        <div id="tab-gallery" style="display: none;">
+            <div class="section-title">
+                <span data-ru="Эксклюзивная галерея артов" data-en="Exclusive Art Gallery">Эксклюзивная галерея артов</span>
+            </div>
+            <div class="wiki-grid">
+                <div class="wiki-card" style="position: relative;">
+                    <img src="IMG_3463_3c8864.jpg" class="wiki-avatar" style="width: 100%; height: 250px; border-radius: 8px;" alt="Art 1">
+                    <h3 style="margin-top: 10px;">Принц Ариэн под звездным небом</h3>
+                    <span style="color: var(--gold); font-size: 0.85rem;" data-ru="🔒 Эксклюзив (Премиум)" data-en="🔒 Exclusive (Premium)">🔒 Эксклюзив (Премиум)</span>
+                </div>
+                <div class="wiki-card" style="position: relative;">
+                    <img src="IMG_3466_3c8864.jpg" class="wiki-avatar" style="width: 100%; height: 250px; border-radius: 8px;" alt="Art 2">
+                    <h3 style="margin-top: 10px;">Архангелы и Демоны Мироздания</h3>
+                    <span style="color: var(--gold); font-size: 0.85rem;" data-ru="🔒 Эксклюзив (Премиум)" data-en="🔒 Exclusive (Premium)">🔒 Эксклюзив (Премиум)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Секция комментариев -->
+        <div class="comments-section">
+            <h3 style="font-family: 'Cinzel', serif; margin-bottom: 1rem;" data-ru="Обсуждения читателей" data-en="Reader Discussions">Обсуждения читателей</h3>
+            <div id="commentsList">
+                <div class="comment-item">
+                    <div class="comment-author">Иван (Premium Reader)</div>
+                    <div style="color: var(--text-main); font-size: 0.95rem;">Глава про прорыв Ариэна до Пробужденного Лорда 6-й ступени просто потрясающая! Жду продолжения арки с делегацией Кроваво-Красной империи.</div>
+                </div>
+            </div>
+            <div id="commentFormContainer" style="margin-top: 1.5rem;">
+                <textarea id="commentInput" placeholder="Написать комментарий (Доступно только зарегистрированным пользователям)..." rows="3" style="width: 100%; padding: 0.8rem; background: rgba(3,7,18,0.8); border: 1px solid var(--border); border-radius: 8px; color: white; margin-bottom: 0.5rem;"></textarea>
+                <button class="btn" onclick="postComment()" data-ru="Отправить" data-en="Post">Отправить</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Переключатель ролей (для демонстрации админки, премиума и гостя) -->
+    <div class="role-switcher">
+        <span style="font-size: 0.85rem; color: var(--text-muted);" data-ru="Режим доступа:" data-en="Access Mode:">Режим доступа:</span>
+        <select id="roleSelect" onchange="changeRole(this.value)">
+            <option value="guest">Гость (Guest)</option>
+            <option value="user">Обычный юзер (Registered)</option>
+            <option value="premium">Премиум-подписчик (Premium)</option>
+            <option value="admin">Владелец / Админ (Owner)</option>
+        </select>
+    </div>
+
+    <script>
+        // Данные глав (с качественным профессиональным переводом на английский)
+        let chapters = [
+            { id: 1, titleRu: "Глава 1: Абсолютное начало. Рождение", titleEn: "Chapter 1: The Absolute Beginning. Birth", descRu: "Рождение принца Расса Ди Ариена во Дворце Святого Белого Света.", descEn: "The birth of Prince Rassa D Arien at the Palace of Holy White Light." },
+            { id: 2, titleRu: "Глава 2: Дарение имени архангелами", titleEn: "Chapter 2: The Archangels' Blessing", descRu: "Сошествие архангелов Микаэля и Азраэля и дарование имени.", descEn: "The descent of Archangels Mikael and Azrael and the true naming." },
+            { id: 3, titleRu: "Глава 3: Мироустройство и знания", titleEn: "Chapter 3: World Structure and Knowledge", descRu: "Обучение четырехлетнего принца под руководством наставников Азиль и Баана.", descEn: "The 4-year-old prince's education under mentors Azil and Baan." },
+            { id: 4, titleRu: "Глава 4: Тайны мира и уровни развития", titleEn: "Chapter 4: World Secrets and Realms", descRu: "Система культивации из 13 уровней и 9 великих кланов вселенной.", descEn: "The 13-tier cultivation system and the 9 Great Clans of the universe." },
+            { id: 5, titleRu: "Глава 5: Этапы Святого Белого Искусства", titleEn: "Chapter 5: Stages of the Holy White Art", descRu: "Изучение 11 уникальных этапов великого искусства Святой Белой Империи.", descEn: "Studying the 11 unique stages of the Holy White Empire's grand art." },
+            { id: 6, titleRu: "Глава 6: Сокрытие способностей и кольцо №138", titleEn: "Chapter 6: Concealing Power & Ring No. 138", descRu: "Ариэн демонстрирует скрытую мощь и кольцо сокрытия силы Энпатуара.", descEn: "Arien demonstrates hidden might and Enpatuar's power-masking ring." },
+            { id: 7, titleRu: "Глава 7: Новый прорыв к Высшему Воину", titleEn: "Chapter 7: Breakthrough to Higher Warrior", descRu: "Императрица Журен помогает сыну совершить серию невероятных прорывов.", descEn: "Empress Juren helps her son achieve a series of incredible breakthroughs." },
+            { id: 8, titleRu: "Глава 8: Скрытая угроза и положение дел", titleEn: "Chapter 8: Hidden Threats & Geopolitics", descRu: "Геополитический баланс восьми империй и монополия на абсолютное исцеление.", descEn: "The geopolitical balance of the 8 empires and healing monopoly." },
+            { id: 9, titleRu: "Глава 9: Гнев императрицы и урок возраста", titleEn: "Chapter 9: The Empress's Wrath", descRu: "Случайное упоминание возраста женщин вызывает гнев Верховной Королевы.", descEn: "A casual remark on age awakens the Supreme Queen's terrifying wrath." },
+            { id: 10, titleRu: "Глава 10: Гений №1 Святой Белой Империи", titleEn: "Chapter 10: Holy White Empire's #1 Genius", descRu: "Спарринг со Скарлетт и создание усовершенствованных оптимизированных техник.", descEn: "Sparring with Scarlett and the creation of optimized techniques." },
+            { id: 11, titleRu: "Глава 11: Гений, от которого болит голова (Часть 1)", titleEn: "Chapter 11: The Headache-Inducing Genius (Part 1)", descRu: "Скарлетт подсчитывает гениальные достижения принца и испытывает экзистенциальный кризис.", descEn: "Scarlett counts the prince's genius achievements and faces a crisis." },
+            { id: 12, titleRu: "Глава 12: Белые когти разрыва и секреты Баана", titleEn: "Chapter 12: White Rending Claws & Baan's Secrets", descRu: "Создание третьей оптимизированной техники и уроки стратега Баана.", descEn: "Creating the 3rd optimized technique and strategist Baan's lessons." },
+            { id: 13, titleRu: "Глава 13: Конец закрытым тренировкам", titleEn: "Chapter 13: End of Closed-Door Training", descRu: "Выход Императрицы Журен из Пруда очищения с прорывом на пик 6-й ступени.", descEn: "Empress Juren emerges from the Purification Pond at the 6th stage peak." },
+            { id: 14, titleRu: "Глава 14: Банкет и Столпы Империи", titleEn: "Chapter 14: Banquet and the Empire's Pillars", descRu: "Представление 30 высших Столпов Святой Белой Империи.", descEn: "Introduction of the 30 supreme Pillars of the Holy White Empire." },
+            { id: 15, titleRu: "Глава 15: Все 18 Королей Белого Света (Часть 1)", titleEn: "Chapter 15: All 18 White Light Kings (Part 1)", descRu: "Знакомство с первыми министрами и лордами Империи.", descEn: "Meeting the Empire's prime ministers and lords." },
+            { id: 16, titleRu: "Глава 16: Все 18 Королей Белого Света (Часть 2)", titleEn: "Chapter 16: All 18 White Light Kings (Part 2)", descRu: "Главнокомандующие армиями и создатели божественных артефактов.", descEn: "Army commanders and creators of divine artifacts." },
+            { id: 17, titleRu: "Глава 17: Десять Святых Дев-Хранительниц", titleEn: "Chapter 17: The Ten Holy Guardian Maidens", descRu: "Элитная личная гвардия и верные соратницы императрицы.", descEn: "The elite personal guard and loyal companions of the Empress." },
+            { id: 18, titleRu: "Глава 18: Предводительницы и бабушки принца", titleEn: "Chapter 18: The Leaders and Grandmothers", descRu: "Геката и Грис — скрытые Верховные Королевы 4-й ступени.", descEn: "Hecate and Gris — hidden 4th-stage Supreme Queens." },
+            { id: 19, titleRu: "Глава 19: Раскрытие истинной силы принца", titleEn: "Chapter 19: Revealing the Prince's True Might", descRu: "Снятие кольца сокрытия перед лицом всех Столпов Империи.", descEn: "Removing the concealment ring before all the Empire's Pillars." },
+            { id: 20, titleRu: "Глава 20: Прорыв на уровень Пробужденного Лорда", titleEn: "Chapter 20: Breakthrough to Awakened Lord", descRu: "Медитация в особой зоне и скачок сразу до 6-й ступени Лорда в 5 лет.", descEn: "Meditation in the special zone and soaring to the 6th Lord stage at age 5." },
+            { id: 21, titleRu: "Глава 21: Святые белые письмена и Глаза Начала", titleEn: "Chapter 21: Holy White Glyphs & Eyes of Origin", descRu: "Тайны Глаз Божественного Начала и божественных даров реальности.", descEn: "Secrets of the Eyes of Divine Origin and reality-altering gifts." },
+            { id: 22, titleRu: "Глава 22: Механика божественных письмен Журен", titleEn: "Chapter 22: Mechanics of Juren's Glyphs", descRu: "Как работает переписывание законов мироздания без затрат энергии.", descEn: "How rewriting the laws of existence works without energy cost." },
+            { id: 23, titleRu: "Глава 23: Абсолютная власть монарха", titleEn: "Chapter 23: The Absolute Power of the Monarch", descRu: "Алгоритмический контроль армии через 'Праведного белого защитника'.", descEn: "Algorithmic control of the army through the 'Righteous White Protector'." },
+            { id: 24, titleRu: "Глава 24: Празднование дня рождения и дворец-артефакт", titleEn: "Chapter 24: The Birthday Celebration & Artifact Palace", descRu: "Начало грандиозного банкета в тайном Дворце торжеств из белых слитков.", descEn: "The grand banquet begins in the secret White Ingot Artifact Palace." },
+            { id: 25, titleRu: "Глава 25: Делегация Империи Изумрудного Ветра", titleEn: "Chapter 25: Delegation of the Emerald Wind Empire", descRu: "Прибытие императора Джеронимо и принцев с принцессой Аниз.", descEn: "Arrival of Emperor Jeronimo, princes, and Princess Aniz." },
+            { id: 26, titleRu: "Глава 26: Эксцентричная делегация Черной Тени", titleEn: "Chapter 26: The Eccentric Black Shadow Delegation", descRu: "Появление Первого Столпа Тиары и ее уникального дара чтения мыслей.", descEn: "Appearance of First Pillar Tiara and her mind-reading divine gift." },
+            { id: 27, titleRu: "Глава 27: Тиара, предвидение и предчувствие бури", titleEn: "Chapter 27: Tiara, Foresight & Storm Gathering", descRu: "Напряжение между подругами детства и приближение грозы с севера.", descEn: "Tension between childhood friends and approaching thunder." },
+            { id: 28, titleRu: "Глава 28: Друг детства и дуэль взглядов с Топ-1", titleEn: "Chapter 28: Childhood Friend & Top-1 Delegation", descRu: "Прибытие императора Агареса и объявление принцессы Астер наследницей.", descEn: "Arrival of Emperor Agares and Princess Aster's crown nomination." },
+            { id: 29, titleRu: "Глава 29: Наглость ветра и словесный удар Баана", titleEn: "Chapter 29: Wind's Arrogance & Baan's Verbal Strike", descRu: "Баан публично унижает провокаторов из Изумрудного Ветра.", descEn: "Baan publicly demolishes the Emerald Wind provocateurs with words." },
+            { id: 30, titleRu: "Глава 30: Гнев пятилетнего принца на арене", titleEn: "Chapter 30: The 5-Year-Old Prince's Wrath on Arena", descRu: "Вызов на спарринг от принца Самира и решение Ариэна проучить наглеца.", descEn: "Sparring challenge from Prince Samir and Arien's decision to teach a lesson." },
+            { id: 31, titleRu: "Глава 31: Превосходство святого белого искусства", titleEn: "Chapter 31: Supremacy of the Holy White Art", descRu: "Демонстрация ласточек, щитов и безупречной боевой техники в ближнем бою.", descEn: "Demonstration of swallows, shields, and flawless close-combat skills." },
+            { id: 32, titleRu: "Глава 32: Серебряный рев против Сферы Ветра", titleEn: "Chapter 32: Silver Roar vs. Wind Sphere", descRu: "Сокрушительный удар Ариэна, впечатавший Самира в стену замка.", descEn: "Arien's devastating strike that crushes Samir into the castle wall." },
+            { id: 33, titleRu: "Глава 33: Снятие маскировки перед всем миром", titleEn: "Chapter 33: Unmasking Before the Entire World", descRu: "Ариэн показывает истинный уровень Лорда 6-й ступени под шокированными взглядами.", descEn: "Arien reveals his true 6th-stage Lord tier under shocked gazes." },
+            { id: 34, titleRu: "Глава 34: Гений против гения и тройственный союз", titleEn: "Chapter 34: Genius vs. Genius & Triple Alliance", descRu: "Объявление вызова принцессе Астер и заключение альянса трех империй.", descEn: "Challenging Princess Aster and forming the Triple Empire Alliance." },
+            { id: 35, titleRu: "Глава 35: Кроваво-Красная Империя и демон Кастос", titleEn: "Chapter 35: Blood-Red Empire & Demon Kastos", descRu: "Прибытие самого кровожадного императора и прекрасной принцессы Кармиллы.", descEn: "Arrival of the most bloodthirsty emperor and Princess Carmila." },
+            { id: 36, titleRu: "Глава 36: Танец света и пурпурных молний", titleEn: "Chapter 36: Dance of Light and Purple Lightning", descRu: "Столкновение Брони Белого Дракона и Когтей Ракшасы в равном бою.", descEn: "Clash of White Dragon Armor and Rakshasa Claws in equal combat." },
+            { id: 37, titleRu: "Глава 37: Альтернативный путь монарха и прорыв", titleEn: "Chapter 37: Monarch's Alternative Path & Awakening", descRu: "Астер создает 10 живых клонов, а Ариэн пробуждает Глаза Божественного Начала.", descEn: "Aster creates 10 living clones, and Arien awakens his Divine Origin Eyes." },
+            { id: 38, titleRu: "Глава 38: Финальный аккорд битвы двух титанов", titleEn: "Chapter 38: Final Chord of Two Titans' Battle", descRu: "Столкновение ультимативных техник 'Возмездие Ангела' и 'Коллапс Молнии'.", descEn: "Clash of ultimate techniques 'Angel's Retribution' and 'Lightning Collapse'." },
+            { id: 39, titleRu: "Глава 39: Завершение банкета и планы Кровавого Дракона", titleEn: "Chapter 39: Banquet Finale & Blood Dragon's Plans", descRu: "Тайные метки Ока Кармиллы и экономический секрет печати слитков.", descEn: "Carmila's secret Eye marks and the economic secret of ingot minting." },
+            { id: 40, titleRu: "Глава 40: Брачный союз и хаос после банкета", titleEn: "Chapter 40: Marriage Alliance & Banquet Chaos", descRu: "Предложение руки и сердца от Изумрудного Ветра и поцелуй Кармиллы.", descEn: "Marriage proposal from Emerald Wind and Carmila's seductive kiss." },
+            { id: 41, titleRu: "Глава 41: Мощный прорыв принцессы Астер", titleEn: "Chapter 41: Princess Aster's Mighty Breakthrough", descRu: "Астер прорывается на пик 3-й ступени Высшего Лорда в Пруду очищения.", descEn: "Aster breaks through to the 3rd Higher Lord stage in the Purification Pond." },
+            { id: 42, titleRu: "Глава 42: Тайна восьмого плавания Синдбада", titleEn: "Chapter 42: The Secret of Sindbad's 8th Voyage", descRu: "Разговор матери и сына о Первом Монархе и 515 именных артефактах Энпатуара.", descEn: "Mother and son talk about the First Monarch and Enpatuar's 515 artifacts." },
+            { id: 43, titleRu: "Глава 43: Энмесоргеус и Кольцо Храброго Духа", titleEn: "Chapter 43: Enmesorgeus & Brave Spirit Ring", descRu: "История создания артефакта №91 и божественное вмешательство Творца.", descEn: "History of Artifact No. 91 and the Creator's divine intervention." },
+            { id: 44, titleRu: "Глава 44: Царь Соломон и проклятие Падших Королей", titleEn: "Chapter 44: King Solomon & Fallen Kings' Curse", descRu: "Как Соломон стал Золотым Сосудом для 72 демонов Ада и грех Синдбада.", descEn: "How Solomon became the Golden Vessel for 72 Hell demons & Sindbad's sin." },
+            { id: 45, titleRu: "Глава 45: Новый рассвет и 10 лет спустя", titleEn: "Chapter 45: A New Dawn & 10 Years Later", descRu: "Таймскип: 15-летний принц Ариэн в черно-серебряном облачении вызывает Сета на спарринг.", descEn: "Timeskip: 15-year-old Prince Arien in black and silver challenges Set." }
+        ];
+
+        // Энциклопедия (Wiki) мира
+        let wikiData = [
+            {
+                name: "Принц Расса Ди Ариэн",
+                category: "character",
+                photo: "IMG_3463_3c8864.jpg",
+                descRu: "Наследный принц Святой Белой Империи. Обладатель Глаз Божественного Начала и Небесных письмен. В 15 лет достиг уровня Пробужденного Короля 7-й ступени.",
+                descEn: "Crown Prince of the Holy White Empire. Wielder of Divine Origin Eyes and Heavenly Glyphs. Reached 7th-stage Awakened King at age 15."
+            },
+            {
+                name: "Императрица Расса Ди Журен",
+                category: "character",
+                photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
+                descRu: "Первая и единственная императрица, правительница 3-й по силе империи мира. Обладательница Святых Белых письмен и Глаз Божественного Начала.",
+                descEn: "First and only Empress, ruler of the world's 3rd strongest empire. Wielder of Holy White Glyphs and Divine Origin Eyes."
+            },
+            {
+                name: "Кольцо №138 (Сокрытие силы)",
+                category: "artifact",
+                photo: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&q=80&w=400",
+                descRu: "Творение бога-кузнеца Энпатуара. Способно скрывать истинную ауру владельца на целую сферу развития.",
+                descEn: "Creation of the forge god Enpatuar. Capable of masking the owner's true aura by an entire realm."
+            },
+            {
+                name: "Клинок Синей Луны (Артефакт №201)",
+                category: "artifact",
+                photo: "https://images.unsplash.com/photo-1589241062272-c0a000071dfa?auto=format&fit=crop&q=80&w=400",
+                descRu: "Личный меч 15-летнего Ариэна. Обладает 99% энергопроводимостью, самовосстановлением и привязкой к душе владельца.",
+                descEn: "15-year-old Arien's personal sword. Features 99% energy conductivity, self-repair, and soul-binding."
+            }
+        ];
+
+        let currentLang = 'ru';
+        let currentRole = 'guest';
+        let lockedCount = 3; // По умолчанию последние 3 главы заблокированы
+
+        function init() {
+            renderChapters();
+            renderWiki();
+            updateRoleUI();
+        }
+
+        function renderChapters() {
+            const grid = document.getElementById('chaptersGrid');
+            grid.innerHTML = '';
+            
+            chapters.forEach((ch, index) => {
+                const isLocked = (index >= chapters.length - lockedCount) && (currentRole === 'guest' || currentRole === 'user');
+                const title = currentLang === 'ru' ? ch.titleRu : ch.titleEn;
+                const desc = currentLang === 'ru' ? ch.descRu : ch.descEn;
+
+                const card = document.createElement('div');
+                card.className = `chapter-card ${isLocked ? 'locked' : ''}`;
+                card.innerHTML = `
+                    <div class="chapter-title">${title}</div>
+                    <div class="chapter-desc">${desc}</div>
+                    <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="readChapter(${ch.id}, ${isLocked})">
+                        ${isLocked ? (currentLang === 'ru' ? 'Купить / Премиум' : 'Unlock Premium') : (currentLang === 'ru' ? 'Читать' : 'Read')}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderWiki() {
+            const grid = document.getElementById('wikiGrid');
+            grid.innerHTML = '';
+
+            wikiData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'wiki-card';
+                card.innerHTML = `
+                    <img src="${item.photo}" class="wiki-avatar" alt="${item.name}">
+                    <h3 style="margin-bottom: 0.55rem; font-size: 1.1rem;">${item.name}</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">${currentLang === 'ru' ? item.descRu : item.descEn}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('main > div[id^="tab-"]').forEach(el => el.style.display = 'none');
+            document.getElementById(`tab-${tabId}`).style.display = 'block';
+            
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            document.documentElement.setAttribute('data-lang', currentLang);
+            
+            // Перевод навигации
+            document.querySelectorAll('nav a').forEach(a => {
+                a.textContent = a.getAttribute(`data-${currentLang}`);
+            });
+            renderChapters();
+            renderWiki();
+        }
+
+        function changeRole(role) {
+            currentRole = role;
+            document.body.setAttribute('data-role', role);
+            updateRoleUI();
+            renderChapters();
+        }
+
+        function updateRoleUI() {
+            const adminPanel = document.getElementById('adminPanel');
+            const authBtn = document.getElementById('auth-btn');
+            const commentInput = document.getElementById('commentInput');
+
+            if (currentRole === 'admin') {
+                adminPanel.classList.add('active');
+                authBtn.textContent = currentLang === 'ru' ? '👑 Владелец' : '👑 Owner';
+                commentInput.disabled = false;
+                commentInput.placeholder = currentLang === 'ru' ? 'Написать комментарий от имени Админа...' : 'Write as Admin...';
+            } else if (currentRole === 'premium') {
+                adminPanel.classList.remove('active');
+                authBtn.textContent = currentLang === 'ru' ? '⭐ Premium Reader' : '⭐ Premium Reader';
+                commentInput.disabled = false;
+                commentInput.placeholder = currentLang === 'ru' ? 'Написать комментарий...' : 'Write a comment...';
+            } else if (currentRole === 'user') {
+                adminPanel.classList.remove('active');
+                authBtn.textContent = currentLang === 'ru' ? '👤 Пользователь' : '👤 User';
+                commentInput.disabled = false;
+                commentInput.placeholder = currentLang === 'ru' ? 'Написать комментарий...' : 'Write a comment...';
+            } else {
+                adminPanel.classList.remove('active');
+                authBtn.textContent = currentLang === 'ru' ? 'Войти' : 'Login';
+                commentInput.disabled = true;
+                commentInput.placeholder = currentLang === 'ru' ? '🔒 Войдите, чтобы комментировать' : '🔒 Login to comment';
+            }
+        }
+
+        function updateLockedChapters() {
+            lockedCount = parseInt(document.getElementById('lockCount').value) || 0;
+            renderChapters();
+        }
+
+        function readChapter(id, isLocked) {
+            if (isLocked) {
+                alert(currentLang === 'ru' 
+                    ? "⚠️ Эта глава доступна только Премиум-подписчикам и Владельцу сайта! Оформите подписку для раннего доступа." 
+                    : "⚠️ This chapter is for Premium subscribers and the Site Owner only! Upgrade to access early releases.");
+            } else {
+                alert(currentLang === 'ru' 
+                    ? `📖 Открыта глава #${id}. Погружение в космологию мира «18 000 + 1 Eternity»...` 
+                    : `📖 Opening Chapter #${id}. Immersing into the universe of '18,000 + 1 Eternity'...`);
+            }
+        }
+
+        function addWikiItem() {
+            const name = document.getElementById('wikiName').value;
+            const category = document.getElementById('wikiCategory').value;
+            const photo = document.getElementById('wikiPhoto').value || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400';
+            const desc = document.getElementById('wikiDesc').value;
+
+            if (!name) {
+                alert("Введите название!");
+                return;
+            }
+
+            // Автоматическое создание карточки с качественным дубляжом на улучшенный английский
+            wikiData.push({
+                name: name,
+                category: category,
+                photo: photo,
+                descRu: desc || "Новый элемент вселенной, добавленный Владельцем.",
+                descEn: "Newly added universe entity, created by the Owner with supreme authority."
+            });
+
+            renderWiki();
+            alert("Папка и карточка успешно созданы и добавлены в Энциклопедию мира!");
+            
+            // Очистка полей
+            document.getElementById('wikiName').value = '';
+            document.getElementById('wikiPhoto').value = '';
+            document.getElementById('wikiDesc').value = '';
+        }
+
+        function postComment() {
+            if (currentRole === 'guest') {
+                alert(currentLang === 'ru' ? "Не зарегистрированные читатели не могут комментировать. Пожалуйста, войдите в систему." : "Unregistered readers cannot comment. Please log in.");
+                return;
+            }
+            const input = document.getElementById('commentInput');
+            if (!input.value.trim()) return;
+
+            const list = document.getElementById('commentsList');
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            
+            let roleBadge = currentRole === 'admin' ? '👑 Owner' : (currentRole === 'premium' ? '⭐ Premium' : '👤 User');
+            
+            item.innerHTML = `
+                <div class="comment-author">Вы (${roleBadge})</div>
+                <div style="color: var(--text-main); font-size: 0.95rem;">${input.value}</div>
+            `;
+            list.prepend(item);
+            input.value = '';
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
