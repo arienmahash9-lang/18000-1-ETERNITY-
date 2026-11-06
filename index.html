@@ -1,0 +1,2629 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInAnonymously, 
+  signInWithCustomToken, 
+  onAuthStateChanged 
+} from 'firebase/auth';
+import { 
+  getFirestore, 
+  collection, 
+  doc, 
+  setDoc, 
+  addDoc, 
+  updateDoc, 
+  onSnapshot 
+} from 'firebase/firestore';
+import { 
+  BookOpen, 
+  Sparkles, 
+  Shield, 
+  Crown, 
+  User, 
+  Eye, 
+  Lock, 
+  Unlock, 
+  Plus, 
+  Image as ImageIcon, 
+  MessageSquare, 
+  ChevronRight, 
+  ChevronLeft, 
+  Settings, 
+  FolderPlus, 
+  Folder, 
+  Star, 
+  Check, 
+  X, 
+  Send, 
+  Compass, 
+  Swords, 
+  Globe, 
+  Layers, 
+  Edit3, 
+  Coins
+} from 'lucide-react';
+
+// ==========================================
+// 1. ИНИЦИАЛИЗАЦИЯ FIREBASE (ПО ПРАВИЛАМ)
+// ==========================================
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const app = Object.keys(firebaseConfig).length > 0 ? initializeApp(firebaseConfig) : null;
+const auth = app ? getAuth(app) : null;
+const db = app ? getFirestore(app) : null;
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'eternity-18001-novel';
+
+// ==========================================
+// 2. РЕФЕРЕНСНЫЕ АРТЫ ПОЛЬЗОВАТЕЛЯ
+// ==========================================
+const USER_ARTS = {
+  cover1: 'IMG_3463_03b5c6.jpg', // Главная обложка со звездным путем, парящими замками, ангелами и демонами
+  cover2: 'IMG_3466_03b5c6.jpg', // Вторая обложка: Ариэн с Клинком Синей Луны идет по звездному пути
+  arienCloseup: 'IMG_1860_03b2bb.jpg', // Крупный план Ариэна с сияющими Глазами Божественного Начала
+  sinbadShip: 'IMG_5257_03b2a2.jpg', // Синдбад у штурвала корабля с фениксом и рунами
+};
+
+// ==========================================
+// 3. НАЧАЛЬНЫЕ ДАННЫЕ ИЗ БИБЛИИ ЛОРА (АРКА 1)
+// ==========================================
+const INITIAL_CHAPTERS = [
+  {
+    id: 'ch-1',
+    number: 1,
+    arc: 'Арка I: Восход Звездного Принца',
+    title: 'Рождение под Звездным Небосводом',
+    subtitle: '1015 год, Столица Расс — Святая Белая Империя',
+    isEarlyAccess: false,
+    readTime: '12 мин',
+    date: '1015 г. Имперского Календаря',
+    blocks: [
+      {
+        type: 'text',
+        content: 'В бескрайнем макрокосме, где переплетаются восемнадцать тысяч миров и еще один — Изначальный, над столицей Святой Белой Империи разверзлись небеса. Тридцать великих Столпов Белого Света замерли в благоговейном молчании, глядя на парящие в облаках башни Дворца Звездных Облаков.'
+      },
+      {
+        type: 'art',
+        url: USER_ARTS.cover1,
+        caption: 'Макрокосм «18 000 + 1 Вечность»: Звездный путь между Небесным Царством Архангелов и Бездной המלכים'
+      },
+      {
+        type: 'text',
+        content: 'Императрица Расса Ди Журен, правившая империей более пяти столетий и достигшая пика восьмой ступени Верховной Королевы, держала на руках младенца. Дитя непорочного зачатия, рожденное из чистейшей эссенции Света. В миг его первого вздоха сквозь завесу Пяти Божественных Измерений сошли два незримых присутствия — Архангел Микаил и Архангел Смерти Азраил, оставив на душе младенца печать небесного благословения.'
+      },
+      {
+        type: 'text',
+        content: 'Когда мальчик, нареченный именем Расса Ди Ариэн, впервые открыл веки, воздух в тронном зале зазвенел, словно натянутая тетива. В его зрачках цвета ночного сапфира вспыхнули древние созвездия — пробудились легендарные Глаза Божественного Начала, дарующие власть читать и переписывать «Небесные Письмена» самой реальности.'
+      },
+      {
+        type: 'art',
+        url: USER_ARTS.arienCloseup,
+        caption: 'Наследный принц Расса Ди Ариэн и пробужденные Глаза Божественного Начала'
+      },
+      {
+        type: 'text',
+        content: 'Никто из Восьми Великих Империй человечества еще не знал, что рождение этого ребенка нарушит тысячелетнее равновесие между Земным континентом, Семью Морями и семьюдесятью двумя тронами Ада.'
+      }
+    ]
+  },
+  {
+    id: 'ch-12',
+    number: 12,
+    arc: 'Арка I: Восход Звездного Принца',
+    title: 'Дворец Звездных Облаков и 30 Столпов',
+    subtitle: 'Тайны Святого Белого Искусства и Кольцо №138',
+    isEarlyAccess: false,
+    readTime: '15 мин',
+    date: '1020 г. Имперского Календаря',
+    blocks: [
+      {
+        type: 'text',
+        content: 'Пять лет спустя юный принц Ариэн уже свободно перемещался по внутренним чертогам Дворца Звездных Облаков. Его наставниками стали сильнейшие из Тридцати Столпов Белого Света — Велкадия, Сэт и таинственная Госпожа Геката.'
+      },
+      {
+        type: 'text',
+        content: 'Именно тогда Императрица Журен передала сыну первый из пятисот пятнадцати древних артефактов великого кузнеца Энпатуара — пространственное и защитное Кольцо под номером 138, способное скрывать истинную ауру Пробужденного даже от взора Королей седьмой ступени.'
+      }
+    ]
+  },
+  {
+    id: 'ch-25',
+    number: 25,
+    arc: 'Арка I: Восход Звездного Принца',
+    title: 'Банкет Восьми Великих Империй. Бой с Астер',
+    subtitle: 'Столкновение двух обладателей Глаз Божественного Начала',
+    isEarlyAccess: false,
+    readTime: '18 мин',
+    date: '1020 г. Имперского Календаря',
+    blocks: [
+      {
+        type: 'text',
+        content: 'На грандиозный Банкет Восьми Великих Империй прибыли наследники всех правящих династий. Среди них выделялась Рису Л. Астер — наследная принцесса Великой Фиолетовой Империи Молнии, вокруг которой искрились фиолетовые разряды, а за спиной безмолвно стояли ее живые клоны.'
+      },
+      {
+        type: 'text',
+        content: 'Когда Астер и Ариэн сошлись на звездной арене, пространство треснуло. У принцессы Молнии также сияли Глаза Божественного Начала, пробудившие ужасающий дар — «Альтернативный путь монарха». Но в ответ Ариэн активировал «Небесные Письмена», перехватывая сам закон движения молнии в воздухе.'
+      },
+      {
+        type: 'art',
+        url: USER_ARTS.cover2,
+        caption: 'Ариэн на Звездной Тропе во время противостояния наследников Империй'
+      },
+      {
+        type: 'text',
+        content: 'В ложах почетных гостей за боем неотрывно следили невеста принца — вторая принцесса Империи Черной Тени Аксенус Н. Виксена — и ее старшая сестра Тиара, чей дар «Последний Читатель» позволял видеть нити судьбы каждого присутствующего.'
+      }
+    ]
+  },
+  {
+    id: 'ch-38',
+    number: 38,
+    arc: 'Арка I: Восход Звездного Принца',
+    title: 'Десять лет спустя. Клинок Синей Луны №201',
+    subtitle: '1030 год — Становление Пробужденного Короля 7-й ступени',
+    isEarlyAccess: true, // РАННИЙ ДОСТУП (Только для Премиум и Админа)
+    readTime: '20 мин',
+    date: '1030 г. Имперского Календаря',
+    blocks: [
+      {
+        type: 'text',
+        content: '[РАННИЙ ДОСТУП VIP] Десять лет прошли как одно мгновение. В 1030 году пятнадцатилетний Расса Ди Ариэн достиг роста 188 сантиметров и прорвался на седьмую ступень — уровень Пробужденного Короля, став в один ряд с древними правителями континента.'
+      },
+      {
+        type: 'art',
+        url: USER_ARTS.cover2,
+        caption: 'Пробужденный Король 7-й ступени Расса Ди Ариэн с артефактом Энпатуара №201 «Клинок Синей Луны»'
+      },
+      {
+        type: 'text',
+        content: 'В его руке покоился меч №201 из коллекции Энпатуара — легендарный «Клинок Синей Луны». Лезвие меча отражало свет далеких галактик, а каждое рассечение оставляло в пространстве шлейф звездных созвездий, подчиняющихся восьми этапам Святого Белого Искусства.'
+      }
+    ]
+  },
+  {
+    id: 'ch-45',
+    number: 45,
+    arc: 'Арка I: Восход Звездного Принца',
+    title: 'Восьмое плавание Синдбада и Печать Соломона',
+    subtitle: 'Взлом Золотого Звездного Сосуда и рождение Падшего Черного Короля',
+    isEarlyAccess: true, // РАННИЙ ДОСТУП (Только для Премиум и Админа)
+    readTime: '24 мин',
+    date: 'Финал Первой Арки',
+    blocks: [
+      {
+        type: 'text',
+        content: '[РАННИЙ ДОСТУП VIP] Пока в столицах Восьми Империй плелись дипломатические интриги, на просторах бурлящих морей разворачивалась катастрофа, способная обрушить барьер между мирами. Великий мореплаватель Синдбад, Герой Семи Морей, обладатель уникального дара «Все дороги открыты», направил свой флагманский корабль в запретное Восьмое плавание.'
+      },
+      {
+        type: 'art',
+        url: USER_ARTS.sinbadShip,
+        caption: 'Синдбад у штурвала во время Восьмого плавания: руны шторма, гетерохромия и золотой феникс'
+      },
+      {
+        type: 'text',
+        content: 'Вместе с Царем Ровоамом они достигли края морской бездны, где хранился запечатанный Золотой Звездный Сосуд самого Царя Соломона. Нарушив древнее табу и взломав Печать Соломона, Синдбад впустил в мир первородную тьму — и сам переродился как Падший Черный Король, открывая врата для 72 Королей Ада.'
+      }
+    ]
+  }
+];
+
+const INITIAL_CHARACTER_FOLDERS = [
+  {
+    id: 'char-arien',
+    name: 'Расса Ди Ариэн',
+    title: 'Наследный принц Святой Белой Империи',
+    faction: 'Святая Белая Империя (Столица Расс)',
+    rank: 'Пробужденный Король (7-я ступень из 27)',
+    eyes: 'Глаза Божественного Начала',
+    gift: '«Небесные Письмена»',
+    artifacts: 'Меч №201 «Клинок Синей Луны», Кольцо №138 Энпатуара',
+    isPremiumLore: false,
+    coverArt: USER_ARTS.arienCloseup,
+    bio: 'Главный герой новеллы. Рожден в 1015 году путем непорочного зачатия и благословлен при рождении Архангелами Микаилом и Азраилом. К 1030 году (рост 188 см) освоил 8 из 11 этапов Святого Белого Искусства. Жених принцессы Виксены из Империи Черной Тени.',
+    arts: [
+      {
+        id: 'art-arien-1',
+        title: 'Глаза Божественного Начала (Портрет)',
+        url: USER_ARTS.arienCloseup,
+        isPaid: false,
+        priceStars: 0,
+        description: 'Официальный портрет Ариэна с активированным даром Небесных Письмен.'
+      },
+      {
+        id: 'art-arien-2',
+        title: 'Звездное Вознесение: 18 000 + 1 Вечность',
+        url: USER_ARTS.cover1,
+        isPaid: false,
+        priceStars: 0,
+        description: 'Полная обложка Первой Арки с парящими замками города Расс.'
+      },
+      {
+        id: 'art-arien-3',
+        title: 'Эксклюзив: Пробуждение Клинка Синей Луны №201',
+        url: USER_ARTS.cover2,
+        isPaid: true,
+        priceStars: 150,
+        description: 'Платный коллекционный арт: Ариэн идет сквозь души ангелов и демонов с обнаженным мечом №201.'
+      }
+    ]
+  },
+  {
+    id: 'char-sinbad',
+    name: 'Синдбад и Царь Ровоам',
+    title: 'Герой Семи Морей / Падший Черный Король',
+    faction: 'Семь Морей / Древнее Царство Соломона',
+    rank: 'Пробужденный Монарх / Падший Король',
+    eyes: 'Гетерохромия (Золотое Солнце и Фиолетовая Бездна)',
+    gift: '«Все дороги открыты»',
+    artifacts: 'Золотой Звездный Сосуд Соломона, Рунический Корабль',
+    isPremiumLore: false,
+    coverArt: USER_ARTS.sinbadShip,
+    bio: 'Легендарный покоритель Семи Морей, чей дар «Все дороги открыты» позволяет прокладывать курс даже сквозь пространственные барьеры. В ходе рокового 8-го плавания вместе с Царем Ровоамом взломал Золотой Звездный Сосуд Соломона и обратился в Падшего Черного Короля.',
+    arts: [
+      {
+        id: 'art-sinbad-1',
+        title: 'Повелитель Штормов и Золотой Феникс',
+        url: USER_ARTS.sinbadShip,
+        isPaid: false,
+        priceStars: 0,
+        description: 'Синдбад у штурвала рунического корабля на пути к Седьмому и Восьмому морям.'
+      },
+      {
+        id: 'art-sinbad-2',
+        title: 'Секретный концепт: Взлом Золотого Сосуда Соломона',
+        url: USER_ARTS.sinbadShip,
+        isPaid: true,
+        priceStars: 200,
+        description: 'Эксклюзивный арт обращения Синдбада в Падшего Черного Короля (Доступно платно или с Премиум).'
+      }
+    ]
+  },
+  {
+    id: 'char-juren',
+    name: 'Расса Ди Журен',
+    title: 'Императрица Святой Белой Империи',
+    faction: 'Святая Белая Империя',
+    rank: 'Верховная Королева (Пик 8-й ступени)',
+    eyes: 'Святой Белый Свет',
+    gift: '«Святые Белые Письмена»',
+    artifacts: 'Императорские регалии Дворца Звездных Облаков',
+    isPremiumLore: false,
+    coverArt: USER_ARTS.cover1,
+    bio: 'Мать Ариэна, правительница возрастом 533 года. Единственная в истории, кто в совершенстве освоил все 11 этапов Святого Белого Искусства. Олицетворяет несокрушимое величие человечества перед лицом иных измерений.',
+    arts: [
+      {
+        id: 'art-juren-1',
+        title: 'Величие Дворца Звездных Облаков',
+        url: USER_ARTS.cover1,
+        isPaid: false,
+        priceStars: 0,
+        description: 'Святая Белая Империя под покровительством Императрицы Журен.'
+      }
+    ]
+  },
+  {
+    id: 'char-aster',
+    name: 'Рису Л. Астер',
+    title: 'Наследная принцесса Империи Молнии',
+    faction: 'Великая Фиолетовая Империя Молнии',
+    rank: 'Гений молодого поколения / Пробужденная',
+    eyes: 'Глаза Божественного Начала',
+    gift: '«Альтернативный путь монарха» (10 живых клонов)',
+    artifacts: 'Копье Пурпурного Грома',
+    isPremiumLore: false,
+    coverArt: USER_ARTS.cover2,
+    bio: 'Главная соперница Ариэна на Банкете Восьми Империй. Обладает Глазами Божественного Начала и способностью создавать до 10 полноценных живых клонов, каждый из которых способен развиваться по собственному пути монарха.',
+    arts: [
+      {
+        id: 'art-aster-1',
+        title: 'Дуэль на Банкете Восьми Империй (Эксклюзив)',
+        url: USER_ARTS.cover2,
+        isPaid: true,
+        priceStars: 120,
+        description: 'Закрытый арт столкновения Небесных Письмен и Альтернативного Пути Монарха.'
+      }
+    ]
+  },
+  {
+    id: 'char-shadow-sisters',
+    name: 'Аксенус Н. Тиара и Виксена',
+    title: '1-й Столп и 2-я Принцесса Черной Тени',
+    faction: 'Великая Империя Черной Тени',
+    rank: 'Высшие Пробужденные Тени',
+    eyes: 'Очи Безмолвной Ночи',
+    gift: 'Тиара: «Последний Читатель»',
+    artifacts: 'Реликвии Теневого Двора',
+    isPremiumLore: false,
+    coverArt: USER_ARTS.arienCloseup,
+    bio: 'Две ключевые фигуры Великой Империи Черной Тени. Вторая принцесса Виксена — официальная невеста принца Ариэна. Ее старшая сестра Тиара занимает пост 1-го Столпа Империи и владеет загадочным даром «Последний Читатель», видящим финал любой истории.',
+    arts: [
+      {
+        id: 'art-shadow-1',
+        title: 'Тени вокруг Наследного Принца',
+        url: USER_ARTS.arienCloseup,
+        isPaid: false,
+        priceStars: 0,
+        description: 'Концепт союза Святой Белой Империи и Империи Черной Тени.'
+      }
+    ]
+  },
+  {
+    id: 'char-crimson',
+    name: 'Грена В. Кармила и Кастос',
+    title: 'Владыки Кроваво-Красной Империи',
+    faction: 'Великая Кроваво-Красная Империя',
+    rank: 'Высшие Пробужденные Крови',
+    eyes: 'Кастос: Глаза Демонического Начала',
+    gift: 'Кармила: «Сторонний Наблюдатель»',
+    artifacts: 'Багровые печати древних кровей',
+    isPremiumLore: false,
+    coverArt: USER_ARTS.cover2,
+    bio: 'Представители самой воинственной и зловещей из Восьми Империй. Грена В. Кармила способна стирать свое присутствие из причинно-следственных связей даром «Сторонний Наблюдатель», а Кастос пробудил пугающий антипод глаз Ариэна — Глаза Демонического Начала.',
+    arts: [
+      {
+        id: 'art-crimson-1',
+        title: 'Пробуждение Глаз Демонического Начала (VIP Арт)',
+        url: USER_ARTS.cover2,
+        isPaid: true,
+        priceStars: 180,
+        description: 'Платный арт: багровое сияние Демонического Начала.'
+      }
+    ]
+  },
+  {
+    id: 'char-archangels-demons',
+    name: 'Архангелы и 72 Монарха Ада',
+    title: 'Высшие Сущности Пяти Божественных Измерений',
+    faction: 'Небеса и Бездна (За пределами Земного мира)',
+    rank: 'Божественные ступени (14–27 уровни)',
+    eyes: 'Изначальный Свет и Первородный Хаос',
+    gift: 'Истинные Имена и Законы Бытия',
+    artifacts: 'Печать Соломона, Небесные Скрижали',
+    isPremiumLore: true, // ЗАКРЫТАЯ КАРТОЧКА ЛОРА (Только для Премиум и Админа)
+    coverArt: USER_ARTS.cover1,
+    bio: '[СЕКРЕТНЫЙ ЛОР БИБЛИИ] Над 18 001 миром возвышаются 5 Божественных Измерений. На стороне Света стоят Архангелы Микаил, Азраил и Зари Диазура. В глубинах Бездны правят Падшие и Монархи Ада: Люцифер (Самаэль), первородная Лилит, а также 72 Короля Ада, включая Агареса, Азазеля, Абаддона и морского змея Левиафана.',
+    arts: [
+      {
+        id: 'art-gods-1',
+        title: 'Противостояние Архангелов и Монархов Бездны',
+        url: USER_ARTS.cover1,
+        isPaid: true,
+        priceStars: 250,
+        description: 'Эксклюзивная панорама высших существ над тропой вечности.'
+      }
+    ]
+  },
+  {
+    id: 'char-30-pillars',
+    name: '30 Столпов Белого Света',
+    title: 'Высший Орден Святой Белой Империи',
+    faction: 'Святая Белая Империя',
+    rank: 'Святые и Короли (6–8 ступени)',
+    eyes: 'Благословение Белого Света',
+    gift: 'Хранители столицы Расс',
+    artifacts: 'Именные артефакты кузнеца Энпатуара',
+    isPremiumLore: true, // ЗАКРЫТАЯ КАРТОЧКА ЛОРА (Только для Премиум и Админа)
+    coverArt: USER_ARTS.sinbadShip,
+    bio: '[СЕКРЕТНЫЙ ЛОР БИБЛИИ] Элитный фундамент власти Императрицы Журен. Включает таких легендарных личностей, как Велкадия, Сэт, Скарлетт, Азиль, Баан, Мишель, а также таинственных Госпожу Гекату и Госпожу Грис, охраняющих секреты Дворца Звездных Облаков.',
+    arts: [
+      {
+        id: 'art-pillars-1',
+        title: 'Собрание Тридцати Столпов',
+        url: USER_ARTS.cover1,
+        isPaid: false,
+        priceStars: 0,
+        description: 'Небесная стража Святой Белой Империи.'
+      }
+    ]
+  }
+];
+
+const WORLD_LORE_CARDS = [
+  {
+    id: 'lore-cosmology',
+    category: 'Космология',
+    title: '18 001 Мир и 5 Божественных Измерений',
+    isPremium: false,
+    summary: 'Устройство вселенной новеллы: Земной континент Восьми Империй, Семь Морей и высшие планы бытия.',
+    details: 'Мир «18 000 + 1 Вечность» состоит из 18 000 параллельных и малых миров, вращающихся вокруг Изначального (+1) Мира. Над физическим планом возвышаются 5 Божественных Измерений, откуда за смертными наблюдают Архангелы и Монархи Бездны.'
+  },
+  {
+    id: 'lore-8-empires',
+    category: 'Геополитика',
+    title: 'Восемь Великих Империй Человечества',
+    isPremium: false,
+    summary: 'Святая Белая Империя, Фиолетовая Империя Молнии, Империя Черной Тени, Кроваво-Красная Империя и другие.',
+    details: 'Центром человеческой цивилизации выступает Святая Белая Империя со столицей в городе Расс и Дворцом Звездных Облаков. Каждая из 8 Империй хранит собственное наследие древних искусств и родословную Глаз Начала.'
+  },
+  {
+    id: 'lore-27-levels',
+    category: 'Система Сил',
+    title: '27 Ступеней Пробужденных: От Смертного до Божества',
+    isPremium: true, // Закрытый лор для Премиум
+    summary: '[СЕКРЕТ БИБЛИИ] Полная классификация 27 уровней силы, включая 7-ю ступень Короля, 8-ю ступень Верховной Королевы и Божественные ранги 14–27.',
+    details: 'Система развития делится на Земные ступени (1–6), Королевские ступени (7-я — Пробужденный Король, как Ариэн в 1030 г.; 8-я — Верховная Королева, как Журен; 9–13 — Императоры и Полубоги) и закрытые Божественные ступени (с 14 по 27 уровень), на которых находятся Архангелы и 72 Короля Ада.'
+  },
+  {
+    id: 'lore-515-artifacts',
+    category: 'Артефакты',
+    title: '515 Артефактов Великого Кузнеца Энпатуара',
+    isPremium: true, // Закрытый лор для Премиум
+    summary: '[СЕКРЕТ БИБЛИИ] Каталог пронумерованных божественных реликвий, включая Кольцо №138 и Меч №201 «Клинок Синей Луны».',
+    details: 'Древний мастер Энпатуар выковал ровно 515 пронумерованных артефактов, каждый из которых наделен уникальным законом. Чем ближе номер к 1, тем страшнее его мощь. Принц Ариэн владеет Кольцом №138 и легендарным мечом №201 «Клинок Синей Луны».'
+  }
+];
+
+const INITIAL_COMMENTS = [
+  {
+    id: 'comm-1',
+    chapterId: 'ch-1',
+    authorName: 'Лорд_Созвездий',
+    role: 'premium',
+    text: 'Атмосфера рождения Ариэна и схождения Микаила с Азраилом просто до мурашек! Арты с глазами Божественного Начала невероятные.',
+    createdAt: '2 часа назад'
+  },
+  {
+    id: 'comm-2',
+    chapterId: 'ch-1',
+    authorName: 'Читатель_Расса',
+    role: 'user',
+    text: 'Очень нравится лор с 18 001 миром и 515 артефактами Энпатуара. Жду продолжения боя с принцессой Астер!',
+    createdAt: '45 минут назад'
+  }
+];
+
+// Описание 4 ролей по ТЗ пользователя
+const ROLES_CONFIG = {
+  admin: {
+    id: 'admin',
+    level: 1,
+    name: 'Админ (Автор)',
+    shortName: 'Админ',
+    badgeColor: 'from-amber-400 via-yellow-300 to-amber-500 text-slate-950',
+    borderColor: 'border-amber-400/60',
+    description: 'Уровень 1: Публикация глав, вставка артов между абзацами, создание папок персонажей и настройка платных/бесплатных артов.'
+  },
+  premium: {
+    id: 'premium',
+    level: 2,
+    name: 'Премиум (VIP)',
+    shortName: 'Премиум',
+    badgeColor: 'from-purple-500 via-fuchsia-400 to-amber-300 text-slate-950',
+    borderColor: 'border-purple-400/60',
+    description: 'Уровень 2: Доступ к главам Раннего доступа, закрытым карточкам лора Библии, платным артам и VIP-комментариям.'
+  },
+  user: {
+    id: 'user',
+    level: 3,
+    name: 'Юзер (Читатель)',
+    shortName: 'Юзер',
+    badgeColor: 'from-sky-500 to-blue-600 text-white',
+    borderColor: 'border-sky-400/50',
+    description: 'Уровень 3: Зарегистрированный пользователь. Читает бесплатные главы и может оставлять комментарии.'
+  },
+  guest: {
+    id: 'guest',
+    level: 4,
+    name: 'Гость',
+    shortName: 'Гость',
+    badgeColor: 'from-slate-700 to-slate-800 text-slate-300',
+    borderColor: 'border-slate-600/50',
+    description: 'Уровень 4: Читает только бесплатные главы без права оставлять комментарии.'
+  }
+};
+
+export default function App() {
+  // Навигация: 'home' | 'chapters' | 'reader' | 'encyclopedia' | 'admin'
+  const [activeTab, setActiveTab] = useState('home');
+  
+  // Текущая роль пользователя (по умолчанию можно переключать в 1 клик для проверки всех 4 уровней)
+  const [currentRole, setCurrentRole] = useState('admin');
+  const [showRoleSwitcherModal, setShowRoleSwitcherModal] = useState(false);
+
+  // Состояние пользователя Firebase и баланса звезд (для открытия платных артов)
+  const [firebaseUser, setFirebaseUser] = useState(null);
+  const [starBalance, setStarBalance] = useState(500);
+  const [unlockedArtIds, setUnlockedArtIds] = useState([]);
+
+  // Данные сайта (синхронизируются с Firestore или работают из состояния)
+  const [chapters, setChapters] = useState(INITIAL_CHAPTERS);
+  const [characterFolders, setCharacterFolders] = useState(INITIAL_CHARACTER_FOLDERS);
+  const [loreCards, setLoreCards] = useState(WORLD_LORE_CARDS);
+  const [comments, setComments] = useState(INITIAL_COMMENTS);
+
+  // Состояния для Главной и Читалки
+  const [activeCoverIndex, setActiveCoverIndex] = useState(0);
+  const [currentChapterId, setCurrentChapterId] = useState('ch-1');
+  const [readerFontSize, setReaderFontSize] = useState(17);
+  const [showReaderSettings, setShowReaderSettings] = useState(false);
+  const [chapterFilter, setChapterFilter] = useState('all'); // 'all' | 'free' | 'vip'
+  const [newCommentText, setNewCommentText] = useState('');
+
+  // Состояния для Энциклопедии и Папок Персонажей
+  const [encyclopediaSubTab, setEncyclopediaSubTab] = useState('folders'); // 'folders' | 'world'
+  const [selectedFolderId, setSelectedFolderId] = useState('char-arien');
+  const [previewArtModal, setPreviewArtModal] = useState(null); // Модалка просмотра или покупки арта
+
+  // Модальные окна Админа (создание главы, вставка арта между абзацами, создание папки персонажа, добавление арта в папку)
+  const [showAddChapterModal, setShowAddChapterModal] = useState(false);
+  const [showInsertParagraphArtModal, setShowInsertParagraphArtModal] = useState(false);
+  const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
+  const [showAddArtToFolderModal, setShowAddArtToFolderModal] = useState(false);
+
+  // Поля форм Админа
+  const [newChapterForm, setNewChapterForm] = useState({
+    number: 46,
+    title: '',
+    subtitle: '',
+    isEarlyAccess: true,
+    paragraph1: '',
+    artUrl: USER_ARTS.arienCloseup,
+    artCaption: '',
+    paragraph2: ''
+  });
+
+  const [insertArtForm, setInsertArtForm] = useState({
+    afterBlockIndex: 0,
+    artUrl: USER_ARTS.sinbadShip,
+    caption: 'Иллюстрация к главе «18 000 + 1 Вечность»'
+  });
+
+  const [newFolderForm, setNewFolderForm] = useState({
+    name: '',
+    title: '',
+    faction: 'Святая Белая Империя',
+    rank: 'Пробужденный',
+    eyes: 'Глаза Начала',
+    gift: '',
+    artifacts: '',
+    bio: '',
+    isPremiumLore: false,
+    coverArt: USER_ARTS.arienCloseup
+  });
+
+  const [newFolderArtForm, setNewFolderArtForm] = useState({
+    title: '',
+    url: USER_ARTS.cover1,
+    description: '',
+    isPaid: true,
+    priceStars: 150
+  });
+
+  // Уведомления (вместо alert)
+  const [toastMessage, setToastMessage] = useState(null);
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // ==========================================
+  // FIREBASE AUTH & FIRESTORE СИНХРОНИЗАЦИЯ
+  // ==========================================
+  useEffect(() => {
+    if (!auth) return;
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error('Auth initialization error:', err);
+      }
+    };
+    initAuth();
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setFirebaseUser(u);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!firebaseUser || !db) return;
+
+    // Подписка на комментарии в реальном времени
+    const commentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'novel_comments');
+    const unsubComments = onSnapshot(
+      commentsRef,
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const loaded = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+          setComments([...INITIAL_COMMENTS, ...loaded]);
+        }
+      },
+      (err) => console.error('Comments listener error:', err)
+    );
+
+    // Подписка на пользовательские папки персонажей
+    const foldersRef = collection(db, 'artifacts', appId, 'public', 'data', 'character_folders');
+    const unsubFolders = onSnapshot(
+      foldersRef,
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const customFolders = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+          setCharacterFolders((prev) => {
+            const map = new Map();
+            INITIAL_CHARACTER_FOLDERS.forEach((f) => map.set(f.id, f));
+            customFolders.forEach((f) => map.set(f.id, f));
+            return Array.from(map.values());
+          });
+        }
+      },
+      (err) => console.error('Folders listener error:', err)
+    );
+
+    return () => {
+      unsubComments();
+      unsubFolders();
+    };
+  }, [firebaseUser]);
+
+  // Права доступа для текущей выбранной роли
+  const permissions = useMemo(() => {
+    return {
+      isAdmin: currentRole === 'admin',
+      canReadEarlyAccess: currentRole === 'admin' || currentRole === 'premium',
+      canReadSecretLore: currentRole === 'admin' || currentRole === 'premium',
+      canViewPaidArtsFree: currentRole === 'admin' || currentRole === 'premium',
+      canComment: currentRole === 'admin' || currentRole === 'premium' || currentRole === 'user',
+      isGuest: currentRole === 'guest'
+    };
+  }, [currentRole]);
+
+  const currentChapter = useMemo(() => {
+    return chapters.find((c) => c.id === currentChapterId) || chapters[0];
+  }, [chapters, currentChapterId]);
+
+  const selectedFolder = useMemo(() => {
+    return characterFolders.find((f) => f.id === selectedFolderId) || characterFolders[0];
+  }, [characterFolders, selectedFolderId]);
+
+  // ==========================================
+  // ОБРАБОТЧИКИ ДЕЙСТВИЙ
+  // ==========================================
+
+  // Открытие главы с проверкой прав Раннего доступа
+  const handleOpenChapter = (chapter) => {
+    if (chapter.isEarlyAccess && !permissions.canReadEarlyAccess) {
+      showToast('🔒 Эта глава в Раннем Доступе! Переключите роль на «Премиум» или «Админ» вверху экрана.');
+      return;
+    }
+    setCurrentChapterId(chapter.id);
+    setActiveTab('reader');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Отправка комментария
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (!permissions.canComment) {
+      showToast('Гости не могут комментировать. Переключите роль на Юзера или Премиум.');
+      return;
+    }
+    if (!newCommentText.trim()) return;
+
+    const newComm = {
+      chapterId: currentChapter.id,
+      authorName:
+        currentRole === 'admin'
+          ? 'Автор (Создатель Мира)'
+          : currentRole === 'premium'
+          ? 'Звездный Монарх (VIP)'
+          : 'Искатель Расса',
+      role: currentRole,
+      text: newCommentText.trim(),
+      createdAt: 'Только что'
+    };
+
+    setNewCommentText('');
+    setComments((prev) => [...prev, { id: `local-${Date.now()}`, ...newComm }]);
+
+    if (firebaseUser && db) {
+      try {
+        const commentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'novel_comments');
+        await addDoc(commentsRef, newComm);
+      } catch (err) {
+        console.error('Error saving comment:', err);
+      }
+    }
+    showToast('✨ Комментарий опубликован!');
+  };
+
+  // Админ: Создание новой главы с артом между абзацами
+  const handleCreateChapter = (e) => {
+    e.preventDefault();
+    if (!newChapterForm.title.trim()) return;
+
+    const blocks = [];
+    if (newChapterForm.paragraph1.trim()) {
+      blocks.push({ type: 'text', content: newChapterForm.paragraph1.trim() });
+    }
+    if (newChapterForm.artUrl.trim()) {
+      blocks.push({
+        type: 'art',
+        url: newChapterForm.artUrl.trim(),
+        caption: newChapterForm.artCaption.trim() || `Иллюстрация к главе ${newChapterForm.number}`
+      });
+    }
+    if (newChapterForm.paragraph2.trim()) {
+      blocks.push({ type: 'text', content: newChapterForm.paragraph2.trim() });
+    }
+
+    const created = {
+      id: `ch-${Date.now()}`,
+      number: Number(newChapterForm.number) || chapters.length + 1,
+      arc: 'Арка I: Восход Звездного Принца',
+      title: newChapterForm.title.trim(),
+      subtitle: newChapterForm.subtitle.trim() || 'Новая глава хроник 18 001 мира',
+      isEarlyAccess: newChapterForm.isEarlyAccess,
+      readTime: '15 мин',
+      date: 'Новая публикация',
+      blocks: blocks.length > 0 ? blocks : [{ type: 'text', content: 'Текст новой главы...' }]
+    };
+
+    setChapters((prev) => [...prev, created]);
+    setCurrentChapterId(created.id);
+    setShowAddChapterModal(false);
+    setActiveTab('reader');
+    showToast(`📖 Глава ${created.number} успешно опубликована!`);
+  };
+
+  // Админ: Вставка арта между абзацами текущей главы
+  const handleInsertArtInChapter = (e) => {
+    e.preventDefault();
+    const updatedChapters = chapters.map((ch) => {
+      if (ch.id !== currentChapter.id) return ch;
+      const newBlocks = [...ch.blocks];
+      const idx = Math.min(Math.max(0, Number(insertArtForm.afterBlockIndex) + 1), newBlocks.length);
+      newBlocks.splice(idx, 0, {
+        type: 'art',
+        url: insertArtForm.artUrl,
+        caption: insertArtForm.caption || 'Авторский арт между абзацами'
+      });
+      return { ...ch, blocks: newBlocks };
+    });
+    setChapters(updatedChapters);
+    setShowInsertParagraphArtModal(false);
+    showToast('🎨 Арт успешно вставлен между абзацами главы!');
+  };
+
+  // Админ: Создание новой папки персонажа
+  const handleCreateCharacterFolder = async (e) => {
+    e.preventDefault();
+    if (!newFolderForm.name.trim()) return;
+
+    const folderId = `char-${Date.now()}`;
+    const newFolder = {
+      id: folderId,
+      name: newFolderForm.name.trim(),
+      title: newFolderForm.title.trim() || 'Герой 18 001 Мира',
+      faction: newFolderForm.faction.trim(),
+      rank: newFolderForm.rank.trim(),
+      eyes: newFolderForm.eyes.trim(),
+      gift: newFolderForm.gift.trim() || 'Скрытый дар',
+      artifacts: newFolderForm.artifacts.trim() || 'Неизвестно',
+      isPremiumLore: newFolderForm.isPremiumLore,
+      coverArt: newFolderForm.coverArt,
+      bio: newFolderForm.bio.trim() || 'Досье персонажа из Библии новеллы.',
+      arts: [
+        {
+          id: `art-${Date.now()}`,
+          title: `Портрет: ${newFolderForm.name.trim()}`,
+          url: newFolderForm.coverArt,
+          isPaid: false,
+          priceStars: 0,
+          description: 'Первый арт в папке персонажа.'
+        }
+      ]
+    };
+
+    setCharacterFolders((prev) => [...prev, newFolder]);
+    setSelectedFolderId(folderId);
+    setShowCreateFolderModal(false);
+
+    if (firebaseUser && db) {
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'character_folders', folderId), newFolder);
+      } catch (err) {
+        console.error('Error saving folder:', err);
+      }
+    }
+    showToast(`📁 Папка персонажа «${newFolder.name}» создана!`);
+  };
+
+  // Админ: Добавление арта в папку персонажа (бесплатного или платного)
+  const handleAddArtToFolder = async (e) => {
+    e.preventDefault();
+    if (!newFolderArtForm.title.trim()) return;
+
+    const newArt = {
+      id: `art-${Date.now()}`,
+      title: newFolderArtForm.title.trim(),
+      url: newFolderArtForm.url,
+      description: newFolderArtForm.description.trim() || 'Эксклюзивная иллюстрация из папки персонажа.',
+      isPaid: newFolderArtForm.isPaid,
+      priceStars: newFolderArtForm.isPaid ? Number(newFolderArtForm.priceStars) || 150 : 0
+    };
+
+    const updatedFolders = characterFolders.map((folder) => {
+      if (folder.id !== selectedFolder.id) return folder;
+      return { ...folder, arts: [...folder.arts, newArt] };
+    });
+
+    setCharacterFolders(updatedFolders);
+    setShowAddArtToFolderModal(false);
+
+    if (firebaseUser && db) {
+      try {
+        const target = updatedFolders.find((f) => f.id === selectedFolder.id);
+        if (target) {
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'character_folders', target.id), target);
+        }
+      } catch (err) {
+        console.error('Error updating folder arts:', err);
+      }
+    }
+    showToast(newArt.isPaid ? '🔒 Платный арт добавлен в папку персонажа!' : '🖼️ Бесплатный арт добавлен в папку!');
+  };
+
+  // Админ: Переключение статуса арта (Платный / Бесплатный) в 1 клик
+  const handleToggleArtPaidStatus = (folderId, artId) => {
+    if (!permissions.isAdmin) return;
+    setCharacterFolders((prev) =>
+      prev.map((folder) => {
+        if (folder.id !== folderId) return folder;
+        const updatedArts = folder.arts.map((art) => {
+          if (art.id !== artId) return art;
+          const nextPaid = !art.isPaid;
+          return {
+            ...art,
+            isPaid: nextPaid,
+            priceStars: nextPaid ? (art.priceStars > 0 ? art.priceStars : 150) : 0
+          };
+        });
+        return { ...folder, arts: updatedArts };
+      })
+    );
+    showToast('⚙️ Статус доступа к арту изменен (Платный / Бесплатный)');
+  };
+
+  // Покупка / Разблокировка платного арта за Звезды
+  const handleUnlockPaidArt = (art) => {
+    if (unlockedArtIds.includes(art.id)) return;
+    const price = art.priceStars || 150;
+    if (starBalance < price) {
+      showToast('Недостаточно Звезд Вечности! Пополните баланс или включите Премиум.');
+      return;
+    }
+    setStarBalance((prev) => prev - price);
+    setUnlockedArtIds((prev) => [...prev, art.id]);
+    showToast(`✨ Арт «${art.title}» навсегда разблокирован!`);
+  };
+
+  // Проверка, открыт ли конкретный арт для текущего пользователя
+  const isArtAccessible = (art) => {
+    if (!art.isPaid) return true;
+    if (permissions.canViewPaidArtsFree) return true;
+    if (unlockedArtIds.includes(art.id)) return true;
+    return false;
+  };
+
+  return (
+    <div className="min-h-screen bg-[#060814] text-slate-100 font-sans selection:bg-sky-500/30 selection:text-sky-200 pb-28 relative overflow-x-hidden">
+      {/* КОСМИЧЕСКИЙ ФОН С ТУМАННОСТЯМИ И ЗВЕЗДНЫМ СВЕЧЕНИЕМ */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/15 rounded-full blur-[120px]" />
+        <div className="absolute top-1/3 -right-32 w-96 h-96 bg-purple-600/15 rounded-full blur-[130px]" />
+        <div className="absolute bottom-10 left-1/4 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px]" />
+        <div
+          className="absolute inset-0 opacity-25"
+          style={{
+            backgroundImage:
+              'radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0,0,0,0)), radial-gradient(1px 1px at 90px 80px, #38bdf8, rgba(0,0,0,0)), radial-gradient(1.5px 1.5px at 160px 120px, #c084fc, rgba(0,0,0,0))',
+            backgroundSize: '200px 200px'
+          }}
+        />
+      </div>
+
+      {/* ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ (TOAST) */}
+      {toastMessage && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-slate-900/95 border border-sky-400/50 text-sky-100 px-4 py-3 rounded-2xl shadow-2xl shadow-sky-950/80 backdrop-blur-xl flex items-center gap-3 animate-fade-in">
+          <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
+          <span className="text-xs sm:text-sm font-medium leading-snug">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* ВЕРХНЯЯ ПАНЕЛЬ (ШАПКА ПОД IPHONE С ПЕРЕКЛЮЧАТЕЛЕМ 4 РОЛЕЙ) */}
+      <header className="sticky top-0 z-40 bg-[#060814]/85 backdrop-blur-xl border-b border-white/10 px-3 sm:px-6 py-2.5">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
+          {/* Логотип новеллы */}
+          <button
+            onClick={() => setActiveTab('home')}
+            className="flex items-center gap-2.5 text-left group"
+          >
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 via-blue-600 to-purple-700 p-[1px] shadow-lg shadow-sky-500/20">
+              <div className="w-full h-full bg-[#090d20] rounded-[11px] flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-sky-400 group-hover:rotate-12 transition-transform" />
+              </div>
+            </div>
+            <div>
+              <div className="font-serif text-sm sm:text-base font-bold tracking-wider bg-gradient-to-r from-sky-200 via-white to-purple-200 bg-clip-text text-transparent">
+                18 000 + 1 ETERNITY
+              </div>
+              <div className="text-[10px] text-sky-400/80 tracking-widest uppercase">
+                Библия и Веб-Новелла
+              </div>
+            </div>
+          </button>
+
+          {/* Правая часть: Баланс звезд и Переключатель Ролей */}
+          <div className="flex items-center gap-2">
+            {/* Баланс Звезд для платных артов */}
+            <button
+              onClick={() => {
+                setStarBalance((s) => s + 250);
+                showToast('⭐ +250 Звезд Вечности начислено на баланс для теста платных артов!');
+              }}
+              title="Нажмите, чтобы пополнить тестовые звезды"
+              className="flex items-center gap-1.5 bg-slate-900/90 hover:bg-slate-800 border border-amber-400/30 px-2.5 py-1.5 rounded-full text-xs font-semibold text-amber-300 transition"
+            >
+              <Coins className="w-3.5 h-3.5 text-amber-400" />
+              <span>{starBalance}</span>
+            </button>
+
+            {/* Кнопка выбора роли (Админ / Премиум / Юзер / Гость) */}
+            <button
+              onClick={() => setShowRoleSwitcherModal(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${ROLES_CONFIG[currentRole].badgeColor} shadow-md transition active:scale-95`}
+            >
+              {currentRole === 'admin' && <Crown className="w-3.5 h-3.5" />}
+              {currentRole === 'premium' && <Sparkles className="w-3.5 h-3.5" />}
+              {currentRole === 'user' && <User className="w-3.5 h-3.5" />}
+              {currentRole === 'guest' && <Eye className="w-3.5 h-3.5" />}
+              <span>Роль: {ROLES_CONFIG[currentRole].shortName}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Быстрая полоска переключения 4 ролей в 1 клик (удобно на айфоне) */}
+        <div className="max-w-5xl mx-auto mt-2 pt-2 border-t border-white/5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
+          <span className="text-[10px] text-slate-400 uppercase tracking-wider shrink-0 mr-1">
+            Режим просмотра:
+          </span>
+          <div className="flex items-center gap-1">
+            {Object.values(ROLES_CONFIG).map((r) => {
+              const active = currentRole === r.id;
+              return (
+                <button
+                  key={r.id}
+                  onClick={() => {
+                    setCurrentRole(r.id);
+                    showToast(`Переключен уровень доступа: ${r.name}`);
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition shrink-0 ${
+                    active
+                      ? 'bg-sky-500/20 text-sky-300 border border-sky-400/50 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  }`}
+                >
+                  {r.level}. {r.shortName}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </header>
+
+      {/* ОСНОВНОЙ КОНТЕНТ САЙТА */}
+      <main className="relative z-10 max-w-5xl mx-auto px-3 sm:px-6 pt-4">
+        {/* =========================================================
+            ВКЛАДКА 1: ГЛАВНАЯ СТРАНИЦА С ОБЛОЖКОЙ И ЛОРОМ
+        ========================================================= */}
+        {activeTab === 'home' && (
+          <div className="space-y-8 animate-fade-in">
+            {/* HERO-БЛОК С ОБЛОЖКОЙ */}
+            <div className="relative rounded-3xl overflow-hidden border border-sky-400/30 bg-gradient-to-b from-[#0B1026] to-[#070A18] shadow-2xl shadow-sky-950/50">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-4 sm:p-7 items-center">
+                {/* Картинка обложки (переключаемая между 2 обложками) */}
+                <div className="md:col-span-5 flex flex-col items-center">
+                  <div className="relative w-full max-w-[320px] aspect-[2/3] rounded-2xl overflow-hidden border-2 border-sky-300/40 shadow-2xl shadow-sky-500/20 group">
+                    <img
+                      src={activeCoverIndex === 0 ? USER_ARTS.cover1 : USER_ARTS.cover2}
+                      alt="18 000 + 1 Eternity Обложка"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#060814] via-transparent to-transparent opacity-60" />
+
+                    {/* Переключатель обложек */}
+                    <div className="absolute bottom-3 inset-x-3 flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => setActiveCoverIndex(0)}
+                        className={`px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md transition ${
+                          activeCoverIndex === 0
+                            ? 'bg-sky-500 text-slate-950 shadow-lg'
+                            : 'bg-slate-900/75 text-slate-200 border border-white/20'
+                        }`}
+                      >
+                        Обложка I (Космология)
+                      </button>
+                      <button
+                        onClick={() => setActiveCoverIndex(1)}
+                        className={`px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md transition ${
+                          activeCoverIndex === 1
+                            ? 'bg-sky-500 text-slate-950 shadow-lg'
+                            : 'bg-slate-900/75 text-slate-200 border border-white/20'
+                        }`}
+                      >
+                        Обложка II (Клинок №201)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Описание новеллы */}
+                <div className="md:col-span-7 space-y-4 text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-300 text-xs font-medium">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Авторская эпическая веб-новелла • Арка I</span>
+                  </div>
+
+                  <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight leading-none bg-gradient-to-r from-white via-sky-200 to-purple-300 bg-clip-text text-transparent">
+                    18 000 + 1 Вечность
+                  </h1>
+                  <p className="text-xs sm:text-sm font-serif italic text-sky-300/80 tracking-widest uppercase">
+                    18,000 + 1 Eternity • Хроники Изначального Мира
+                  </p>
+
+                  {/* Теги */}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {[
+                      '18 001 Мир',
+                      '5 Божественных Измерений',
+                      'Глаза Божественного Начала',
+                      '27 Уровней Пробужденных',
+                      '515 Артефактов Энпатуара',
+                      '8 Великих Империй'
+                    ].map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Синопсис из Библии */}
+                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                    В макрокосме из <strong>18 001 мира</strong> и <strong>5 Божественных Измерений</strong> в столице Святой Белой Империи рождается наследный принц <strong>Расса Ди Ариэн</strong> — дитя непорочного зачатия, благословленное Архангелами Микаилом и Азраилом. Пробудив легендарные <em>Глаза Божественного Начала</em> и дар <em>«Небесные Письмена»</em>, он сжимает в руке меч №201 «Клинок Синей Луны», пока на просторах Семи Морей Синдбад и Царь Ровоам вскрывают Золотой Звездный Сосуд Соломона.
+                  </p>
+
+                  {/* Статистика из Библии */}
+                  <div className="grid grid-cols-3 gap-2 pt-2">
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center">
+                      <div className="text-lg sm:text-xl font-bold text-sky-400">45 глав</div>
+                      <div className="text-[11px] text-slate-400">Первая Арка</div>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center">
+                      <div className="text-lg sm:text-xl font-bold text-purple-400">27 ступеней</div>
+                      <div className="text-[11px] text-slate-400">Система Сил</div>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center">
+                      <div className="text-lg sm:text-xl font-bold text-amber-400">515 реликвий</div>
+                      <div className="text-[11px] text-slate-400">Кузнец Энпатуар</div>
+                    </div>
+                  </div>
+
+                  {/* Кнопки действий */}
+                  <div className="flex flex-wrap items-center gap-3 pt-3">
+                    <button
+                      onClick={() => handleOpenChapter(chapters[0])}
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-sky-400 via-blue-500 to-purple-600 text-white shadow-lg shadow-sky-500/30 hover:brightness-110 active:scale-98 transition"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      <span>Читать с 1 главы</span>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('encyclopedia')}
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-semibold text-sm bg-slate-900/90 hover:bg-slate-800 border border-sky-400/40 text-sky-200 transition"
+                    >
+                      <Folder className="w-4 h-4 text-amber-400" />
+                      <span>Папки Персонажей и Арты</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ВИТРИНА ПАПОК ПЕРСОНАЖЕЙ НА ГЛАВНОЙ */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-sky-400" />
+                    <span>Ключевые Персонажи и Папки Артов</span>
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Нажмите на папку персонажа, чтобы открыть досье из Библии и галерею (бесплатные и платные арты)
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('encyclopedia')}
+                  className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1 shrink-0"
+                >
+                  <span>Все папки ({characterFolders.length})</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {characterFolders.slice(0, 4).map((folder) => {
+                  const paidCount = folder.arts.filter((a) => a.isPaid).length;
+                  return (
+                    <button
+                      key={folder.id}
+                      onClick={() => {
+                        setSelectedFolderId(folder.id);
+                        setEncyclopediaSubTab('folders');
+                        setActiveTab('encyclopedia');
+                      }}
+                      className="group text-left rounded-2xl overflow-hidden bg-[#0B1026]/90 border border-white/10 hover:border-sky-400/50 transition flex flex-col shadow-lg"
+                    >
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-950">
+                        <img
+                          src={folder.coverArt}
+                          alt={folder.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1026] via-transparent to-transparent" />
+                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/80 border border-white/15 text-sky-300 flex items-center gap-1">
+                          <ImageIcon className="w-3 h-3" />
+                          <span>{folder.arts.length}</span>
+                        </div>
+                        {paidCount > 0 && (
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/90 text-slate-950 flex items-center gap-1">
+                            <Lock className="w-2.5 h-2.5" />
+                            <span>VIP арт</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="font-serif font-bold text-sm text-white group-hover:text-sky-300 transition line-clamp-1">
+                            {folder.name}
+                          </div>
+                          <div className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
+                            {folder.title}
+                          </div>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-white/5 text-[10px] text-sky-400 font-medium flex items-center justify-between">
+                          <span>Дар: {folder.gift}</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* КАРТОЧКА ТЕКУЩЕЙ РОЛИ ПОЛЬЗОВАТЕЛЯ */}
+            <section className="rounded-2xl bg-gradient-to-r from-slate-900/90 via-[#0F1738] to-slate-900/90 border border-sky-400/30 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wider text-sky-400 font-bold">
+                    Активный уровень доступа:
+                  </span>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r ${ROLES_CONFIG[currentRole].badgeColor}`}
+                  >
+                    {ROLES_CONFIG[currentRole].name}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300">
+                  {ROLES_CONFIG[currentRole].description}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowRoleSwitcherModal(true)}
+                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-semibold text-white shrink-0 transition"
+              >
+                Сменить роль (Тест 4 уровней)
+              </button>
+            </section>
+          </div>
+        )}
+
+        {/* =========================================================
+            ВКЛАДКА 2: СПИСОК ГЛАВ (БЕСПЛАТНЫЕ И РАННИЙ ДОСТУП)
+        ========================================================= */}
+        {activeTab === 'chapters' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0B1026]/90 border border-white/10 rounded-2xl p-4 sm:p-5">
+              <div>
+                <h2 className="font-serif text-2xl font-bold text-white">
+                  Оглавление: Арка I (Главы 1–45)
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-400">
+                  1015 г. (Рождение Ариэна) — 1030 г. (Пробужденный Король 7-й ступени и 8-е плавание Синдбада)
+                </p>
+              </div>
+
+              {permissions.isAdmin && (
+                <button
+                  onClick={() => setShowAddChapterModal(true)}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-bold text-xs shadow-lg hover:brightness-110 transition shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Опубликовать главу (Админ)</span>
+                </button>
+              )}
+            </div>
+
+            {/* Фильтры глав */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {[
+                { id: 'all', label: 'Все главы' },
+                { id: 'free', label: 'Бесплатные (Открытые)' },
+                { id: 'vip', label: 'Ранний доступ (Премиум VIP)' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setChapterFilter(tab.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold transition shrink-0 ${
+                    chapterFilter === tab.id
+                      ? 'bg-sky-500 text-slate-950 shadow-md shadow-sky-500/20'
+                      : 'bg-[#0B1026] text-slate-300 border border-white/10 hover:border-sky-400/40'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Список глав */}
+            <div className="space-y-3">
+              {chapters
+                .filter((ch) => {
+                  if (chapterFilter === 'free') return !ch.isEarlyAccess;
+                  if (chapterFilter === 'vip') return ch.isEarlyAccess;
+                  return true;
+                })
+                .map((chapter) => {
+                  const locked = chapter.isEarlyAccess && !permissions.canReadEarlyAccess;
+                  const artBlocksCount = chapter.blocks.filter((b) => b.type === 'art').length;
+
+                  return (
+                    <div
+                      key={chapter.id}
+                      onClick={() => handleOpenChapter(chapter)}
+                      className={`group cursor-pointer rounded-2xl p-4 sm:p-5 border transition flex items-center justify-between gap-4 ${
+                        locked
+                          ? 'bg-slate-950/70 border-amber-500/30 hover:border-amber-400/60'
+                          : 'bg-[#0B1026]/90 border-white/10 hover:border-sky-400/50 hover:bg-[#101736]'
+                      }`}
+                    >
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-sky-500/15 text-sky-300 border border-sky-400/30">
+                            Глава {chapter.number}
+                          </span>
+
+                          {chapter.isEarlyAccess ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-500/20 to-purple-500/20 text-amber-300 border border-amber-400/40">
+                              {locked ? <Lock className="w-3 h-3" /> : <Crown className="w-3 h-3" />}
+                              <span>Ранний доступ (Премиум)</span>
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-medium px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-400/30">
+                              Бесплатно
+                            </span>
+                          )}
+
+                          {artBlocksCount > 0 && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-purple-300 bg-purple-500/15 px-2 py-0.5 rounded-lg border border-purple-400/30">
+                              <ImageIcon className="w-3 h-3" />
+                              <span>{artBlocksCount} арт(а) в тексте</span>
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 className="font-serif text-base sm:text-lg font-bold text-white group-hover:text-sky-300 transition">
+                          {chapter.title}
+                        </h3>
+                        <p className="text-xs text-slate-400">{chapter.subtitle}</p>
+                      </div>
+
+                      <div className="shrink-0 flex items-center gap-2">
+                        {locked ? (
+                          <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-amber-300">
+                            <Lock className="w-5 h-5" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-sky-300 group-hover:bg-sky-400 group-hover:text-slate-950 transition">
+                            <ChevronRight className="w-5 h-5" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================
+            ВКЛАДКА 3: ШАБЛОН ЧТЕНИЯ С АРТАМИ МЕЖДУ АБЗАЦАМИ И КОММЕНТАРИЯМИ
+        ========================================================= */}
+        {activeTab === 'reader' && (
+          <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
+            {/* Верхняя панель читалки */}
+            <div className="sticky top-[88px] z-30 bg-[#0B1026]/95 backdrop-blur-xl border border-white/15 rounded-2xl p-3 flex items-center justify-between gap-2 shadow-xl">
+              <button
+                onClick={() => setActiveTab('chapters')}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white px-2.5 py-1.5 rounded-xl bg-white/5"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>К списку глав</span>
+              </button>
+
+              <div className="text-center truncate px-2">
+                <div className="text-[11px] text-sky-400 font-semibold">
+                  Глава {currentChapter.number}
+                </div>
+                <div className="text-xs font-serif font-bold text-white truncate max-w-[180px] sm:max-w-xs">
+                  {currentChapter.title}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {permissions.isAdmin && (
+                  <button
+                    onClick={() => setShowInsertParagraphArtModal(true)}
+                    title="Вставить арт между абзацами"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-400/20 border border-amber-400/50 text-amber-300 text-xs font-semibold hover:bg-amber-400/30 transition"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">+ Арт в текст</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowReaderSettings(!showReaderSettings)}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Выпадающая панель настроек шрифта для iPhone */}
+            {showReaderSettings && (
+              <div className="bg-[#0B1026] border border-sky-400/40 rounded-2xl p-4 flex items-center justify-between gap-4">
+                <span className="text-xs font-semibold text-slate-300">Размер шрифта в читалке:</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setReaderFontSize((s) => Math.max(14, s - 1))}
+                    className="px-3 py-1.5 rounded-xl bg-white/10 text-xs font-bold"
+                  >
+                    A-
+                  </button>
+                  <span className="text-xs font-bold text-sky-400 w-10 text-center">
+                    {readerFontSize}px
+                  </span>
+                  <button
+                    onClick={() => setReaderFontSize((s) => Math.min(24, s + 1))}
+                    className="px-3 py-1.5 rounded-xl bg-white/10 text-xs font-bold"
+                  >
+                    A+
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Проверка доступа, если пользователь переключил роль на Гостя/Юзера внутри VIP-главы */}
+            {currentChapter.isEarlyAccess && !permissions.canReadEarlyAccess ? (
+              <div className="rounded-3xl bg-[#0B1026] border border-amber-400/50 p-8 text-center space-y-4 my-8">
+                <div className="w-16 h-16 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center mx-auto text-amber-300">
+                  <Lock className="w-8 h-8" />
+                </div>
+                <h2 className="font-serif text-2xl font-bold text-white">
+                  Глава {currentChapter.number} доступна в Раннем Доступе (Премиум)
+                </h2>
+                <p className="text-sm text-slate-300 max-w-md mx-auto">
+                  Ваша текущая роль — <strong>{ROLES_CONFIG[currentRole].name}</strong>. Чтобы прочитать эту главу прямо сейчас, переключите роль на <strong>Премиум</strong> или <strong>Админ</strong>.
+                </p>
+                <div className="flex justify-center gap-3 pt-2">
+                  <button
+                    onClick={() => setCurrentRole('premium')}
+                    className="px-5 py-3 rounded-2xl font-bold text-xs bg-gradient-to-r from-purple-500 to-amber-400 text-slate-950 shadow-lg"
+                  >
+                    Включить роль «Премиум»
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('chapters')}
+                    className="px-5 py-3 rounded-2xl font-semibold text-xs bg-white/10 text-white"
+                  >
+                    Вернуться к бесплатным главам
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* САМО ТЕЛО ГЛАВЫ С АБЗАЦАМИ И ВСТАВКАМИ АРТОВ МЕЖДУ НИМИ */
+              <article className="bg-[#090D20]/90 border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6">
+                {/* Заголовок главы */}
+                <div className="border-b border-white/10 pb-6 text-center space-y-2">
+                  <div className="text-xs font-bold uppercase tracking-widest text-sky-400">
+                    {currentChapter.arc} • Глава {currentChapter.number}
+                  </div>
+                  <h1 className="font-serif text-2xl sm:text-4xl font-bold text-white">
+                    {currentChapter.title}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-400 italic">
+                    {currentChapter.subtitle}
+                  </p>
+                </div>
+
+                {/* Рендер блоков: Текст и Иллюстрации между абзацами */}
+                <div className="space-y-6">
+                  {currentChapter.blocks.map((block, index) => {
+                    if (block.type === 'art') {
+                      return (
+                        <figure
+                          key={index}
+                          className="my-6 rounded-2xl overflow-hidden border border-sky-400/30 bg-[#060814] shadow-xl shadow-sky-950/40"
+                        >
+                          <div className="max-h-[520px] overflow-hidden flex items-center justify-center bg-slate-950">
+                            <img
+                              src={block.url}
+                              alt={block.caption}
+                              className="w-full h-auto object-contain max-h-[500px]"
+                            />
+                          </div>
+                          {block.caption && (
+                            <figcaption className="px-4 py-3 text-center text-xs text-sky-200/90 border-t border-white/10 bg-[#0B1026] flex items-center justify-center gap-2">
+                              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                              <span>{block.caption}</span>
+                            </figcaption>
+                          )}
+                        </figure>
+                      );
+                    }
+
+                    return (
+                      <div key={index} className="group relative">
+                        <p
+                          style={{ fontSize: `${readerFontSize}px` }}
+                          className="text-slate-200 leading-relaxed font-normal tracking-wide indent-6"
+                        >
+                          {block.content}
+                        </p>
+                        {permissions.isAdmin && (
+                          <button
+                            onClick={() => {
+                              setInsertArtForm((prev) => ({ ...prev, afterBlockIndex: index }));
+                              setShowInsertParagraphArtModal(true);
+                            }}
+                            className="mt-2 opacity-80 sm:opacity-0 group-hover:opacity-100 transition inline-flex items-center gap-1.5 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-400/30 px-2.5 py-1 rounded-lg"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Вставить арт после этого абзаца (Админ)</span>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Навигация между главами */}
+                <div className="pt-6 border-t border-white/10 flex items-center justify-between gap-3">
+                  <button
+                    onClick={() => {
+                      const idx = chapters.findIndex((c) => c.id === currentChapter.id);
+                      if (idx > 0) handleOpenChapter(chapters[idx - 1]);
+                    }}
+                    disabled={chapters.findIndex((c) => c.id === currentChapter.id) === 0}
+                    className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 disabled:opacity-40 text-xs font-semibold flex items-center gap-1.5"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Предыдущая</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const idx = chapters.findIndex((c) => c.id === currentChapter.id);
+                      if (idx < chapters.length - 1) handleOpenChapter(chapters[idx + 1]);
+                    }}
+                    disabled={
+                      chapters.findIndex((c) => c.id === currentChapter.id) === chapters.length - 1
+                    }
+                    className="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-40 text-slate-950 text-xs font-bold flex items-center gap-1.5"
+                  >
+                    <span>Следующая глава</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </article>
+            )}
+
+            {/* СЕКЦИЯ КОММЕНТАРИЕВ (С УЧЕТОМ ПРАВ 4 РОЛЕЙ) */}
+            <section className="bg-[#0B1026]/90 border border-white/10 rounded-3xl p-5 sm:p-6 space-y-5">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-sky-400" />
+                  <span>Обсуждение главы</span>
+                </h3>
+                <span className="text-xs text-slate-400">
+                  Роль: <strong className="text-sky-300">{ROLES_CONFIG[currentRole].shortName}</strong>
+                </span>
+              </div>
+
+              {/* Поле ввода комментария или Блокировка для Гостя */}
+              {permissions.canComment ? (
+                <form onSubmit={handleAddComment} className="space-y-3">
+                  <textarea
+                    rows={3}
+                    value={newCommentText}
+                    onChange={(e) => setNewCommentText(e.target.value)}
+                    placeholder={`Напишите комментарий как ${ROLES_CONFIG[currentRole].name}...`}
+                    className="w-full rounded-2xl bg-[#060814] border border-white/15 focus:border-sky-400 focus:outline-none p-3.5 text-sm text-white placeholder-slate-500"
+                  />
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-400 to-blue-600 text-white text-xs font-bold shadow-md hover:brightness-110 transition"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Отправить комментарий</span>
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="rounded-2xl bg-slate-950/90 border border-slate-700/70 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 text-left">
+                    <Lock className="w-5 h-5 text-slate-400 shrink-0" />
+                    <div className="text-xs text-slate-300">
+                      <strong>Режим «Гость» (Уровень 4):</strong> Вы можете читать бесплатные главы, но комментирование доступно только зарегистрированным пользователям (Юзер, Премиум, Админ).
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setCurrentRole('user')}
+                    className="px-4 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs shrink-0"
+                  >
+                    Войти как Юзер
+                  </button>
+                </div>
+              )}
+
+              {/* Список комментариев */}
+              <div className="space-y-3 pt-2">
+                {comments
+                  .filter((c) => c.chapterId === currentChapter.id || c.chapterId === 'ch-1')
+                  .map((comm) => (
+                    <div
+                      key={comm.id}
+                      className="rounded-2xl bg-[#060814]/80 border border-white/10 p-3.5 space-y-1.5"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white">{comm.authorName}</span>
+                          {comm.role === 'admin' && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950">
+                              АВТОР
+                            </span>
+                          )}
+                          {comm.role === 'premium' && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/30 text-purple-200 border border-purple-400/40">
+                              VIP ПРЕМИУМ
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-slate-500">{comm.createdAt}</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{comm.text}</p>
+                    </div>
+                  ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* =========================================================
+            ВКЛАДКА 4: ЭНЦИКЛОПЕДИЯ, ПАПКИ ПЕРСОНАЖЕЙ И ПЛАТНЫЕ/БЕСПЛАТНЫЕ АРТЫ
+        ========================================================= */}
+        {activeTab === 'encyclopedia' && (
+          <div className="space-y-6 animate-fade-in">
+            {/* Шапка Энциклопедии */}
+            <div className="bg-[#0B1026]/90 border border-white/10 rounded-3xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-amber-400" />
+                  <span>Библия Лора и Папки Персонажей</span>
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                  Индивидуальные папки героев для загрузки артов (с возможностью закрыть эксклюзивные арты платно)
+                </p>
+              </div>
+
+              {permissions.isAdmin && (
+                <button
+                  onClick={() => setShowCreateFolderModal(true)}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-bold text-xs shadow-lg shrink-0"
+                >
+                  <FolderPlus className="w-4 h-4" />
+                  <span>+ Создать папку персонажа</span>
+                </button>
+              )}
+            </div>
+
+            {/* Переключатель подразделов: Папки персонажей / Лор мира */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEncyclopediaSubTab('folders')}
+                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition ${
+                  encyclopediaSubTab === 'folders'
+                    ? 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/20'
+                    : 'bg-[#0B1026] text-slate-300 border border-white/10'
+                }`}
+              >
+                <Folder className="w-4 h-4" />
+                <span>Папки Персонажей и Арты ({characterFolders.length})</span>
+              </button>
+              <button
+                onClick={() => setEncyclopediaSubTab('world')}
+                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition ${
+                  encyclopediaSubTab === 'world'
+                    ? 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/20'
+                    : 'bg-[#0B1026] text-slate-300 border border-white/10'
+                }`}
+              >
+                <Globe className="w-4 h-4" />
+                <span>Устройство Мира и Уровни Сил</span>
+              </button>
+            </div>
+
+            {encyclopediaSubTab === 'folders' ? (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* ЛЕВАЯ КОЛОНКА: СПИСОК ПАПОК ПЕРСОНАЖЕЙ */}
+                <div className="lg:col-span-4 space-y-2.5">
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
+                    Выберите папку персонажа:
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
+                    {characterFolders.map((folder) => {
+                      const isSelected = folder.id === selectedFolder.id;
+                      const isLoreLocked = folder.isPremiumLore && !permissions.canReadSecretLore;
+                      return (
+                        <button
+                          key={folder.id}
+                          onClick={() => setSelectedFolderId(folder.id)}
+                          className={`w-full text-left p-3 rounded-2xl border transition flex items-center gap-3 ${
+                            isSelected
+                              ? 'bg-gradient-to-r from-sky-500/20 to-purple-500/20 border-sky-400 shadow-lg'
+                              : 'bg-[#0B1026]/80 border-white/10 hover:border-white/25'
+                          }`}
+                        >
+                          <img
+                            src={folder.coverArt}
+                            alt={folder.name}
+                            className="w-12 h-12 rounded-xl object-cover border border-white/15 shrink-0"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-serif font-bold text-sm text-white truncate">
+                                {folder.name}
+                              </span>
+                              {folder.isPremiumLore && (
+                                <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                              )}
+                            </div>
+                            <div className="text-[11px] text-slate-400 truncate">{folder.title}</div>
+                            <div className="text-[10px] text-sky-400 mt-0.5 flex items-center gap-2">
+                              <span>📁 Артов: {folder.arts.length}</span>
+                              {isLoreLocked && (
+                                <span className="text-amber-300 flex items-center gap-0.5">
+                                  <Lock className="w-2.5 h-2.5" /> VIP Лор
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ПРАВАЯ КОЛОНКА: СОДЕРЖИМОЕ ВЫБРАННОЙ ПАПКИ ПЕРСОНАЖА + ГАЛЕРЕЯ АРТОВ */}
+                <div className="lg:col-span-8 space-y-6">
+                  {selectedFolder.isPremiumLore && !permissions.canReadSecretLore ? (
+                    /* ЗАБЛОКИРОВАННАЯ ПАПКА СЕКРЕТНОГО ЛОРА ДЛЯ ГОСТЯ И ЮЗЕРА */
+                    <div className="rounded-3xl bg-[#0B1026] border border-amber-400/50 p-8 text-center space-y-4">
+                      <Lock className="w-12 h-12 text-amber-400 mx-auto" />
+                      <h3 className="font-serif text-2xl font-bold text-white">
+                        Секретная папка лора: «{selectedFolder.name}»
+                      </h3>
+                      <p className="text-sm text-slate-300 max-w-md mx-auto">
+                        Эта карточка из «Библии Лора» содержит спойлеры высших измерений и открыта только для уровней <strong>Премиум</strong> и <strong>Админ</strong>.
+                      </p>
+                      <button
+                        onClick={() => setCurrentRole('premium')}
+                        className="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-amber-400 text-slate-950 font-bold text-xs"
+                      >
+                        Переключить на «Премиум» для чтения
+                      </button>
+                    </div>
+                  ) : (
+                    /* ОТКРЫТОЕ ДОСЬЕ ПЕРСОНАЖА И ЕГО ПАПКА С АРТАМИ */
+                    <div className="rounded-3xl bg-[#0B1026]/95 border border-white/15 overflow-hidden shadow-2xl">
+                      {/* Шапка карточки персонажа */}
+                      <div className="p-5 sm:p-6 bg-gradient-to-b from-sky-950/40 to-transparent border-b border-white/10 flex flex-col sm:flex-row gap-5 items-start">
+                        <img
+                          src={selectedFolder.coverArt}
+                          alt={selectedFolder.name}
+                          className="w-24 h-28 sm:w-28 sm:h-36 rounded-2xl object-cover border-2 border-sky-400/50 shadow-lg shrink-0"
+                        />
+                        <div className="space-y-2 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                              {selectedFolder.faction}
+                            </span>
+                            {selectedFolder.isPremiumLore && (
+                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                                Секретный Лор (VIP)
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+                            {selectedFolder.name}
+                          </h3>
+                          <p className="text-xs sm:text-sm text-sky-300 font-medium">
+                            {selectedFolder.title}
+                          </p>
+                          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pt-1">
+                            {selectedFolder.bio}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Характеристики из Библии */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-5 border-b border-white/10 bg-[#060814]/50 text-xs">
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                          <span className="text-slate-400 block text-[10px] uppercase">Ступень Силы:</span>
+                          <strong className="text-white">{selectedFolder.rank}</strong>
+                        </div>
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                          <span className="text-slate-400 block text-[10px] uppercase">Божественные Очи:</span>
+                          <strong className="text-sky-300">{selectedFolder.eyes}</strong>
+                        </div>
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                          <span className="text-slate-400 block text-[10px] uppercase">Пробужденный Дар:</span>
+                          <strong className="text-purple-300">{selectedFolder.gift}</strong>
+                        </div>
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                          <span className="text-slate-400 block text-[10px] uppercase">Артефакты Энпатуара:</span>
+                          <strong className="text-amber-300">{selectedFolder.artifacts}</strong>
+                        </div>
+                      </div>
+
+                      {/* ГАЛЕРЕЯ АРТОВ ВНУТРИ ПАПКИ ПЕРСОНАЖА */}
+                      <div className="p-5 sm:p-6 space-y-4">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div>
+                            <h4 className="font-serif text-lg font-bold text-white flex items-center gap-2">
+                              <ImageIcon className="w-5 h-5 text-sky-400" />
+                              <span>Папка артов персонажа ({selectedFolder.arts.length})</span>
+                            </h4>
+                            <p className="text-xs text-slate-400">
+                              {permissions.isAdmin
+                                ? 'Режим Админа: вы можете добавлять арты в папку и переключать замок «Платно / Бесплатно»'
+                                : 'Нажмите на арт для полного просмотра или разблокировки платного контента'}
+                            </p>
+                          </div>
+
+                          {permissions.isAdmin && (
+                            <button
+                              onClick={() => setShowAddArtToFolderModal(true)}
+                              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs shadow-md hover:brightness-110 transition"
+                            >
+                              <Plus className="w-4 h-4" />
+                              <span>+ Добавить арт в эту папку</span>
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Сетка артов персонажа */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {selectedFolder.arts.map((art) => {
+                            const unlocked = isArtAccessible(art);
+                            return (
+                              <div
+                                key={art.id}
+                                className="rounded-2xl overflow-hidden border border-white/15 bg-[#060814] flex flex-col justify-between shadow-lg"
+                              >
+                                <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-950">
+                                  <img
+                                    src={art.url}
+                                    alt={art.title}
+                                    className={`w-full h-full object-cover transition duration-500 ${
+                                      unlocked ? 'hover:scale-105 cursor-pointer' : 'blur-xl scale-110 opacity-50'
+                                    }`}
+                                    onClick={() => unlocked && setPreviewArtModal(art)}
+                                  />
+
+                                  {/* Бейдж статуса арта */}
+                                  <div className="absolute top-3 left-3">
+                                    {art.isPaid ? (
+                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-400 text-slate-950 shadow-md">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Платный арт • {art.priceStars} ⭐</span>
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/90 text-slate-950 shadow-md">
+                                        <Unlock className="w-3 h-3" />
+                                        <span>Бесплатный арт</span>
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Оверлей Paywall, если арт закрыт для Юзера или Гостя */}
+                                  {!unlocked && (
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-slate-950/60 backdrop-blur-sm">
+                                      <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/50 flex items-center justify-center text-amber-300 mb-2">
+                                        <Lock className="w-6 h-6" />
+                                      </div>
+                                      <div className="font-serif font-bold text-sm text-white">
+                                        Эксклюзивный закрытый арт
+                                      </div>
+                                      <p className="text-[11px] text-slate-300 mt-1 mb-3">
+                                        Откройте за {art.priceStars} Звезд или с подпиской Премиум
+                                      </p>
+                                      <button
+                                        onClick={() => handleUnlockPaidArt(art)}
+                                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-bold text-xs shadow-lg"
+                                      >
+                                        Открыть за {art.priceStars} ⭐
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Подпись и управление Админа */}
+                                <div className="p-3.5 space-y-2">
+                                  <div className="font-serif font-bold text-sm text-white">
+                                    {art.title}
+                                  </div>
+                                  <p className="text-xs text-slate-400 line-clamp-2">
+                                    {art.description}
+                                  </p>
+
+                                  <div className="pt-2 flex items-center justify-between gap-2 border-t border-white/10">
+                                    {unlocked ? (
+                                      <button
+                                        onClick={() => setPreviewArtModal(art)}
+                                        className="text-xs font-semibold text-sky-400 hover:text-sky-300"
+                                      >
+                                        Открыть на весь экран
+                                      </button>
+                                    ) : (
+                                      <span className="text-[11px] text-amber-300">
+                                        Требуется разблокировка
+                                      </span>
+                                    )}
+
+                                    {/* Тумблер Админа: сделать арт Платным или Бесплатным */}
+                                    {permissions.isAdmin && (
+                                      <button
+                                        onClick={() =>
+                                          handleToggleArtPaidStatus(selectedFolder.id, art.id)
+                                        }
+                                        className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-[11px] font-semibold text-amber-300 border border-amber-400/30"
+                                      >
+                                        {art.isPaid ? 'Сделать бесплатным' : 'Сделать платным 🔒'}
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* ВКЛАДКА ЛОРА МИРА (КОСМОЛОГИЯ, 27 СТУПЕНЕЙ, 515 АРТЕФАКТОВ) */
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {loreCards.map((card) => {
+                  const locked = card.isPremium && !permissions.canReadSecretLore;
+                  return (
+                    <div
+                      key={card.id}
+                      className={`rounded-3xl p-5 sm:p-6 border space-y-3 ${
+                        locked
+                          ? 'bg-slate-950/80 border-amber-400/40'
+                          : 'bg-[#0B1026]/90 border-white/15'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30">
+                          {card.category}
+                        </span>
+                        {card.isPremium ? (
+                          <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                            <Crown className="w-3.5 h-3.5" />
+                            <span>Закрытый Лор (Премиум)</span>
+                          </span>
+                        ) : (
+                          <span className="text-xs text-emerald-300">Открытый Лор</span>
+                        )}
+                      </div>
+
+                      <h3 className="font-serif text-xl font-bold text-white">{card.title}</h3>
+                      <p className="text-xs sm:text-sm text-slate-300">{card.summary}</p>
+
+                      {locked ? (
+                        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/30 space-y-2">
+                          <div className="text-xs text-amber-200 font-medium flex items-center gap-2">
+                            <Lock className="w-4 h-4 shrink-0" />
+                            <span>
+                              Полная расшифровка доступна для уровней «Премиум» и «Админ».
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setCurrentRole('premium')}
+                            className="px-3.5 py-1.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs"
+                          >
+                            Открыть с Премиум
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="p-4 rounded-2xl bg-[#060814] border border-white/10 text-xs sm:text-sm text-sky-100/90 leading-relaxed">
+                          {card.details}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =========================================================
+            ВКЛАДКА 5: ПРОФИЛЬ И АДМИН-ПАНЕЛЬ УПРАВЛЕНИЯ
+        ========================================================= */}
+        {activeTab === 'admin' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="rounded-3xl bg-[#0B1026]/95 border border-sky-400/30 p-5 sm:p-7 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                <div>
+                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+                    Центр Управления и Система 4 Ролей
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-400">
+                    Тестируйте права Админа, Премиума, Юзера и Гостя или публикуйте новый контент
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400">Ваш баланс:</span>
+                  <span className="px-3 py-1.5 rounded-xl bg-amber-400/20 border border-amber-400/40 text-amber-300 font-bold text-xs">
+                    {starBalance} ⭐ Звезд
+                  </span>
+                </div>
+              </div>
+
+              {/* Сетка 4 ролей для наглядного переключения */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {Object.values(ROLES_CONFIG).map((role) => {
+                  const isActive = currentRole === role.id;
+                  return (
+                    <div
+                      key={role.id}
+                      onClick={() => {
+                        setCurrentRole(role.id);
+                        showToast(`Активна роль: ${role.name}`);
+                      }}
+                      className={`cursor-pointer rounded-2xl p-4 border transition flex flex-col justify-between gap-3 ${
+                        isActive
+                          ? 'bg-sky-500/15 border-sky-400 shadow-lg'
+                          : 'bg-[#060814]/80 border-white/10 hover:border-white/30'
+                      }`}
+                    >
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r ${role.badgeColor}`}
+                          >
+                            Уровень {role.level}: {role.name}
+                          </span>
+                          {isActive && (
+                            <span className="text-xs font-bold text-sky-400 flex items-center gap-1">
+                              <Check className="w-4 h-4" /> Активно
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-300 leading-relaxed pt-1">
+                          {role.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Инструменты Автора (Админа) */}
+              <div className="pt-4 border-t border-white/10 space-y-4">
+                <h3 className="font-serif text-xl font-bold text-amber-300 flex items-center gap-2">
+                  <Crown className="w-5 h-5" />
+                  <span>Панель Автора (Доступна на уровне 1 — Админ)</span>
+                </h3>
+
+                {permissions.isAdmin ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button
+                      onClick={() => setShowAddChapterModal(true)}
+                      className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/20 to-yellow-600/10 border border-amber-400/40 hover:border-amber-400 text-left space-y-1 transition"
+                    >
+                      <BookOpen className="w-6 h-6 text-amber-400" />
+                      <div className="font-bold text-sm text-white">1. Опубликовать главу</div>
+                      <div className="text-xs text-slate-300">
+                        Добавить главу (Бесплатную или VIP) с артами между абзацами
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => setShowCreateFolderModal(true)}
+                      className="p-4 rounded-2xl bg-gradient-to-br from-sky-500/20 to-blue-600/10 border border-sky-400/40 hover:border-sky-400 text-left space-y-1 transition"
+                    >
+                      <FolderPlus className="w-6 h-6 text-sky-400" />
+                      <div className="font-bold text-sm text-white">2. Создать папку персонажа</div>
+                      <div className="text-xs text-slate-300">
+                        Создать новую именную папку для героя из вашей Библии
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setEncyclopediaSubTab('folders');
+                        setActiveTab('encyclopedia');
+                        setShowAddArtToFolderModal(true);
+                      }}
+                      className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/20 to-fuchsia-600/10 border border-purple-400/40 hover:border-purple-400 text-left space-y-1 transition"
+                    >
+                      <ImageIcon className="w-6 h-6 text-purple-400" />
+                      <div className="font-bold text-sm text-white">3. Загрузить платный арт</div>
+                      <div className="text-xs text-slate-300">
+                        Добавить арт в папку персонажа и закрыть его под Paywall
+                      </div>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-3">
+                    <span className="text-xs text-slate-300">
+                      Переключите роль на «Админ (Автор)», чтобы создавать главы и папки персонажей.
+                    </span>
+                    <button
+                      onClick={() => setCurrentRole('admin')}
+                      className="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs shrink-0"
+                    >
+                      Включить роль Админа
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* =========================================================
+          НИЖНЯЯ НАВИГАЦИОННАЯ ПАНЕЛЬ ПОД IPHONE (TAB BAR)
+      ========================================================= */}
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#060814]/90 backdrop-blur-2xl border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
+        <div className="max-w-lg mx-auto px-2 py-2 grid grid-cols-5 gap-1">
+          {[
+            { id: 'home', label: 'Главная', icon: Compass },
+            { id: 'chapters', label: 'Главы', icon: Layers },
+            { id: 'reader', label: 'Читалка', icon: BookOpen },
+            { id: 'encyclopedia', label: 'Папки и Лор', icon: Folder },
+            { id: 'admin', label: 'Роли / Админ', icon: Crown }
+          ].map((item) => {
+            const Icon = item.icon;
+            const active = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex flex-col items-center justify-center py-1.5 rounded-2xl transition ${
+                  active
+                    ? 'text-sky-400 bg-sky-500/10 font-bold'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${active ? 'text-sky-400' : ''}`} />
+                <span className="text-[10px] mt-1 tracking-tight">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* =========================================================
+          МОДАЛЬНЫЕ ОКНА (СОЗДАНИЕ ГЛАВ, ПАПОК, АРТОВ И ПРОСМОТР)
+      ========================================================= */}
+
+      {/* 1. Модальное окно полноэкранного просмотра арта */}
+      {previewArtModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+          onClick={() => setPreviewArtModal(null)}
+        >
+          <div
+            className="max-w-2xl w-full bg-[#0B1026] border border-sky-400/40 rounded-3xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <div className="font-serif font-bold text-white">{previewArtModal.title}</div>
+              <button
+                onClick={() => setPreviewArtModal(null)}
+                className="p-1.5 rounded-xl bg-white/10 text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="max-h-[75vh] overflow-auto bg-slate-950 flex items-center justify-center">
+              <img
+                src={previewArtModal.url}
+                alt={previewArtModal.title}
+                className="w-full h-auto object-contain max-h-[70vh]"
+              />
+            </div>
+            <div className="p-4 text-xs text-slate-300">{previewArtModal.description}</div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Модальное окно смены роли (4 уровня доступа) */}
+      {showRoleSwitcherModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-[#0B1026] border border-sky-400/40 rounded-3xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-xl font-bold text-white">
+                Выберите роль для проверки сайта
+              </h3>
+              <button
+                onClick={() => setShowRoleSwitcherModal(false)}
+                className="p-1.5 rounded-xl bg-white/10 text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-2.5">
+              {Object.values(ROLES_CONFIG).map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => {
+                    setCurrentRole(r.id);
+                    setShowRoleSwitcherModal(false);
+                    showToast(`Вы переключились на роль: ${r.name}`);
+                  }}
+                  className={`w-full text-left p-3.5 rounded-2xl border transition ${
+                    currentRole === r.id
+                      ? 'bg-sky-500/20 border-sky-400'
+                      : 'bg-[#060814] border-white/10 hover:border-white/30'
+                  }`}
+                >
+                  <div className="font-bold text-sm text-white">
+                    Уровень {r.level}: {r.name}
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">{r.description}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Модальное окно Админа: Опубликовать новую главу с артом между абзацами */}
+      {showAddChapterModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <form
+            onSubmit={handleCreateChapter}
+            className="max-w-lg w-full bg-[#0B1026] border border-amber-400/40 rounded-3xl p-5 space-y-4 my-8"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-xl font-bold text-white">
+                Опубликовать новую главу (Админ)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAddChapterModal(false)}
+                className="p-1.5 rounded-xl bg-white/10 text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Номер главы</label>
+                <input
+                  type="number"
+                  value={newChapterForm.number}
+                  onChange={(e) => setNewChapterForm({ ...newChapterForm, number: e.target.value })}
+                  className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-sm text-white"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="text-xs text-slate-400 block mb-1">Название главы</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Например: Пробуждение Зари Диазуры"
+                  value={newChapterForm.title}
+                  onChange={(e) => setNewChapterForm({ ...newChapterForm, title: e.target.value })}
+                  className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-sm text-white"
+                />
+              </div>
+            </div>
+
+            <label className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newChapterForm.isEarlyAccess}
+                onChange={(e) =>
+                  setNewChapterForm({ ...newChapterForm, isEarlyAccess: e.target.checked })
+                }
+                className="w-4 h-4 accent-amber-400"
+              />
+              <span className="text-xs font-semibold text-amber-200">
+                Пометить как «Ранний доступ (Только для Премиум и Админа)»
+              </span>
+            </label>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Первый абзац текста</label>
+              <textarea
+                rows={3}
+                required
+                placeholder="Введите художественный текст до иллюстрации..."
+                value={newChapterForm.paragraph1}
+                onChange={(e) =>
+                  setNewChapterForm({ ...newChapterForm, paragraph1: e.target.value })
+                }
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-sm text-white"
+              />
+            </div>
+
+            <div className="p-3 rounded-2xl bg-sky-500/10 border border-sky-400/30 space-y-2">
+              <div className="text-xs font-bold text-sky-300">
+                Вставка арта между абзацами:
+              </div>
+              <select
+                value={newChapterForm.artUrl}
+                onChange={(e) => setNewChapterForm({ ...newChapterForm, artUrl: e.target.value })}
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2 text-xs text-white"
+              >
+                <option value={USER_ARTS.arienCloseup}>Арт 1: Крупный план Ариэна (Глаза Начала)</option>
+                <option value={USER_ARTS.cover1}>Арт 2: Обложка со Звездным Путем и Архангелами</option>
+                <option value={USER_ARTS.cover2}>Арт 3: Ариэн с Клинком Синей Луны №201</option>
+                <option value={USER_ARTS.sinbadShip}>Арт 4: Синдбад у штурвала корабля</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Подпись к арту между абзацами..."
+                value={newChapterForm.artCaption}
+                onChange={(e) =>
+                  setNewChapterForm({ ...newChapterForm, artCaption: e.target.value })
+                }
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2 text-xs text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Абзац после арта</label>
+              <textarea
+                rows={3}
+                placeholder="Продолжение текста главы после иллюстрации..."
+                value={newChapterForm.paragraph2}
+                onChange={(e) =>
+                  setNewChapterForm({ ...newChapterForm, paragraph2: e.target.value })
+                }
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-sm text-white"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-bold text-sm"
+            >
+              Опубликовать главу
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* 4. Модальное окно Админа: Вставить арт между абзацами существующей главы */}
+      {showInsertParagraphArtModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form
+            onSubmit={handleInsertArtInChapter}
+            className="max-w-md w-full bg-[#0B1026] border border-sky-400/40 rounded-3xl p-5 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-lg font-bold text-white">
+                Вставить арт между абзацами
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowInsertParagraphArtModal(false)}
+                className="p-1.5 rounded-xl bg-white/10 text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Выберите иллюстрацию</label>
+              <select
+                value={insertArtForm.artUrl}
+                onChange={(e) => setInsertArtForm({ ...insertArtForm, artUrl: e.target.value })}
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+              >
+                <option value={USER_ARTS.arienCloseup}>Крупный план Ариэна (Глаза Божественного Начала)</option>
+                <option value={USER_ARTS.sinbadShip}>Синдбад у штурвала корабля (8-е плавание)</option>
+                <option value={USER_ARTS.cover2}>Ариэн с Клинком Синей Луны №201</option>
+                <option value={USER_ARTS.cover1}>Звездный путь 18 000 + 1 Вечность</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Или вставьте прямую ссылку на свой арт</label>
+              <input
+                type="text"
+                value={insertArtForm.artUrl}
+                onChange={(e) => setInsertArtForm({ ...insertArtForm, artUrl: e.target.value })}
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Подпись под артом</label>
+              <input
+                type="text"
+                value={insertArtForm.caption}
+                onChange={(e) => setInsertArtForm({ ...insertArtForm, caption: e.target.value })}
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-sky-500 text-slate-950 font-bold text-xs"
+            >
+              Вставить иллюстрацию в главу
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* 5. Модальное окно Админа: Создать новую папку персонажа */}
+      {showCreateFolderModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <form
+            onSubmit={handleCreateCharacterFolder}
+            className="max-w-lg w-full bg-[#0B1026] border border-sky-400/40 rounded-3xl p-5 space-y-3.5 my-8"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-xl font-bold text-white">
+                Создать папку персонажа (Админ)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowCreateFolderModal(false)}
+                className="p-1.5 rounded-xl bg-white/10 text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Имя персонажа</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Напр.: Госпожа Геката"
+                  value={newFolderForm.name}
+                  onChange={(e) => setNewFolderForm({ ...newFolderForm, name: e.target.value })}
+                  className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Титул / Роль</label>
+                <input
+                  type="text"
+                  placeholder="Напр.: Столп Белого Света"
+                  value={newFolderForm.title}
+                  onChange={(e) => setNewFolderForm({ ...newFolderForm, title: e.target.value })}
+                  className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Дар / Способность</label>
+                <input
+                  type="text"
+                  placeholder="Напр.: Святые Письмена"
+                  value={newFolderForm.gift}
+                  onChange={(e) => setNewFolderForm({ ...newFolderForm, gift: e.target.value })}
+                  className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Обложка папки</label>
+                <select
+                  value={newFolderForm.coverArt}
+                  onChange={(e) => setNewFolderForm({ ...newFolderForm, coverArt: e.target.value })}
+                  className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+                >
+                  <option value={USER_ARTS.arienCloseup}>Портрет Ариэна</option>
+                  <option value={USER_ARTS.sinbadShip}>Синдбад и Корабль</option>
+                  <option value={USER_ARTS.cover1}>Обложка 1 (Небеса и Бездна)</option>
+                  <option value={USER_ARTS.cover2}>Обложка 2 (Клинок №201)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Описание из Библии Лора</label>
+              <textarea
+                rows={3}
+                placeholder="Биография, ступень силы и артефакты..."
+                value={newFolderForm.bio}
+                onChange={(e) => setNewFolderForm({ ...newFolderForm, bio: e.target.value })}
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+              />
+            </div>
+
+            <label className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newFolderForm.isPremiumLore}
+                onChange={(e) =>
+                  setNewFolderForm({ ...newFolderForm, isPremiumLore: e.target.checked })
+                }
+                className="w-4 h-4 accent-amber-400"
+              />
+              <span className="text-xs text-amber-200 font-semibold">
+                Закрытая карточка лора (Видна только Премиум и Админу)
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-400 to-blue-600 text-white font-bold text-xs"
+            >
+              Создать папку персонажа
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* 6. Модальное окно Админа: Добавить арт в папку персонажа (Платный или Бесплатный) */}
+      {showAddArtToFolderModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form
+            onSubmit={handleAddArtToFolder}
+            className="max-w-md w-full bg-[#0B1026] border border-amber-400/40 rounded-3xl p-5 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-lg font-bold text-white">
+                Добавить арт в папку «{selectedFolder.name}»
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAddArtToFolderModal(false)}
+                className="p-1.5 rounded-xl bg-white/10 text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Название арта</label>
+              <input
+                type="text"
+                required
+                placeholder="Напр.: Секретный образ 8-й ступени"
+                value={newFolderArtForm.title}
+                onChange={(e) =>
+                  setNewFolderArtForm({ ...newFolderArtForm, title: e.target.value })
+                }
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Выберите изображение или вставьте URL</label>
+              <select
+                value={newFolderArtForm.url}
+                onChange={(e) => setNewFolderArtForm({ ...newFolderArtForm, url: e.target.value })}
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white mb-2"
+              >
+                <option value={USER_ARTS.arienCloseup}>Крупный план Ариэна</option>
+                <option value={USER_ARTS.sinbadShip}>Синдбад у штурвала корабля</option>
+                <option value={USER_ARTS.cover1}>Обложка 1 (18 000 + 1 Eternity)</option>
+                <option value={USER_ARTS.cover2}>Обложка 2 (Клинок Синей Луны)</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Или вставьте URL вашей картинки..."
+                value={newFolderArtForm.url}
+                onChange={(e) => setNewFolderArtForm({ ...newFolderArtForm, url: e.target.value })}
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Описание арта</label>
+              <input
+                type="text"
+                placeholder="Краткое описание сцены или концепта..."
+                value={newFolderArtForm.description}
+                onChange={(e) =>
+                  setNewFolderArtForm({ ...newFolderArtForm, description: e.target.value })
+                }
+                className="w-full rounded-xl bg-[#060814] border border-white/15 p-2.5 text-xs text-white"
+              />
+            </div>
+
+            {/* Настройка: Закрыть арт платно или оставить бесплатным */}
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-400/40 space-y-3">
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={newFolderArtForm.isPaid}
+                  onChange={(e) =>
+                    setNewFolderArtForm({ ...newFolderArtForm, isPaid: e.target.checked })
+                  }
+                  className="w-4 h-4 accent-amber-400"
+                />
+                <span className="text-xs font-bold text-amber-300">
+                  🔒 Закрыть этот арт (Открывается только платно за Звезды или с Премиум)
+                </span>
+              </label>
+
+              {newFolderArtForm.isPaid && (
+                <div>
+                  <label className="text-[11px] text-slate-300 block mb-1">
+                    Стоимость открытия в Звездах:
+                  </label>
+                  <input
+                    type="number"
+                    value={newFolderArtForm.priceStars}
+                    onChange={(e) =>
+                      setNewFolderArtForm({ ...newFolderArtForm, priceStars: e.target.value })
+                    }
+                    className="w-full rounded-xl bg-[#060814] border border-amber-400/40 p-2 text-xs text-amber-300 font-bold"
+                  />
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-bold text-xs"
+            >
+              Сохранить арт в папку персонажа
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
