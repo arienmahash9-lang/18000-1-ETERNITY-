@@ -163,17 +163,14 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // ТВОИ АДМИНСКИЕ ДАННЫЕ
         const ADMIN_USERNAME = "Guardian_Angel_15";
         const ADMIN_EMAIL = "arien.mahash.9@gmail.com";
 
-        // Загружаем сохраненные локальные данные (резервная база, если Firestore заблокирован правилами)
         const savedBackup = JSON.parse(localStorage.getItem('eternity_db_backup') || 'null');
         const savedSession = JSON.parse(localStorage.getItem('eternity_user_session') || 'null');
 
         window.appState = {
             lang: 'RU',
-            // Если на этом устройстве еще не входили — роль строго ГОСТЬ ('guest')
             user: savedSession || { uid: null, name: "Гость", email: null, role: "guest", tokens: 0 },
             currentView: 'home',
             activeChapterId: null,
@@ -238,7 +235,6 @@
             }
         };
 
-        // Проверка: является ли пользователь тобой (Админом)
         function isAdminAccount(name, email) {
             const cleanName = (name || '').trim().toLowerCase();
             const cleanEmail = (email || '').trim().toLowerCase();
@@ -248,6 +244,24 @@
                 cleanEmail === ADMIN_EMAIL.toLowerCase()
             );
         }
+
+        // Вспомогательная функция конвертации файла с телефона в Base64
+        window.convertFileToBase64 = function(fileInputId, callback) {
+            const fileInput = document.getElementById(fileInputId);
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                callback(null);
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                callback(e.target.result); // возвращает Base64 строку картинки
+            };
+            reader.onerror = function() {
+                callback(null);
+            };
+            reader.readAsDataURL(file);
+        };
 
         // --- 1. СИНХРОНИЗАЦИЯ С БАЗОЙ FIREBASE ---
         function initRealtimeDatabase() {
@@ -259,7 +273,7 @@
                         document.getElementById('header-site-title').innerText = window.appState.siteConfig.title;
                         router.render();
                     }
-                }, (err) => console.warn("Firestore read notice:", err));
+                }, (err) => {});
 
                 onSnapshot(collection(db, "chapters"), (snapshot) => {
                     if (!snapshot.empty) {
@@ -270,7 +284,7 @@
                         window.appState.saveLocalBackup();
                         router.render();
                     }
-                }, (err) => console.warn("Firestore chapters notice:", err));
+                }, (err) => {});
 
                 onSnapshot(collection(db, "characters"), (snapshot) => {
                     if (!snapshot.empty) {
@@ -280,7 +294,7 @@
                         window.appState.saveLocalBackup();
                         router.render();
                     }
-                }, (err) => console.warn("Firestore characters notice:", err));
+                }, (err) => {});
 
                 onSnapshot(collection(db, "comments"), (snapshot) => {
                     if (!snapshot.empty) {
@@ -291,80 +305,46 @@
                         window.appState.saveLocalBackup();
                         if (window.appState.currentView === 'reader') router.render();
                     }
-                }, (err) => console.warn("Firestore comments notice:", err));
-            } catch (e) {
-                console.warn("Realtime listener fallback:", e);
-            }
+                }, (err) => {});
+            } catch (e) {}
         }
 
-        // --- 2. ВХОД И РЕГИСТРАЦИЯ (РАБОТАЕТ ДАЖЕ ЕСЛИ FIREBASE AUTH НЕ НАСТРОЕН) ---
+        // --- 2. ВХОД И РЕГИСТРАЦИЯ ---
         window.handleAuthSubmit = async function(mode) {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-pass').value.trim();
             const usernameInput = document.getElementById('auth-username');
             const username = usernameInput ? usernameInput.value.trim() : '';
 
-            if (!email || !password) {
-                return alertCustom("Пожалуйста, введите Email и Пароль!");
-            }
-            if (password.length < 6) {
-                return alertCustom("Пароль должен быть не менее 6 символов!");
-            }
+            if (!email || !password) return alertCustom("Введите Email и Пароль!");
+            if (password.length < 6) return alertCustom("Пароль должен быть от 6 символов!");
 
-            // Определяем роль: если это ты (Guardian_Angel_15 или arien.mahash.9@gmail.com) — даем ADMIN!
             const isOwner = isAdminAccount(username, email);
             const finalName = isOwner ? ADMIN_USERNAME : (username || email.split('@')[0]);
             const finalRole = isOwner ? 'admin' : 'user';
 
             try {
-                // Пытаемся войти/зарегистрироваться через Firebase Auth
                 let cred;
                 if (mode === 'register') {
                     cred = await createUserWithEmailAndPassword(auth, email, password);
                 } else {
                     try {
                         cred = await signInWithEmailAndPassword(auth, email, password);
-                    } catch (loginErr) {
-                        // Если пользователь нажал «Войти», но аккаунта еще нет в базе — создаем автоматически
+                    } catch (lErr) {
                         cred = await createUserWithEmailAndPassword(auth, email, password);
                     }
                 }
 
-                const userObj = {
-                    uid: cred.user.uid,
-                    name: finalName,
-                    email: email,
-                    role: finalRole,
-                    tokens: isOwner ? 9999 : 50
-                };
-
-                // Пытаемся сохранить в Firestore
+                const userObj = { uid: cred.user.uid, name: finalName, email, role: finalRole, tokens: isOwner ? 9999 : 50 };
                 await setDoc(doc(db, "users", cred.user.uid), userObj).catch(()=>{});
                 window.appState.saveSession(userObj);
 
-                alertCustom(isOwner 
-                    ? "⚡ Добро пожаловать, Автор Guardian_Angel_15! Панель Админа открыта." 
-                    : "✅ Вы успешно вошли в аккаунт!"
-                );
+                alertCustom(isOwner ? "⚡ Добро пожаловать, Автор Guardian_Angel_15!" : "✅ Вход выполнен!");
                 router.navigate(isOwner ? 'admin' : 'home');
-
             } catch (err) {
-                // РЕЗЕРВНЫЙ ВХОД: Если в консоли Firebase забыли включить Email/Password провайдер,
-                // все равно пускаем пользователя и сохраняем сессию!
-                console.warn("Firebase Auth fallback triggered:", err.message);
-                const fallbackUser = {
-                    uid: "user-" + btoa(email).slice(0, 10),
-                    name: finalName,
-                    email: email,
-                    role: finalRole,
-                    tokens: isOwner ? 9999 : 50
-                };
-
+                const fallbackUser = { uid: "user-fb", name: finalName, email, role: finalRole, tokens: isOwner ? 9999 : 50 };
                 window.appState.saveSession(fallbackUser);
-                alertCustom(isOwner 
-                    ? "⚡ Вход выполнен! Вы вошли как Администратор Guardian_Angel_15." 
-                    : "✅ Вы успешно вошли как читатель!"
-                );
+                alertCustom(isOwner ? "⚡ Вход выполнен как Администратор!" : "✅ Вход выполнен успешно!");
                 router.navigate(isOwner ? 'admin' : 'home');
             }
         };
@@ -372,7 +352,7 @@
         window.logoutUser = async function() {
             try { await signOut(auth); } catch(e) {}
             window.appState.saveSession({ uid: null, name: "Гость", email: null, role: "guest", tokens: 0 });
-            alertCustom("Вы вышли из аккаунта. Теперь вы в режиме Гостя.");
+            alertCustom("Вы вышли из аккаунта.");
             router.navigate('home');
         };
 
@@ -388,14 +368,8 @@
             if (user.role === 'admin') {
                 badgeIcon.innerText = '⚡';
                 adminBtn.classList.remove('hidden');
-            } else if (user.role === 'premium') {
-                badgeIcon.innerText = '💎';
-                adminBtn.classList.add('hidden');
-            } else if (user.role === 'user') {
-                badgeIcon.innerText = '🛡️';
-                adminBtn.classList.add('hidden');
             } else {
-                badgeIcon.innerText = '👤';
+                badgeIcon.innerText = user.role === 'premium' ? '💎' : user.role === 'user' ? '🛡️' : '👤';
                 adminBtn.classList.add('hidden');
             }
         }
@@ -600,14 +574,20 @@
                             </div>
 
                             ${state.user.role === 'admin' ? `
-                                <div class="glass-card p-4 rounded-2xl space-y-2 border border-accent-pink/40">
-                                    <h4 class="text-xs font-bold text-accent-pink">⚡ Админ: Добавить арт в папку «${char.name}»</h4>
-                                    <input type="text" id="new-char-art-url" placeholder="Ссылка на фото или имя файла (IMG_3464_c97ee2.jpg)" class="w-full glass-card p-2 rounded-xl text-xs text-white">
-                                    <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-pink/40">
+                                    <h4 class="text-xs font-bold text-accent-pink">⚡ Админ: Загрузить арт в папку «${char.name}»</h4>
+                                    
+                                    <!-- КНОПКА ВЫБОРА ФОТО С АЙФОНА -->
+                                    <div class="space-y-2">
+                                        <label class="block text-[11px] text-gray-300">Выберите фото из галереи iPhone:</label>
+                                        <input type="file" id="char-file-input" accept="image/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-accent-blue file:text-white hover:file:bg-blue-600">
+                                    </div>
+
+                                    <label class="flex items-center space-x-2 text-xs text-gray-300 pt-1">
                                         <input type="checkbox" id="new-char-art-lock">
-                                        <span>🔒 Сделать арт платным (только для Premium)</span>
+                                        <span>🔒 Платный арт (только для Premium)</span>
                                     </label>
-                                    <button onclick="addArtToCharacter('${char.id}')" class="w-full py-2 rounded-xl bg-accent-pink text-white text-xs font-bold">Загрузить арт в папку</button>
+                                    <button onclick="uploadArtFromPhone('${char.id}')" class="w-full py-2.5 rounded-xl bg-accent-pink text-white text-xs font-bold shadow-lg">Загрузить фото с телефона</button>
                                 </div>
                             ` : ''}
 
@@ -660,11 +640,11 @@
                             ${isGuest ? `
                                 <div class="glass-card p-5 rounded-2xl space-y-4 border border-accent-blue/30">
                                     <h3 class="text-base font-bold text-white">🔐 Вход или Регистрация</h3>
-                                    <p class="text-xs text-gray-400">Придумайте любой пароль от 6 символов (пароль от почты Google вводить не нужно!). Для входа автора укажите <b>Guardian_Angel_15</b> и почту <b>arien.mahash.9@gmail.com</b>.</p>
+                                    <p class="text-xs text-gray-400">Придумайте любой пароль от 6 символов. Для входа автора укажите <b>Guardian_Angel_15</b> и почту <b>arien.mahash.9@gmail.com</b>.</p>
                                     <div class="space-y-3">
                                         <input type="text" id="auth-username" placeholder="Ваш никнейм (например: Guardian_Angel_15)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
                                         <input type="email" id="auth-email" placeholder="Ваш Email" class="w-full glass-card p-3 rounded-xl text-xs text-white">
-                                        <input type="password" id="auth-pass" placeholder="Придумайте пароль для сайта (от 6 симв.)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                                        <input type="password" id="auth-pass" placeholder="Пароль для сайта (от 6 симв.)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
                                         <div class="grid grid-cols-2 gap-2 pt-1">
                                             <button onclick="handleAuthSubmit('login')" class="py-3 rounded-xl bg-accent-blue text-white text-xs font-bold">Войти</button>
                                             <button onclick="handleAuthSubmit('register')" class="py-3 rounded-xl cosmic-gradient text-white text-xs font-bold border border-white/20">Создать аккаунт</button>
@@ -692,35 +672,52 @@
                         <div class="space-y-6 pb-16">
                             <h2 class="text-xl font-bold text-white">⚡ Админ-панель (${ADMIN_USERNAME})</h2>
 
-                            <!-- 1. Публикация главы -->
+                            <!-- 1. Публикация главы с загрузкой фото с телефона -->
                             <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-blue/40">
                                 <h3 class="text-sm font-bold text-white">📖 Опубликовать новую главу</h3>
                                 <input type="number" id="pub-num" placeholder="Номер главы (например: 2)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                                 <input type="text" id="pub-title-ru" placeholder="Название главы" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
-                                <textarea id="pub-text-ru" rows="5" placeholder="Текст главы. Для вставки арта между абзацами укажите ссылку или имя файла (IMG_3464_c97ee2.jpg) с новой строки." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
-                                <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                <textarea id="pub-text-ru" rows="4" placeholder="Текст главы (абзацы)..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
+                                
+                                <!-- ВЫБОР ФОТО ДЛЯ ГЛАВЫ ИЗ ГАЛЕРЕИ -->
+                                <div class="space-y-1">
+                                    <label class="block text-[11px] text-gray-300">Вставить иллюстрацию/арт из галереи iPhone:</label>
+                                    <input type="file" id="pub-file-input" accept="image/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-accent-blue file:text-white hover:file:bg-blue-600">
+                                </div>
+
+                                <label class="flex items-center space-x-2 text-xs text-gray-300 pt-1">
                                     <input type="checkbox" id="pub-early">
                                     <span>🔒 Ранний доступ (только для Premium)</span>
                                 </label>
-                                <button onclick="publishNewChapter()" class="w-full py-3 rounded-xl cosmic-gradient text-white text-xs font-bold shadow-lg">Опубликовать главу</button>
+                                <button onclick="publishNewChapterWithPhoto()" class="w-full py-3 rounded-xl cosmic-gradient text-white text-xs font-bold shadow-lg">Опубликовать главу</button>
                             </div>
 
-                            <!-- 2. Создание папки персонажа -->
+                            <!-- 2. Создание папки персонажа с загрузкой аватара -->
                             <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-purple/40">
                                 <h3 class="text-sm font-bold text-white">📁 Создать папку персонажа (Лор)</h3>
                                 <input type="text" id="char-name" placeholder="Имя персонажа" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                                 <input type="text" id="char-folder" placeholder="Категория / папка" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
-                                <input type="text" id="char-avatar" placeholder="Ссылка на аватар персонажа (IMG_3463_c97ee2.jpg)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                                 <textarea id="char-bio" rows="3" placeholder="Описание и лор персонажа..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
-                                <button onclick="createCharacterFolder()" class="w-full py-3 rounded-xl bg-accent-purple text-white text-xs font-bold shadow-lg">Создать папку персонажа</button>
+                                
+                                <div class="space-y-1">
+                                    <label class="block text-[11px] text-gray-300">Аватар персонажа из галереи iPhone:</label>
+                                    <input type="file" id="char-avatar-input" accept="image/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-accent-purple file:text-white">
+                                </div>
+
+                                <button onclick="createCharacterFolderWithPhoto()" class="w-full py-3 rounded-xl bg-accent-purple text-white text-xs font-bold shadow-lg">Создать папку персонажа</button>
                             </div>
 
-                            <!-- 3. Настройка обложки -->
+                            <!-- 3. Настройка обложки сайта -->
                             <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-pink/30">
-                                <h3 class="text-sm font-bold text-white">🎨 Обложка и название сайта</h3>
+                                <h3 class="text-sm font-bold text-white">🎨 Главная обложка новеллы</h3>
                                 <input type="text" id="cfg-title" value="${state.siteConfig.title}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
-                                <input type="text" id="cfg-banner" value="${state.siteConfig.bannerUrl}" placeholder="URL главной обложки" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
-                                <button onclick="saveSiteConfig()" class="w-full py-2.5 rounded-xl bg-accent-pink text-white text-xs font-bold">Сохранить обложку</button>
+                                
+                                <div class="space-y-1">
+                                    <label class="block text-[11px] text-gray-300">Загрузить новую обложку с телефона:</label>
+                                    <input type="file" id="cfg-banner-input" accept="image/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-accent-pink file:text-white">
+                                </div>
+
+                                <button onclick="saveSiteConfigWithPhoto()" class="w-full py-2.5 rounded-xl bg-accent-pink text-white text-xs font-bold">Сохранить обложку</button>
                             </div>
                         </div>
                     `;
@@ -728,27 +725,29 @@
             }
         };
 
-        // --- 4. ФУНКЦИИ СОХРАНЕНИЯ (FIREBASE + МГНОВЕННЫЙ РЕЗЕРВ) ---
+        // --- 4. ФУНКЦИИ С ЗАГРУЗКОЙ ФОТО С ТЕЛЕФОНА ---
         window.openChapter = function(id) {
             if (!id && window.appState.chapters.length > 0) id = window.appState.chapters[0].id;
             router.navigate('reader', id);
         };
 
-        window.saveSiteConfig = async function() {
+        window.saveSiteConfigWithPhoto = async function() {
             const title = document.getElementById('cfg-title').value.trim();
-            const bannerUrl = document.getElementById('cfg-banner').value.trim();
-            const newCfg = { title, bannerUrl, adminAvatar: window.appState.siteConfig.adminAvatar };
+            convertFileToBase64('cfg-banner-input', async (base64Img) => {
+                const bannerUrl = base64Img || window.appState.siteConfig.bannerUrl;
+                const newCfg = { title, bannerUrl, adminAvatar: window.appState.siteConfig.adminAvatar };
 
-            window.appState.siteConfig = newCfg;
-            window.appState.saveLocalBackup();
-            document.getElementById('header-site-title').innerText = title;
+                window.appState.siteConfig = newCfg;
+                window.appState.saveLocalBackup();
+                document.getElementById('header-site-title').innerText = title;
 
-            try { await setDoc(doc(db, "settings", "siteConfig"), newCfg); } catch(e) {}
-            alertCustom("✅ Обложка и название успешно обновлены!");
-            router.render();
+                try { await setDoc(doc(db, "settings", "siteConfig"), newCfg); } catch(e) {}
+                alertCustom("✅ Обложка успешно обновлена!");
+                router.render();
+            });
         };
 
-        window.publishNewChapter = async function() {
+        window.publishNewChapterWithPhoto = async function() {
             const num = parseInt(document.getElementById('pub-num').value) || (window.appState.chapters.length + 1);
             const titleRu = document.getElementById('pub-title-ru').value.trim();
             const textRu = document.getElementById('pub-text-ru').value.trim();
@@ -756,22 +755,29 @@
 
             if (!titleRu || !textRu) return alertCustom("Заполните название и текст главы!");
 
-            const contentBlocks = textRu.split('\n').map(s => s.trim()).filter(Boolean);
-            const newChapter = {
-                id: "ch-" + Date.now(),
-                number: num,
-                titleRu: titleRu,
-                date: new Date().toLocaleDateString('ru-RU'),
-                isEarly: isEarly,
-                contentRu: contentBlocks
-            };
+            convertFileToBase64('pub-file-input', async (base64Img) => {
+                const contentBlocks = textRu.split('\n').map(s => s.trim()).filter(Boolean);
+                // Если с телефона выбрали картинку, автоматически добавляем её в конец текста главы
+                if (base64Img) {
+                    contentBlocks.push(base64Img);
+                }
 
-            window.appState.chapters.push(newChapter);
-            window.appState.saveLocalBackup();
+                const newChapter = {
+                    id: "ch-" + Date.now(),
+                    number: num,
+                    titleRu: titleRu,
+                    date: new Date().toLocaleDateString('ru-RU'),
+                    isEarly: isEarly,
+                    contentRu: contentBlocks
+                };
 
-            try { await setDoc(doc(db, "chapters", newChapter.id), newChapter); } catch(e) {}
-            alertCustom("🎉 Глава успешно опубликована!");
-            router.navigate('chapters');
+                window.appState.chapters.push(newChapter);
+                window.appState.saveLocalBackup();
+
+                try { await setDoc(doc(db, "chapters", newChapter.id), newChapter); } catch(e) {}
+                alertCustom("🎉 Глава с артом опубликована!");
+                router.navigate('chapters');
+            });
         };
 
         window.deleteChapter = async function(chapterId) {
@@ -782,29 +788,31 @@
             try { await deleteDoc(doc(db, "chapters", chapterId)); } catch(e) {}
         };
 
-        window.createCharacterFolder = async function() {
+        window.createCharacterFolderWithPhoto = async function() {
             const name = document.getElementById('char-name').value.trim();
             const folder = document.getElementById('char-folder').value.trim() || "Персонажи";
-            const avatar = document.getElementById('char-avatar').value.trim() || "IMG_3464_c97ee2.jpg";
             const bioRu = document.getElementById('char-bio').value.trim();
 
             if (!name) return alertCustom("Укажите имя персонажа!");
 
-            const newChar = {
-                id: "char-" + Date.now(),
-                name,
-                folder,
-                avatar,
-                bioRu,
-                gallery: [{ url: avatar, isPremium: false }]
-            };
+            convertFileToBase64('char-avatar-input', async (base64Img) => {
+                const avatar = base64Img || "IMG_3464_c97ee2.jpg";
+                const newChar = {
+                    id: "char-" + Date.now(),
+                    name,
+                    folder,
+                    avatar,
+                    bioRu,
+                    gallery: [{ url: avatar, isPremium: false }]
+                };
 
-            window.appState.characters.push(newChar);
-            window.appState.saveLocalBackup();
+                window.appState.characters.push(newChar);
+                window.appState.saveLocalBackup();
 
-            try { await setDoc(doc(db, "characters", newChar.id), newChar); } catch(e) {}
-            alertCustom("📁 Папка персонажа создана!");
-            router.navigate('lore');
+                try { await setDoc(doc(db, "characters", newChar.id), newChar); } catch(e) {}
+                alertCustom("📁 Папка персонажа создана!");
+                router.navigate('lore');
+            });
         };
 
         window.deleteCharacter = async function(charId) {
@@ -815,20 +823,21 @@
             try { await deleteDoc(doc(db, "characters", charId)); } catch(e) {}
         };
 
-        window.addArtToCharacter = async function(charId) {
-            const url = document.getElementById('new-char-art-url').value.trim();
+        window.uploadArtFromPhone = async function(charId) {
             const isPremium = document.getElementById('new-char-art-lock').checked;
-            if (!url) return alertCustom("Вставьте ссылку на арт или имя файла!");
+            convertFileToBase64('char-file-input', async (base64Img) => {
+                if (!base64Img) return alertCustom("Выберите фото из галереи телефона!");
 
-            const char = window.appState.characters.find(c => c.id === charId);
-            if (!char) return;
+                const char = window.appState.characters.find(c => c.id === charId);
+                if (!char) return;
 
-            char.gallery = [...(char.gallery || []), { url, isPremium }];
-            window.appState.saveLocalBackup();
-            router.render();
+                char.gallery = [...(char.gallery || []), { url: base64Img, isPremium }];
+                window.appState.saveLocalBackup();
+                router.render();
 
-            try { await updateDoc(doc(db, "characters", charId), { gallery: char.gallery }); } catch(e) {}
-            alertCustom("🎨 Арт добавлен в папку персонажа!");
+                try { await updateDoc(doc(db, "characters", charId), { gallery: char.gallery }); } catch(e) {}
+                alertCustom("🎨 Фото успешно загружено из галереи в папку!");
+            });
         };
 
         window.toggleCharacterArtLock = async function(charId, artIndex) {
@@ -893,7 +902,7 @@
         window.activatePremiumStatus = async function() {
             closeModal();
             if (window.appState.user.role === 'guest') {
-                alertCustom("Сначала войдите или создайте аккаунт в разделе «Профиль», чтобы подписка закрепилась за вами!");
+                alertCustom("Сначала войдите или создайте аккаунт в разделе «Профиль»!");
                 router.navigate('profile');
                 return;
             }
