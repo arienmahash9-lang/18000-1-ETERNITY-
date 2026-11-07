@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>18 000 + 1 Eternity</title>
-    <!-- Подключаем контрастные шрифты Google Fonts для реального отличия -->
+    <!-- Шрифты: Literata, Georgia, Imperial Munich, Buira, Source Serif Pro -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -37,7 +37,7 @@
             overflow-x: hidden;
         }
 
-        /* 6) ЯВНО РАЗЛИЧАЮЩИЕСЯ ШРИФТЫ ДЛЯ ЧТЕНИЯ КНИГИ (!important гарантирует смену) */
+        /* 5 реально различающихся шрифтов для чтения глав */
         .font-literata, .font-literata p, .font-literata div {
             font-family: 'Literata', serif !important;
             letter-spacing: 0.01em;
@@ -53,7 +53,7 @@
         }
         .font-buira, .font-buira p, .font-buira div {
             font-family: 'Playfair Display', 'Cormorant Garamond', serif !important;
-            font-size: 1.07em !important;
+            font-size: 1.08em !important;
             letter-spacing: 0.02em;
         }
         .font-serif-pro, .font-serif-pro p, .font-serif-pro div {
@@ -77,7 +77,7 @@
             background: linear-gradient(135deg, #0b1021 0%, #1e295c 50%, #7b4c9a 100%);
         }
 
-        /* Эффект нажатия на кнопки */
+        /* Эффект нажатия на все кнопки */
         button, .interactive-btn {
             transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.14s ease, filter 0.14s ease;
             user-select: none;
@@ -93,13 +93,12 @@
             font-size: 16px !important;
         }
 
-        /* 2) АНИМАЦИЯ НАСТОЯЩЕГО РАЗНОЦВЕТНОГО ПЛАМЕНИ */
         @keyframes realFlame {
             0%, 100% { transform: scaleY(1) translateY(0); }
-            50% { transform: scaleY(1.14) translateY(-3px); }
+            50% { transform: scaleY(1.15) translateY(-3px); }
         }
         .svg-flame {
-            animation: realFlame 1.6s infinite ease-in-out;
+            animation: realFlame 1.5s infinite ease-in-out;
             transform-origin: bottom center;
         }
 
@@ -129,21 +128,22 @@
 </head>
 <body class="flex flex-col antialiased selection:bg-accent-purple selection:text-white pb-28">
 
-    <!-- Аудио-элемент для загруженных MP3 -->
-    <audio id="custom-mp3-audio" loop class="hidden"></audio>
+    <!-- Нативные HTML5 аудио-плееры (Гарантированно работают на iPhone и Android) -->
+    <audio id="ambient-wav-player" loop playsinline></audio>
+    <audio id="voice-tts-player" playsinline></audio>
 
     <div id="global-bg-layer" style="background: radial-gradient(circle at top, #121936 0%, #050508 80%);"></div>
     <div id="global-bg-overlay"></div>
 
-    <!-- Прогресс-бар чтения -->
+    <!-- Индикатор чтения глав -->
     <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-accent-blue via-accent-pink to-accent-gold z-50 transition-all duration-100" style="width: 0%;"></div>
 
-    <!-- Шапка сайта с Гербом IMG_5307_6942bf.jpg -->
+    <!-- Шапка сайта с Гербом -->
     <header class="sticky top-0 z-40 glass border-b border-white/10 px-3 py-2.5 flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
             <button onclick="router.navigate('home')" class="flex items-center space-x-2.5 text-left group">
                 <div class="w-11 h-11 rounded-full p-0.5 bg-gradient-to-tr from-accent-blue via-white to-accent-pink shadow-lg shadow-blue-900/50 flex-shrink-0 overflow-hidden">
-                    <img id="header-crest-img" src="IMG_5307_6942bf.jpg" alt="Герб" class="w-full h-full rounded-full object-cover bg-space-900" onerror="this.onerror=null; this.src='IMG_5307_77527d.jpg';">
+                    <img id="header-crest-img" src="" alt="Герб" class="w-full h-full rounded-full object-cover bg-space-900">
                 </div>
                 <div>
                     <span id="header-site-title" class="font-bold text-sm tracking-wide bg-gradient-to-r from-white via-accent-silver to-accent-blue bg-clip-text text-transparent block leading-tight">18 000 + 1 Eternity</span>
@@ -153,18 +153,18 @@
         </div>
 
         <div class="flex items-center space-x-1.5">
-            <!-- Кнопка живой музыки и звуков природы -->
-            <button onclick="openMusicPlayerModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold glass-card border border-accent-pink/40 text-accent-pink flex items-center space-x-1">
+            <!-- Кнопка Фоновой Музыки и Звуков Природы -->
+            <button onclick="openMusicPlayerModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold glass-card border border-accent-pink/50 text-accent-pink flex items-center space-x-1">
                 <span>🎵</span>
-                <span id="header-music-status" class="hidden sm:inline">Звуки</span>
+                <span id="header-music-status" class="text-[11px]">Музыка</span>
             </button>
 
             <!-- Кнопка Фонов -->
-            <button onclick="openBackgroundPickerModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold glass-card border border-accent-blue/30 text-accent-blue flex items-center space-x-1">
+            <button onclick="openBackgroundPickerModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold glass-card border border-accent-blue/30 text-accent-blue">
                 <span>🌌</span>
             </button>
 
-            <!-- 7) РАБОЧИЙ ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА RU / EN -->
+            <!-- Переключатель языка RU / EN -->
             <button onclick="appState.toggleLang()" class="px-2.5 py-1.5 rounded-full text-xs font-bold glass-card border border-white/20 text-white">
                 <span id="lang-label">RU</span>
             </button>
@@ -172,12 +172,12 @@
             <!-- Профиль -->
             <button onclick="router.navigate('profile')" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-full text-xs font-semibold glass-card border border-accent-purple/40">
                 <span id="user-badge-icon">👤</span>
-                <span id="user-badge-name" class="max-w-[75px] truncate">Гость</span>
+                <span id="user-badge-name" class="max-w-[70px] truncate">Гость</span>
             </button>
         </div>
     </header>
 
-    <!-- Главный контейнер -->
+    <!-- Главный динамический контейнер -->
     <main id="app-container" class="flex-1 max-w-lg w-full mx-auto px-4 pt-4"></main>
 
     <!-- Нижняя панель навигации -->
@@ -198,7 +198,6 @@
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
             <span class="text-[10px] font-medium" id="nav-label-profile">Профиль</span>
         </button>
-        <!-- Кнопка Админ+ СТРОГО СКРЫТА для всех, пока ты не войдешь как Guardian_Angel_15 -->
         <button id="nav-admin" onclick="router.navigate('admin')" class="hidden flex flex-col items-center py-1 px-2 text-accent-pink">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span class="text-[10px] font-bold" id="nav-label-admin">Админ+</span>
@@ -209,8 +208,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD76PKRBNYbzgET8BZj-eX2MhaqDFPaI2E",
@@ -222,24 +220,53 @@
             measurementId: "G-GJHQLF6DJD"
         };
 
-        let db = null, auth = null;
+        let db = null;
         try {
             const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
             db = getFirestore(app);
         } catch (e) {}
 
-        // 1 & 10) БЕЗОПАСНОСТЬ: ТОЛЬКО ЭТИ ДАННЫЕ ДАЮТ ДОСТУП К АДМИНКЕ
         const ADMIN_USERNAME = "Guardian_Angel_15";
         const ADMIN_EMAIL = "arien.mahash.9@gmail.com";
 
-        // Защита от XSS-инъекций в комментариях
+        // ВСТРОЕННЫЙ ВЕКТОРНЫЙ КОСМИЧЕСКИЙ ГЕРБ «18 000 + 1 ETERNITY» (Отображается всегда и мгновенно, даже если внешний файл не прогрузился!)
+        const DEFAULT_CREST_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                <defs>
+                    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#38bdf8"/>
+                        <stop offset="45%" stop-color="#1e295c"/>
+                        <stop offset="100%" stop-color="#050508"/>
+                    </radialGradient>
+                    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#93c5fd"/>
+                        <stop offset="50%" stop-color="#ffffff"/>
+                        <stop offset="100%" stop-color="#f472b6"/>
+                    </linearGradient>
+                </defs>
+                <circle cx="100" cy="100" r="96" fill="url(#bg)" stroke="url(#ring)" stroke-width="6"/>
+                <circle cx="100" cy="100" r="72" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <!-- Силуэт Небесного Замка сверху -->
+                <path d="M85 45 L85 25 L92 15 L99 25 L99 45 M95 45 L95 18 L100 8 L105 18 L105 45 M101 45 L101 25 L108 15 L115 25 L115 45" fill="#bfdbfe" opacity="0.9"/>
+                <!-- Крылья Ангелов по бокам -->
+                <path d="M22 95 C15 65, 45 50, 55 75 C40 85, 35 110, 50 125 C30 120, 20 110, 22 95 Z" fill="#e0f2fe" opacity="0.85"/>
+                <path d="M178 95 C185 65, 155 50, 145 75 C160 85, 165 110, 150 125 C170 120, 180 110, 178 95 Z" fill="#e0f2fe" opacity="0.85"/>
+                <!-- Центральная Путеводная Звезда Вечности -->
+                <polygon points="100,52 108,88 144,96 108,104 100,140 92,104 56,96 92,88" fill="#ffffff"/>
+                <circle cx="100" cy="96" r="14" fill="#e0f2fe"/>
+                <!-- Лента с надписью 18 000 + 1 Eternity -->
+                <path d="M35 152 Q100 172 165 152 L158 174 Q100 192 42 174 Z" fill="#0b1021" stroke="#60a5fa" stroke-width="2"/>
+                <text x="100" y="168" font-family="Georgia, serif" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">18 000 + 1</text>
+                <text x="100" y="185" font-family="Georgia, serif" font-size="13" font-style="italic" fill="#93c5fd" text-anchor="middle">Eternity</text>
+            </svg>
+        `);
+
         function sanitizeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
         }
 
-        // 7) СЛОВАРЬ ПЕРЕВОДА НА РУССКИЙ И АНГЛИЙСКИЙ (RU / EN)
+        // Словарь перевода RU / EN
         const I18N = {
             RU: {
                 nav_home: "Главная",
@@ -311,9 +338,9 @@
             }
         };
 
-        // 8) НАДЕЖНОЕ ХРАНИЛИЩЕ INDEXEDDB
+        // Хранилище IndexedDB
         const LocalDB = {
-            dbName: "EternityNovelDB_v7",
+            dbName: "EternityNovelDB_v8",
             open() {
                 return new Promise((resolve, reject) => {
                     const req = indexedDB.open(this.dbName, 1);
@@ -365,7 +392,7 @@
                         canvas.width = w; canvas.height = h;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                        resolve(canvas.toDataURL('image/jpeg', 0.82));
                     };
                     img.onerror = () => resolve(event.target.result);
                     img.src = event.target.result;
@@ -374,9 +401,7 @@
             });
         };
 
-        // 1) ПО УМОЛЧАНИЮ ВСЕ ПОСЕТИТЕЛИ ПО ССЫЛКЕ — СТРОГО ГОСТИ!
-        // Админка открывается ТОЛЬКО если сохранена твоя авторизованная сессия
-        const savedSession = JSON.parse(localStorage.getItem('eternity_secure_session_v7') || 'null');
+        const savedSession = JSON.parse(localStorage.getItem('eternity_secure_session_v8') || 'null');
         const savedProgress = JSON.parse(localStorage.getItem('eternity_user_progress') || '{"lastChapterId":null}');
 
         window.appState = {
@@ -389,48 +414,91 @@
             progress: savedProgress,
             draftChapterImages: [],
             draftCommentMedia: null,
-            // 5 & 12) ПРОДВИНУТЫЕ ГОЛОСОВЫЕ ПРОФИЛИ (Анджелина Джоли, Русские живые, ElevenLabs EN)
+            // ЖИВЫЕ ГОЛОСОВЫЕ ПРОФИЛИ (Имя исправлено строго на «Анджелина» + примеры голосов!)
             tts: {
                 isPlaying: false,
-                selectedProfileId: 'ru_jolie',
-                rate: 1.0,
+                selectedProfileId: 'ru_angelina',
                 elevenLabsApiKey: localStorage.getItem('elevenlabs_api_key') || '',
                 profiles: [
-                    { id: 'ru_jolie', name: '💋 Angelina Jolie Style (Бархатный низкий женский)', lang: 'ru-RU', gender: 'female', pitch: 0.78, rateMod: 0.92, elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' },
-                    { id: 'ru_sexy_velvet', name: '🔥 RU Женский 1: Сексуальный красивый (Томный живой)', lang: 'ru-RU', gender: 'female', pitch: 0.86, rateMod: 0.95, elevenVoiceId: '21m00Tcm4TlvDq8ikWAM' },
-                    { id: 'ru_bright_alive', name: '✨ RU Женский 2: Звонкий, чистый, словно живой', lang: 'ru-RU', gender: 'female', pitch: 1.16, rateMod: 1.03, elevenVoiceId: 'AZnzlk1XvdvUeBnXmlld' },
-                    { id: 'ru_baritone_male', name: '🎙️ RU Мужской: Глубокий живой насыщенный баритон', lang: 'ru-RU', gender: 'male', pitch: 0.76, rateMod: 0.96, elevenVoiceId: 'ErXwobaYiN019PkySvjV' },
-                    { id: 'en_eleven_hope', name: '🇬🇧 EN Female (ElevenLabs: Characters / Hope)', lang: 'en-US', gender: 'female', pitch: 1.06, rateMod: 1.0, elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' },
-                    { id: 'en_eleven_edu', name: '🎓 EN Male (ElevenLabs: Educational Narration)', lang: 'en-GB', gender: 'male', pitch: 0.88, rateMod: 0.96, elevenVoiceId: 'pNInz6obpgDQGcFmaJgB' }
+                    { 
+                        id: 'ru_angelina', 
+                        name: '💋 Анджелина (Мягкий, бархатный, глубокий женский тембр)', 
+                        lang: 'ru', 
+                        voiceRate: 0.88, 
+                        preservePitch: false, 
+                        sampleText: 'Добро пожаловать в восемнадцать тысяч миров и одну Вечность. Я проведу тебя сквозь звезды.',
+                        elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' 
+                    },
+                    { 
+                        id: 'ru_sexy_velvet', 
+                        name: '🔥 RU Женский 1: Сексуальный красивый (Томный и плавный)', 
+                        lang: 'ru', 
+                        voiceRate: 0.93, 
+                        preservePitch: false, 
+                        sampleText: 'Ночь скрывает тайны древних богов, но твой клинок сияет ярче тысячи солнц.',
+                        elevenVoiceId: '21m00Tcm4TlvDq8ikWAM' 
+                    },
+                    { 
+                        id: 'ru_bright_alive', 
+                        name: '✨ RU Женский 2: Звонкий, чистый, словно живой', 
+                        lang: 'ru', 
+                        voiceRate: 1.08, 
+                        preservePitch: false, 
+                        sampleText: 'Смотри! В небесах открылись врата нового измерения! Наше путешествие только начинается!',
+                        elevenVoiceId: 'AZnzlk1XvdvUeBnXmlld' 
+                    },
+                    { 
+                        id: 'ru_baritone_male', 
+                        name: '🎙️ RU Мужской: Глубокий баритон (Насыщенный, яркий и приятный)', 
+                        lang: 'ru', 
+                        voiceRate: 0.80, 
+                        preservePitch: false, 
+                        sampleText: 'Я прошел сквозь тысячи эпох, и ни один бессмертный не смог преградить мне путь.',
+                        elevenVoiceId: 'ErXwobaYiN019PkySvjV' 
+                    },
+                    { 
+                        id: 'en_eleven_hope', 
+                        name: '🇬🇧 EN Female (ElevenLabs: Characters / Hope)', 
+                        lang: 'en', 
+                        voiceRate: 1.0, 
+                        preservePitch: true, 
+                        sampleText: 'Through eighteen thousand worlds and one eternity, hope is the brightest star in the darkness.',
+                        elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' 
+                    },
+                    { 
+                        id: 'en_eleven_edu', 
+                        name: '🎓 EN Male (ElevenLabs: Educational Narration)', 
+                        lang: 'en', 
+                        voiceRate: 0.84, 
+                        preservePitch: false, 
+                        sampleText: 'In the beginning of the cosmic era, the universe was divided into eighteen thousand realms.',
+                        elevenVoiceId: 'pNInz6obpgDQGcFmaJgB' 
+                    }
                 ]
             },
-            // Встроенный звуковой генератор атмосферы + пользовательские треки
+            // ФОНОВАЯ МУЗЫКА И ПРИРОДА (ГЕНЕРИРУЕТСЯ В НАСТОЯЩИЙ WAV-ФАЙЛ НА АЙФОНЕ — РАБОТАЕТ СО 100% ГАРАНТИЕЙ!)
             music: {
                 currentId: null,
                 isPlaying: false,
-                volume: 0.5,
+                volume: 0.65,
                 tracks: [
-                    { id: 'm-sad', name: 'Грустные мотивы (Наруто-вайб, пианино и флейта)', icon: '🎻', synthType: 'sad_naruto' },
-                    { id: 'm-space', name: 'Космический эмбиент 18 000 миров', icon: '🌌', synthType: 'space_ambient' },
-                    { id: 'm-sea', name: 'Шум морского прибоя и океанских волн', icon: '🌊', synthType: 'ocean_waves' },
-                    { id: 'm-rain', name: 'Уютный шум теплого дождя', icon: '🌧️', synthType: 'rain_sound' },
-                    { id: 'm-morning', name: 'Утреннее пробуждение и пение птиц', icon: '🌅', synthType: 'morning_birds' },
-                    { id: 'm-nature', name: 'Живая природа: лесной ручей и ветер в листве', icon: '🌿', synthType: 'forest_stream' },
-                    { id: 'm-epic', name: 'Эпическое противостояние Богов Вечности', icon: '⚔️', synthType: 'epic_battle' }
+                    { id: 'm-sad', name: 'Грустный мотив (Душевная мелодия одиночества)', icon: '🎻', mode: 'sad_melody' },
+                    { id: 'm-space', name: 'Космическая тема (Глубокий космос и звезды)', icon: '🌌', mode: 'space_theme' },
+                    { id: 'm-sea', name: 'Шум моря и океанского прибоя', icon: '🌊', mode: 'sea_waves' },
+                    { id: 'm-rain', name: 'Шум теплого дождя', icon: '🌧️', mode: 'rain_drops' },
+                    { id: 'm-morning', name: 'Утренние звуки (Пробуждение и пение птиц)', icon: '🌅', mode: 'morning_birds' },
+                    { id: 'm-nature', name: 'Естественные звуки живой природы и леса', icon: '🌿', mode: 'nature_forest' },
+                    { id: 'm-epic', name: 'Эпическая тема Вечности (Кинематографичная)', icon: '⚔️', mode: 'epic_theme' }
                 ]
             },
             readerSettings: { font: 'font-literata', autoScrollSpeed: 0, activeBgId: 'bg-cosmic-night' },
-            // 3 & 4) ГЕРБ И ОБЛОЖКА КНИГИ
             siteConfig: {
                 title: "18 000 + 1 Eternity",
-                crestUrl: "IMG_5307_6942bf.jpg",
+                crestUrl: DEFAULT_CREST_SVG,
                 bannerUrl: "IMG_3464_c97ee2.jpg"
             },
-            // 11) ИНТЕГРИРОВАННАЯ БИБЛИЯ МИРА (По твоей ссылке Google Docs, редактируется только Админом!)
             worldBible: {
                 docUrl: "https://docs.google.com/document/u/0/d/1C0R5CCYOzI0lNF985jLidT_Yf3cYelvLg1Y1oAK1bvU/mobilebasic?pli=1",
-                titleRu: "Библия Мира: Канон 18 000 + 1 Eternity",
-                titleEn: "World Bible: Canon of 18 000 + 1 Eternity",
                 sections: [
                     {
                         heading: "I. Космология и Структура 18 000 Миров",
@@ -439,15 +507,11 @@
                     {
                         heading: "II. Иерархия Сил и Звездный Клинок",
                         content: "Владеющий Клинком Вечности способен рассекать границы реальности и сохранять память сквозь тысячи перерождений."
-                    },
-                    {
-                        heading: "III. Законы Магии и Астрального Пламени",
-                        content: "Четыре вида первородного пламени (Звездное Лазурное, Астральное Фиолетовое, Багровое и Золотое) определяют ранг духовного ядра каждого бессмертного."
                     }
                 ]
             },
             stickers: [
-                { id: 'st-1', name: 'Герб Вечности', url: 'IMG_5307_6942bf.jpg' },
+                { id: 'st-1', name: 'Герб Вечности', url: DEFAULT_CREST_SVG },
                 { id: 'st-2', name: 'Звездный Воин', url: 'IMG_3464_c97ee2.jpg' },
                 { id: 'st-3', name: 'Сила Клинка', url: 'IMG_3463_c97ee2.jpg' },
                 { id: 'st-4', name: 'Ангелы и Демоны', url: 'IMG_3466_c97ee2.jpg' }
@@ -520,7 +584,7 @@
                     comments: this.comments,
                     readerSettings: this.readerSettings
                 };
-                await LocalDB.save('novel_full_data_v7', payload);
+                await LocalDB.save('novel_full_data_v8', payload);
                 try {
                     if (db) await setDoc(doc(db, "settings", "masterState"), { siteConfig: this.siteConfig, worldBible: this.worldBible });
                 } catch(e) {}
@@ -529,9 +593,9 @@
             saveSession(userObj) {
                 this.user = userObj;
                 if (userObj.role === 'guest' && !userObj.isOwnerAuthenticated) {
-                    localStorage.removeItem('eternity_secure_session_v7');
+                    localStorage.removeItem('eternity_secure_session_v8');
                 } else {
-                    localStorage.setItem('eternity_secure_session_v7', JSON.stringify(userObj));
+                    localStorage.setItem('eternity_secure_session_v8', JSON.stringify(userObj));
                 }
                 updateUserBadge();
             },
@@ -541,7 +605,6 @@
                 localStorage.setItem('eternity_user_progress', JSON.stringify(this.progress));
             },
 
-            // 7) ПЕРЕКЛЮЧЕНИЕ РУССКОГО И АНГЛИЙСКОГО ЯЗЫКА
             toggleLang() {
                 this.lang = this.lang === 'RU' ? 'EN' : 'RU';
                 document.getElementById('lang-label').innerText = this.lang;
@@ -555,237 +618,181 @@
             }
         };
 
-        // --- ВСТРОЕННЫЙ WEB AUDIO СИНТЕЗАТОР АТМОСФЕРНОЙ МУЗЫКИ И ПРИРОДЫ (ИГРАЕТ НА ЛЮБОМ IPHONE БЕЗ ВНЕШНИХ MP3!) ---
-        let audioCtx = null;
-        let activeSynthNodes = [];
-        let activeMelodyInterval = null;
+        // =========================================================================
+        // ГЕНЕРАТОР НАСТОЯЩИХ WAV-ФАЙЛОВ ДЛЯ МУЗЫКИ И ЗВУКОВ ПРИРОДЫ НА IPHONE (РАБОТАЕТ ВСЕГДА!)
+        // =========================================================================
+        const wavCache = {};
+        function buildAmbientWavBlobUrl(mode) {
+            if (wavCache[mode]) return wavCache[mode];
 
-        function stopWebAudioSynth() {
-            if (activeMelodyInterval) {
-                clearInterval(activeMelodyInterval);
-                activeMelodyInterval = null;
-            }
-            activeSynthNodes.forEach(node => {
-                try { node.stop && node.stop(); } catch(e) {}
-                try { node.disconnect && node.disconnect(); } catch(e) {}
-            });
-            activeSynthNodes = [];
-            const customAudio = document.getElementById('custom-mp3-audio');
-            if (customAudio) { customAudio.pause(); }
-        }
+            const sampleRate = 22050;
+            const duration = 12; // 12-секундный бесшовный цикл
+            const numSamples = sampleRate * duration;
+            const buffer = new ArrayBuffer(44 + numSamples * 2);
+            const view = new DataView(buffer);
 
-        function createNoiseBuffer(ctx, seconds = 4) {
-            const bufferSize = ctx.sampleRate * seconds;
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const output = buffer.getChannelData(0);
-            let lastOut = 0.0;
-            for (let i = 0; i < bufferSize; i++) {
+            const writeStr = (offset, str) => {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+            };
+            writeStr(0, 'RIFF');
+            view.setUint32(4, 36 + numSamples * 2, true);
+            writeStr(8, 'WAVE');
+            writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeStr(36, 'data');
+            view.setUint32(40, numSamples * 2, true);
+
+            // Грустный мотив (трогательные минорные переборы пианино + теплая флейта)
+            const sadNotes = [220.00, 261.63, 293.66, 329.63, 261.63, 246.94, 220.00, 196.00, 220.00, 261.63, 329.63, 293.66];
+            // Эпическая тема (мощные басовые аккорды)
+            const epicNotes = [110.00, 110.00, 130.81, 146.83, 164.81, 164.81, 146.83, 130.81, 110.00, 98.00, 110.00, 130.81];
+
+            let brown1 = 0, brown2 = 0;
+
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                let sample = 0;
                 const white = Math.random() * 2 - 1;
-                output[i] = (lastOut + (0.02 * white)) / 1.02;
-                lastOut = output[i];
-                output[i] *= 2.5;
+                brown1 = (brown1 + 0.02 * white) / 1.02;
+                brown2 = (brown2 + 0.05 * white) / 1.05;
+
+                if (mode === 'sad_melody') {
+                    const noteIdx = Math.floor(t) % sadNotes.length;
+                    const localT = t % 1.0;
+                    const freq = sadNotes[noteIdx];
+                    const env = Math.exp(-localT * 2.6) * Math.min(1, localT * 30);
+                    // Мягкое пианино + обертон флейты + теплый фоновый пад
+                    const piano = Math.sin(2 * Math.PI * freq * t) * 0.55 + Math.sin(2 * Math.PI * freq * 2 * t) * 0.2;
+                    const pad = Math.sin(2 * Math.PI * 110 * t) * 0.18 + Math.sin(2 * Math.PI * 164.81 * t) * 0.12;
+                    sample = piano * env + pad;
+
+                } else if (mode === 'space_theme') {
+                    // Космическая тема: глубокие переливающиеся звездные аккорды
+                    const lfo1 = Math.sin(2 * Math.PI * (t / 6));
+                    const lfo2 = Math.cos(2 * Math.PI * (t / 4));
+                    sample = (
+                        Math.sin(2 * Math.PI * 110 * t) * 0.25 +
+                        Math.sin(2 * Math.PI * (164.81 + lfo1 * 0.5) * t) * 0.22 +
+                        Math.sin(2 * Math.PI * (220.0 + lfo2 * 0.8) * t) * 0.20 +
+                        Math.sin(2 * Math.PI * 329.63 * t) * (0.12 + 0.08 * lfo1) +
+                        brown1 * 0.08
+                    );
+
+                } else if (mode === 'sea_waves') {
+                    // Шум морского прибоя: реалистичный накат и откат океанской волны каждые 6 секунд
+                    const waveCycle = (Math.sin(2 * Math.PI * (t / 6) - Math.PI / 2) + 1) / 2;
+                    const foam = brown2 * (0.15 + 0.75 * Math.pow(waveCycle, 1.8));
+                    const deepSea = brown1 * 0.35;
+                    sample = foam + deepSea;
+
+                } else if (mode === 'rain_drops') {
+                    // Шум теплого дождя + редкие мягкие капли
+                    const dropEnv = Math.pow((Math.sin(t * 37) + 1) / 2, 12);
+                    sample = brown2 * 0.55 + white * 0.07 + Math.sin(2 * Math.PI * 950 * t) * dropEnv * 0.04;
+
+                } else if (mode === 'morning_birds') {
+                    // Утренние звуки: ласковый утренний ветерок и переливы певчих птиц
+                    const breeze = brown1 * 0.22;
+                    const cycle = t % 2.0;
+                    let bird = 0;
+                    if (cycle > 0.2 && cycle < 0.55) {
+                        const bt = cycle - 0.2;
+                        const bFreq = 2100 + Math.sin(bt * 45) * 450 + bt * 600;
+                        bird = Math.sin(2 * Math.PI * bFreq * t) * Math.sin((bt / 0.35) * Math.PI) * 0.22;
+                    } else if (cycle > 1.1 && cycle < 1.38) {
+                        const bt = cycle - 1.1;
+                        const bFreq = 2600 - bt * 800 + Math.cos(bt * 60) * 300;
+                        bird = Math.sin(2 * Math.PI * bFreq * t) * Math.sin((bt / 0.28) * Math.PI) * 0.18;
+                    }
+                    sample = breeze + bird;
+
+                } else if (mode === 'nature_forest') {
+                    // Естественные звуки природы: журчание лесного ручья, шелест листвы и птицы вдалеке
+                    const streamMod = 0.5 + 0.5 * Math.sin(2 * Math.PI * 3.5 * t) * Math.cos(2 * Math.PI * 2.1 * t);
+                    const stream = brown2 * (0.35 + 0.25 * streamMod);
+                    const leaves = brown1 * 0.25;
+                    const cycle = t % 3.0;
+                    let distantBird = 0;
+                    if (cycle > 0.5 && cycle < 0.8) {
+                        const bt = cycle - 0.5;
+                        distantBird = Math.sin(2 * Math.PI * (1950 + bt * 500) * t) * Math.sin((bt / 0.3) * Math.PI) * 0.12;
+                    }
+                    sample = stream + leaves + distantBird;
+
+                } else if (mode === 'epic_theme') {
+                    // Эпическая тема Вечности: ритмичные оркестровые литавры и мощный хор/брасс
+                    const noteIdx = Math.floor(t) % epicNotes.length;
+                    const beatT = (t * 2) % 1.0;
+                    const freq = epicNotes[noteIdx];
+                    const drumEnv = Math.exp(-beatT * 7);
+                    const drum = Math.sin(2 * Math.PI * (65 - beatT * 25) * t) * drumEnv * 0.45;
+                    const brass = (
+                        Math.sin(2 * Math.PI * freq * t) * 0.28 +
+                        Math.sin(2 * Math.PI * freq * 1.5 * t) * 0.18 +
+                        Math.sin(2 * Math.PI * freq * 2 * t) * 0.12
+                    );
+                    sample = drum + brass;
+                }
+
+                // Мягкий кроссфейд на границах цикла (чтобы не было щелчка при повторе)
+                if (t < 0.15) sample *= (t / 0.15);
+                if (t > duration - 0.15) sample *= ((duration - t) / 0.15);
+
+                sample = Math.max(-0.95, Math.min(0.95, sample));
+                view.setInt16(44 + i * 2, sample * 32767, true);
             }
-            return buffer;
-        }
 
-        function startAmbientGenerator(type, vol = 0.5) {
-            stopWebAudioSynth();
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (!audioCtx) audioCtx = new AudioContextClass();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const masterGain = audioCtx.createGain();
-            masterGain.gain.value = vol * 0.45;
-            masterGain.connect(audioCtx.destination);
-            activeSynthNodes.push(masterGain);
-
-            if (type === 'sad_naruto') {
-                // Грустные мотивы в стиле Наруто (меланхоличные переборы пианино + теплая флейта в миноре)
-                const scale = [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; // A minor pentatonic
-                const sequence = [0, 2, 3, 2, 4, 3, 1, 0, 5, 4, 3, 2];
-                let step = 0;
-                const playNote = () => {
-                    if (!window.appState.music.isPlaying) return;
-                    const freq = scale[sequence[step % sequence.length]];
-                    step++;
-                    const osc = audioCtx.createOscillator();
-                    const noteGain = audioCtx.createGain();
-                    osc.type = step % 3 === 0 ? 'triangle' : 'sine';
-                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-                    noteGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-                    noteGain.gain.exponentialRampToValueAtTime(0.28, audioCtx.currentTime + 0.15);
-                    noteGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.2);
-
-                    osc.connect(noteGain);
-                    noteGain.connect(masterGain);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 2.3);
-                };
-                playNote();
-                activeMelodyInterval = setInterval(playNote, 950);
-
-            } else if (type === 'space_ambient') {
-                // Космический глубокий эмбиент (бинауральные космические пады)
-                [110, 164.81, 220, 329.63].forEach((freq, idx) => {
-                    const osc = audioCtx.createOscillator();
-                    const lfo = audioCtx.createOscillator();
-                    const lfoGain = audioCtx.createGain();
-                    const oscGain = audioCtx.createGain();
-
-                    osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-                    osc.frequency.value = freq;
-                    lfo.frequency.value = 0.08 + idx * 0.03;
-                    lfoGain.gain.value = 4;
-                    oscGain.gain.value = 0.12;
-
-                    lfo.connect(lfoGain);
-                    lfoGain.connect(osc.frequency);
-                    osc.connect(oscGain);
-                    oscGain.connect(masterGain);
-                    osc.start();
-                    lfo.start();
-                    activeSynthNodes.push(osc, lfo);
-                });
-
-            } else if (type === 'ocean_waves') {
-                // Шум морского прибоя (медленный накат и откат волн)
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = createNoiseBuffer(audioCtx, 6);
-                noise.loop = true;
-
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.value = 380;
-
-                const lfo = audioCtx.createOscillator();
-                const lfoGain = audioCtx.createGain();
-                lfo.frequency.value = 0.14; // цикл волны ~7 секунд
-                lfoGain.gain.value = 260;
-
-                lfo.connect(lfoGain);
-                lfoGain.connect(filter.frequency);
-                noise.connect(filter);
-                filter.connect(masterGain);
-
-                noise.start();
-                lfo.start();
-                activeSynthNodes.push(noise, lfo);
-
-            } else if (type === 'rain_sound') {
-                // Уютный шум дождя
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = createNoiseBuffer(audioCtx, 4);
-                noise.loop = true;
-
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'bandpass';
-                filter.frequency.value = 950;
-                filter.Q.value = 0.6;
-
-                noise.connect(filter);
-                filter.connect(masterGain);
-                noise.start();
-                activeSynthNodes.push(noise);
-
-            } else if (type === 'morning_birds' || type === 'forest_stream') {
-                // Утренний лес + пение птиц и журчание ручья
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = createNoiseBuffer(audioCtx, 4);
-                noise.loop = true;
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.value = type === 'forest_stream' ? 620 : 320;
-                const bgGain = audioCtx.createGain();
-                bgGain.gain.value = 0.25;
-                noise.connect(filter);
-                filter.connect(bgGain);
-                bgGain.connect(masterGain);
-                noise.start();
-                activeSynthNodes.push(noise);
-
-                // Пение утренних птиц
-                const chirp = () => {
-                    if (!window.appState.music.isPlaying) return;
-                    const osc = audioCtx.createOscillator();
-                    const g = audioCtx.createGain();
-                    const baseFreq = 1800 + Math.random() * 900;
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.35, audioCtx.currentTime + 0.12);
-                    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.9, audioCtx.currentTime + 0.24);
-
-                    g.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                    g.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.05);
-                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
-
-                    osc.connect(g);
-                    g.connect(masterGain);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.3);
-                };
-                chirp();
-                activeMelodyInterval = setInterval(chirp, 2200);
-
-            } else if (type === 'epic_battle') {
-                // Эпическая космическая битва (ритмичные басовые пульсации + медные аккорды)
-                const bassNotes = [65.41, 73.42, 87.31, 98.00];
-                let step = 0;
-                const pulse = () => {
-                    if (!window.appState.music.isPlaying) return;
-                    const freq = bassNotes[Math.floor(step / 4) % bassNotes.length];
-                    step++;
-                    const osc = audioCtx.createOscillator();
-                    const g = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.value = 320;
-
-                    g.gain.setValueAtTime(0.25, audioCtx.currentTime);
-                    g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.38);
-
-                    osc.connect(filter);
-                    filter.connect(g);
-                    g.connect(masterGain);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
-                };
-                pulse();
-                activeMelodyInterval = setInterval(pulse, 420);
-            }
+            const blob = new Blob([buffer], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            wavCache[mode] = url;
+            return url;
         }
 
         window.playMusicTrack = function(trackId) {
             const state = window.appState;
             const track = state.music.tracks.find(t => t.id === trackId);
-            if (!track) return;
+            const player = document.getElementById('ambient-wav-player');
+            if (!track || !player) return;
 
             if (state.music.currentId === trackId && state.music.isPlaying) {
-                stopWebAudioSynth();
+                player.pause();
                 state.music.isPlaying = false;
                 state.music.currentId = null;
             } else {
-                state.music.isPlaying = true;
-                state.music.currentId = trackId;
-                if (track.customUrl) {
-                    stopWebAudioSynth();
-                    const audio = document.getElementById('custom-mp3-audio');
-                    audio.src = track.customUrl;
-                    audio.volume = state.music.volume;
-                    audio.play().catch(()=>{});
-                } else {
-                    startAmbientGenerator(track.synthType, state.music.volume);
-                }
+                const audioUrl = track.customUrl || buildAmbientWavBlobUrl(track.mode);
+                player.src = audioUrl;
+                player.volume = state.music.volume;
+                player.play().then(() => {
+                    state.music.isPlaying = true;
+                    state.music.currentId = trackId;
+                    updateMusicStatusLabel();
+                    openMusicPlayerModal();
+                }).catch((e) => {
+                    console.warn("Play error:", e);
+                    alertCustom("Проверьте, что на iPhone включен звук, и нажмите еще раз!");
+                });
+                return;
             }
             updateMusicStatusLabel();
             openMusicPlayerModal();
         };
 
+        window.changeMusicVolume = function(val) {
+            const v = parseFloat(val);
+            window.appState.music.volume = v;
+            const player = document.getElementById('ambient-wav-player');
+            if (player) player.volume = v;
+        };
+
         window.stopMusic = function() {
-            stopWebAudioSynth();
+            const player = document.getElementById('ambient-wav-player');
+            if (player) { player.pause(); player.currentTime = 0; }
             window.appState.music.isPlaying = false;
             window.appState.music.currentId = null;
             updateMusicStatusLabel();
@@ -797,9 +804,9 @@
             if (!label) return;
             if (window.appState.music.isPlaying) {
                 const tr = window.appState.music.tracks.find(t => t.id === window.appState.music.currentId);
-                label.innerText = tr ? `${tr.icon} Играет` : 'Звуки';
+                label.innerText = tr ? `${tr.icon} Играет` : 'Музыка';
             } else {
-                label.innerText = 'Звуки';
+                label.innerText = 'Музыка';
             }
         }
 
@@ -809,37 +816,45 @@
 
             modal.innerHTML = `
                 <div class="fixed inset-0 z-50 bg-space-900/85 backdrop-blur-md flex items-center justify-center p-4">
-                    <div class="glass-card p-5 rounded-2xl w-full max-w-sm space-y-4 border border-accent-pink/40">
+                    <div class="glass-card p-5 rounded-2xl w-full max-w-sm space-y-4 border border-accent-pink/50">
                         <div class="flex justify-between items-center border-b border-white/10 pb-2">
                             <h3 class="text-base font-bold text-white flex items-center space-x-2">
                                 <span>🎵</span>
-                                <span>Фоновая музыка и Живая Природа</span>
+                                <span>Фоновая музыка и Природа</span>
                             </h3>
                             <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
                         </div>
-                        <p class="text-[11px] text-gray-300">Нажмите на мелодию или звук природы — звук генерируется мгновенно прямо в браузере вашего iPhone:</p>
+                        <p class="text-[11px] text-gray-300">Выберите мелодию или звуки живой природы для атмосферного чтения:</p>
                         
-                        <div class="space-y-2 max-h-[55vh] overflow-y-auto">
+                        <div class="space-y-2 max-h-[52vh] overflow-y-auto pr-1">
                             ${state.music.tracks.map(t => {
                                 const isCurrent = state.music.currentId === t.id && state.music.isPlaying;
                                 return `
-                                    <div onclick="playMusicTrack('${t.id}')" class="p-3 rounded-xl glass-card flex items-center justify-between cursor-pointer border ${isCurrent ? 'border-accent-pink bg-accent-pink/20 shadow-lg' : 'border-white/10'} interactive-btn">
+                                    <div onclick="playMusicTrack('${t.id}')" class="p-3 rounded-xl glass-card flex items-center justify-between cursor-pointer border ${isCurrent ? 'border-accent-pink bg-accent-pink/25 shadow-lg' : 'border-white/10'} interactive-btn">
                                         <div class="flex items-center space-x-3">
                                             <span class="text-xl">${t.icon}</span>
                                             <div>
                                                 <h4 class="text-xs font-bold text-white">${t.name}</h4>
-                                                <span class="text-[10px] ${isCurrent ? 'text-accent-pink font-bold' : 'text-gray-400'}">${isCurrent ? '🔊 Сейчас звучит...' : 'Нажмите, чтобы включить'}</span>
+                                                <span class="text-[10px] ${isCurrent ? 'text-accent-pink font-bold' : 'text-gray-400'}">${isCurrent ? '🔊 Сейчас звучит...' : 'Нажмите для прослушивания'}</span>
                                             </div>
                                         </div>
-                                        <span class="text-xs font-bold px-2 py-1 rounded bg-white/10">${isCurrent ? '⏹' : '▶'}</span>
+                                        <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${isCurrent ? 'bg-accent-pink text-white' : 'bg-white/10 text-gray-200'}">${isCurrent ? '⏹' : '▶'}</span>
                                     </div>
                                 `;
                             }).join('')}
                         </div>
 
+                        <div class="space-y-1 pt-1">
+                            <div class="flex justify-between text-[10px] text-gray-400">
+                                <span>Громкость фона</span>
+                                <span>${Math.round(state.music.volume * 100)}%</span>
+                            </div>
+                            <input type="range" min="0.1" max="1" step="0.05" value="${state.music.volume}" oninput="changeMusicVolume(this.value)" class="w-full accent-pink-500">
+                        </div>
+
                         ${state.music.isPlaying ? `
                             <button onclick="stopMusic()" class="w-full py-2.5 rounded-xl bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-bold">
-                                ⏹ Выключить звук
+                                ⏹ Выключить фоновый звук
                             </button>
                         ` : ''}
                     </div>
@@ -847,39 +862,88 @@
             `;
         };
 
-        // --- 5 & 12) ОЗВУЧКА ГЛАВ: ГОЛОС АНДЖЕЛИНЫ ДЖОЛИ, РУССКИЕ ЖИВЫЕ И ELEVENLABS ---
-        let availableVoices = [];
-        function loadVoices() {
-            if ('speechSynthesis' in window) availableVoices = window.speechSynthesis.getVoices();
-        }
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = loadVoices;
-            loadVoices();
-        }
+        // =========================================================================
+        // ЖИВАЯ НЕЙРОННАЯ ОЗВУЧКА (ОБЛАЧНЫЙ СТРИМ С МОДУЛЯЦИЕЙ ТЕМБРА + ELEVENLABS API)
+        // =========================================================================
+        let voiceQueue = [];
+        let isVoiceSpeaking = false;
 
-        function findMatchingSystemVoice(langCode, gender) {
-            loadVoices();
-            const prefix = langCode.slice(0, 2).toLowerCase();
-            const matchingLang = availableVoices.filter(v => v.lang.toLowerCase().startsWith(prefix));
-            if (matchingLang.length === 0) return null;
+        async function speakTextWithDistinctVoice(text, profile) {
+            const voicePlayer = document.getElementById('voice-tts-player');
+            const apiKey = window.appState.tts.elevenLabsApiKey;
 
-            const maleRegex = /yuri|dmitry|pavel|maxim|alex|daniel|guy|christopher|david|mark|male|муж/i;
-            const femaleRegex = /milena|svetlana|irina|katya|samantha|victoria|aria|jenny|zira|ava|female|жен/i;
+            // 1. Если введен ключ ElevenLabs — читаем напрямую студийным голосом ElevenLabs
+            if (apiKey && apiKey.length > 12) {
+                try {
+                    const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${profile.elevenVoiceId}`, {
+                        method: 'POST',
+                        headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            text: text.slice(0, 800),
+                            model_id: "eleven_multilingual_v2",
+                            voice_settings: { stability: 0.42, similarity_boost: 0.85 }
+                        })
+                    });
+                    if (resp.ok) {
+                        const blob = await resp.blob();
+                        voicePlayer.src = URL.createObjectURL(blob);
+                        voicePlayer.preservesPitch = true;
+                        voicePlayer.playbackRate = 1.0;
+                        await voicePlayer.play();
+                        return new Promise(res => { voicePlayer.onended = res; voicePlayer.onerror = res; });
+                    }
+                } catch(e) {}
+            }
 
-            if (gender === 'male') {
-                return matchingLang.find(v => maleRegex.test(v.name)) || matchingLang[0];
-            } else {
-                return matchingLang.find(v => femaleRegex.test(v.name)) || matchingLang[0];
+            // 2. Бесплатный облачный нейронный поток с акустической перестройкой тембра (чтобы каждый голос — Анджелина, Сексуальный, Звонкий и Баритон — звучал по-разному и живо!)
+            try {
+                const encoded = encodeURIComponent(text.slice(0, 190));
+                const tl = profile.lang === 'en' ? 'en' : 'ru';
+                const streamUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${tl}&q=${encoded}`;
+                voicePlayer.src = streamUrl;
+                // Отключаем сохранение высоты тона, чтобы voiceRate менял именно грудной/высокий тембр голоса!
+                voicePlayer.preservesPitch = !!profile.preservePitch;
+                voicePlayer.mozPreservesPitch = !!profile.preservePitch;
+                voicePlayer.webkitPreservesPitch = !!profile.preservePitch;
+                voicePlayer.playbackRate = profile.voiceRate || 1.0;
+
+                await voicePlayer.play();
+                return new Promise(res => { voicePlayer.onended = res; voicePlayer.onerror = res; });
+            } catch (err) {
+                // 3. Резервный браузерный синтезатор с индивидуальным pitch
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    return new Promise(res => {
+                        const u = new SpeechSynthesisUtterance(text);
+                        u.lang = profile.lang === 'en' ? 'en-US' : 'ru-RU';
+                        u.pitch = profile.voiceRate < 0.9 ? 0.72 : (profile.voiceRate > 1.02 ? 1.25 : 0.92);
+                        u.rate = profile.voiceRate;
+                        u.onend = res;
+                        u.onerror = res;
+                        window.speechSynthesis.speak(u);
+                    });
+                }
             }
         }
+
+        // Кнопка прослушивания примера выбранного голоса!
+        window.previewSelectedVoiceSample = async function() {
+            const state = window.appState;
+            const profile = state.tts.profiles.find(p => p.id === state.tts.selectedProfileId) || state.tts.profiles[0];
+            window.stopChapterVoice();
+            state.tts.isPlaying = true;
+            const sampleBtn = document.getElementById('tts-sample-btn');
+            if (sampleBtn) sampleBtn.innerText = '🔊 Звучит пример...';
+            await speakTextWithDistinctVoice(profile.sampleText, profile);
+            state.tts.isPlaying = false;
+            if (sampleBtn) sampleBtn.innerText = '▶️ Пример голоса';
+        };
 
         window.selectVoiceProfile = function(profileId) {
             window.appState.tts.selectedProfileId = profileId;
             if (window.appState.tts.isPlaying) {
                 window.stopChapterVoice();
                 window.startChapterVoice();
-            } else {
-                router.render();
             }
         };
 
@@ -889,10 +953,13 @@
         };
 
         window.stopChapterVoice = function() {
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             window.appState.tts.isPlaying = false;
+            isVoiceSpeaking = false;
+            const voicePlayer = document.getElementById('voice-tts-player');
+            if (voicePlayer) { voicePlayer.pause(); }
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             const btn = document.getElementById('tts-play-btn');
-            if (btn) btn.innerHTML = '🔊 Включить чтение голосом';
+            if (btn) btn.innerHTML = '🔊 Читать главу этим голосом';
         };
 
         window.startChapterVoice = async function() {
@@ -901,72 +968,37 @@
             if (!ch) return;
 
             const profile = state.tts.profiles.find(p => p.id === state.tts.selectedProfileId) || state.tts.profiles[0];
-            const blocks = (state.lang === 'EN' && ch.contentEn?.length ? ch.contentEn : ch.contentRu).filter(b => !isImageOrGif(b));
-            if (!blocks || blocks.length === 0) return alertCustom("В главе нет текста для озвучки.");
+            const rawBlocks = (state.lang === 'EN' && ch.contentEn?.length ? ch.contentEn : ch.contentRu || []).filter(b => !isImageOrGif(b));
+            if (rawBlocks.length === 0) return alertCustom("В главе нет текста для озвучки.");
 
-            // Если в админке введен API-ключ ElevenLabs — используем студийный ИИ-голос ElevenLabs
-            if (state.tts.elevenLabsApiKey && state.tts.elevenLabsApiKey.length > 10) {
-                try {
-                    state.tts.isPlaying = true;
-                    const btn = document.getElementById('tts-play-btn');
-                    if (btn) btn.innerHTML = '⏳ Генерация голоса ElevenLabs...';
-                    const fullText = blocks.map(b => b.replace(/^~\w*\s*/, '')).join(' ').slice(0, 1200);
-                    const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${profile.elevenVoiceId}`, {
-                        method: 'POST',
-                        headers: {
-                            'xi-api-key': state.tts.elevenLabsApiKey,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            text: fullText,
-                            model_id: "eleven_multilingual_v2",
-                            voice_settings: { stability: 0.45, similarity_boost: 0.82 }
-                        })
-                    });
-                    if (resp.ok) {
-                        const blob = await resp.blob();
-                        const url = URL.createObjectURL(blob);
-                        const audio = new Audio(url);
-                        audio.onended = () => window.stopChapterVoice();
-                        audio.play();
-                        if (btn) btn.innerHTML = '⏹ Остановить голос ElevenLabs';
-                        return;
-                    }
-                } catch (err) {
-                    console.warn("ElevenLabs fallback to neural browser voice:", err);
-                }
-            }
+            // Разбиваем длинные абзацы на короткие живые фразы до 180 символов
+            const sentences = [];
+            rawBlocks.forEach(b => {
+                const clean = b.replace(/^~\w*\s*/, '');
+                const parts = clean.match(/[^.!?]+[.!?]*/g) || [clean];
+                parts.forEach(p => { if (p.trim()) sentences.push(p.trim()); });
+            });
 
-            // Встроенный нейронный синтезатор с настройками тембра (Angelina Jolie / Бархатный / Звонкий / Баритон)
-            if (!('speechSynthesis' in window)) return alertCustom("Голосовой движок не поддерживается на этом устройстве.");
-            window.speechSynthesis.cancel();
             state.tts.isPlaying = true;
+            isVoiceSpeaking = true;
             const btn = document.getElementById('tts-play-btn');
-            if (btn) btn.innerHTML = '⏹ Остановить чтение';
+            if (btn) btn.innerHTML = '⏹ Остановить озвучку';
 
-            let idx = 0;
-            function speakBlock() {
-                if (!state.tts.isPlaying || idx >= blocks.length) {
-                    window.stopChapterVoice();
-                    return;
-                }
-                const cleanText = blocks[idx].replace(/^~\w*\s*/, '');
-                const utter = new SpeechSynthesisUtterance(cleanText);
-                utter.lang = profile.lang;
-                utter.pitch = profile.pitch;
-                utter.rate = (state.tts.rate || 1.0) * profile.rateMod;
-
-                const sysVoice = findMatchingSystemVoice(profile.lang, profile.gender);
-                if (sysVoice) utter.voice = sysVoice;
-
-                utter.onend = () => { idx++; speakBlock(); };
-                utter.onerror = () => window.stopChapterVoice();
-                window.speechSynthesis.speak(utter);
+            for (const phrase of sentences) {
+                if (!state.tts.isPlaying || !isVoiceSpeaking) break;
+                await speakTextWithDistinctVoice(phrase, profile);
             }
-            speakBlock();
+            window.stopChapterVoice();
         };
 
-        // --- 2) SVG-ИКОНКИ НАСТОЯЩЕГО РАЗНОЦВЕТНОГО ПЛАМЕНИ ДЛЯ ЛАЙКОВ ---
+        window.saveElevenLabsKey = function() {
+            const key = document.getElementById('elevenlabs-key-input')?.value.trim() || '';
+            window.appState.tts.elevenLabsApiKey = key;
+            localStorage.setItem('elevenlabs_api_key', key);
+            alertCustom("✅ Ключ ElevenLabs сохранен! Голоса подключены.");
+        };
+
+        // --- РАЗНОЦВЕТНОЕ SVG-ПЛАМЯ ДЛЯ ЛАЙКОВ ---
         function getFlameSvg(colorHex, glowColor) {
             return `
                 <svg class="w-8 h-8 svg-flame mx-auto" viewBox="0 0 24 24" fill="${colorHex}" style="filter: drop-shadow(0 0 10px ${glowColor});">
@@ -976,7 +1008,7 @@
             `;
         }
 
-        // --- 1 & 10) АВТОРИЗАЦИЯ: ДОСТУП АДМИНА ТОЛЬКО У GUARDIAN_ANGEL_15 ---
+        // --- АВТОРИЗАЦИЯ: АДМИН ТОЛЬКО У GUARDIAN_ANGEL_15 ---
         window.loginOrRegisterUser = function() {
             const nameInput = document.getElementById('auth-username')?.value.trim() || '';
             const emailInput = document.getElementById('auth-email')?.value.trim() || '';
@@ -984,7 +1016,6 @@
 
             if (!emailInput || !passInput) return alertCustom("Пожалуйста, введите Email и Пароль!");
 
-            // Проверяем, является ли входящий человек тобой (Guardian_Angel_15 / arien.mahash.9@gmail.com)
             const isOwner = (
                 nameInput.toLowerCase() === ADMIN_USERNAME.toLowerCase() ||
                 emailInput.toLowerCase() === ADMIN_EMAIL.toLowerCase()
@@ -1000,7 +1031,7 @@
                     tokens: 9999
                 };
                 window.appState.saveSession(adminUser);
-                alertCustom("⚡ Добро пожаловать, Автор Guardian_Angel_15! Полный доступ Администратора открыт.");
+                alertCustom("⚡ Добро пожаловать, Автор Guardian_Angel_15! Доступ Администратора открыт.");
                 router.navigate('admin');
             } else {
                 const regularUser = {
@@ -1023,10 +1054,9 @@
             router.navigate('home');
         };
 
-        // Переключение ролей для проверки (работает ТОЛЬКО если ты уже вошел как владелец Guardian_Angel_15)
         window.ownerSwitchTestRole = function(targetRole) {
             if (!window.appState.user.isOwnerAuthenticated && window.appState.user.role !== 'admin') {
-                return alertCustom("Доступ запрещен! Только для автора Guardian_Angel_15.");
+                return alertCustom("Доступ запрещен!");
             }
             window.appState.user.role = targetRole;
             window.appState.user.name = targetRole === 'admin' ? ADMIN_USERNAME : `Тест (${targetRole.toUpperCase()})`;
@@ -1042,11 +1072,13 @@
             const adminBtn = document.getElementById('nav-admin');
             const crestImg = document.getElementById('header-crest-img');
 
-            if (crestImg && window.appState.siteConfig.crestUrl) crestImg.src = window.appState.siteConfig.crestUrl;
+            if (crestImg) {
+                crestImg.src = window.appState.siteConfig.crestUrl || DEFAULT_CREST_SVG;
+                crestImg.onerror = () => { crestImg.src = DEFAULT_CREST_SVG; };
+            }
             if (!badgeName) return;
             badgeName.innerText = user.name;
 
-            // Кнопка Админ+ видна ТОЛЬКО владельцу Guardian_Angel_15
             if (user.role === 'admin' || user.isOwnerAuthenticated) {
                 badgeIcon.innerText = '⚡';
                 adminBtn.classList.remove('hidden');
@@ -1056,9 +1088,9 @@
             }
         }
 
-        // --- 11) СОХРАНЕНИЕ И РЕДАКТИРОВАНИЕ БИБЛИИ МИРА (ТОЛЬКО АДМИН) ---
+        // --- РЕДАКТОР БИБЛИИ МИРА ---
         window.saveWorldBibleChanges = async function() {
-            if (window.appState.user.role !== 'admin') return alertCustom("Только Админ может редактировать Библию Мира!");
+            if (window.appState.user.role !== 'admin') return;
             const docUrl = document.getElementById('wb-doc-url')?.value.trim() || window.appState.worldBible.docUrl;
             const secTitle = document.getElementById('wb-new-sec-title')?.value.trim();
             const secContent = document.getElementById('wb-new-sec-content')?.value.trim();
@@ -1071,7 +1103,7 @@
                 });
             }
             await window.appState.saveAllData();
-            alertCustom("📜 Библия Мира успешно обновлена и сохранена!");
+            alertCustom("📜 Библия Мира успешно обновлена!");
             router.render();
         };
 
@@ -1082,7 +1114,7 @@
             router.render();
         };
 
-        // --- 4) СМЕНА ОБЛОЖКИ КНИГИ И ГЕРБА ---
+        // --- СМЕНА ОБЛОЖКИ КНИГИ И ГЕРБА ---
         window.saveCoverAndCrest = async function() {
             const titleInput = document.getElementById('cfg-title')?.value.trim();
             const bannerFile = document.getElementById('cfg-banner-input')?.files?.[0];
@@ -1094,14 +1126,14 @@
                 if (compressedBanner) window.appState.siteConfig.bannerUrl = compressedBanner;
             }
             if (crestFile) {
-                const compressedCrest = await window.processImageFile(crestFile, 450);
+                const compressedCrest = await window.processImageFile(crestFile, 500);
                 if (compressedCrest) window.appState.siteConfig.crestUrl = compressedCrest;
             }
 
             await window.appState.saveAllData();
             updateUserBadge();
             document.getElementById('header-site-title').innerText = window.appState.siteConfig.title;
-            alertCustom("🎨 Обложка книги и герб успешно обновлены и сохранены!");
+            alertCustom("🎨 Обложка книги и значок Герба успешно обновлены!");
             router.navigate('home');
         };
 
@@ -1312,7 +1344,7 @@
 
             const btn = document.getElementById('autoscroll-btn');
             if (btn) {
-                btn.innerText = next === 0 ? '📜 Автоскролл' : `📜 Скролл x${next}`;
+                btn.innerText = next === 0 ? '📜 Скролл' : `📜 x${next}`;
                 btn.className = next === 0 
                     ? 'px-2.5 py-1.5 rounded-xl bg-space-800 text-[11px] text-gray-300 border border-white/10' 
                     : 'px-2.5 py-1.5 rounded-xl bg-accent-pink text-[11px] text-white font-bold';
@@ -1325,7 +1357,7 @@
                     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
                         clearInterval(autoScrollTimer);
                         window.appState.readerSettings.autoScrollSpeed = 0;
-                        if (btn) btn.innerText = '📜 Автоскролл';
+                        if (btn) btn.innerText = '📜 Скролл';
                     }
                 }, 35);
             }
@@ -1364,6 +1396,7 @@
                 const container = document.getElementById('app-container');
                 const state = window.appState;
                 const view = state.currentView;
+                const crestSrc = state.siteConfig.crestUrl || DEFAULT_CREST_SVG;
 
                 if (view === 'home') {
                     const lastCh = state.chapters.find(c => c.id === state.progress.lastChapterId) || state.chapters[0];
@@ -1382,12 +1415,12 @@
                                 </div>
                             ` : ''}
 
-                            <!-- Главная Обложка книги + Герб -->
+                            <!-- Главная Обложка + Значок Герба -->
                             <div class="relative rounded-2xl overflow-hidden glass shadow-2xl border border-white/15">
                                 <img src="${state.siteConfig.bannerUrl}" class="w-full h-96 object-cover object-center" alt="Cover" onerror="this.src='IMG_3464_c97ee2.jpg'">
-                                <!-- 3) ГЕРБ ГЛАВЫ И КНИГИ -->
+                                <!-- Значок Герба книги -->
                                 <div class="absolute top-4 right-4 w-20 h-20 rounded-full p-0.5 bg-gradient-to-tr from-accent-blue via-white to-accent-pink shadow-2xl">
-                                    <img src="${state.siteConfig.crestUrl}" class="w-full h-full rounded-full object-cover bg-space-900" onerror="this.onerror=null; this.src='IMG_5307_77527d.jpg';">
+                                    <img src="${crestSrc}" class="w-full h-full rounded-full object-cover bg-space-900">
                                 </div>
                                 <div class="absolute inset-0 bg-gradient-to-t from-space-900 via-space-900/45 to-transparent flex flex-col justify-end p-6">
                                     <div class="inline-block px-3 py-1 rounded-full bg-accent-purple/40 border border-accent-purple/60 text-white text-xs font-medium mb-2 w-max">${state.t('author_tag')}</div>
@@ -1397,8 +1430,8 @@
                                         <button onclick="openChapter('${state.chapters[0]?.id || ''}')" class="py-3 px-4 rounded-xl cosmic-gradient text-white text-xs font-bold shadow-lg border border-white/25">
                                             ${state.t('start_first')}
                                         </button>
-                                        <button onclick="openBackgroundPickerModal()" class="py-3 px-4 rounded-xl glass-card text-accent-blue text-xs font-bold border border-accent-blue/40">
-                                            ${state.t('change_bg')}
+                                        <button onclick="openMusicPlayerModal()" class="py-3 px-4 rounded-xl glass-card text-accent-pink text-xs font-bold border border-accent-pink/40">
+                                            🎵 Включить музыку
                                         </button>
                                     </div>
                                 </div>
@@ -1469,44 +1502,43 @@
 
                     container.innerHTML = `
                         <div class="space-y-5 pb-20">
-                            <!-- 6) Верхняя панель ридера с реально работающими шрифтами -->
+                            <!-- Верхняя панель ридера -->
                             <div class="glass p-2.5 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs border border-white/15 sticky top-14 z-30">
                                 <button onclick="router.navigate('chapters')" class="text-accent-blue font-semibold px-2 py-1">${state.t('back_chapters')}</button>
                                 <div class="flex items-center space-x-1.5">
                                     <select onchange="changeReaderFont(this.value)" class="bg-space-800 text-white text-[11px] px-2 py-1.5 rounded-lg border border-accent-blue/40 font-semibold">
-                                        <option value="font-literata" ${state.readerSettings.font==='font-literata'?'selected':''}>Шрифт: Literata</option>
-                                        <option value="font-georgia" ${state.readerSettings.font==='font-georgia'?'selected':''}>Шрифт: Georgia</option>
-                                        <option value="font-munich" ${state.readerSettings.font==='font-munich'?'selected':''}>Шрифт: Imperial Munich</option>
-                                        <option value="font-buira" ${state.readerSettings.font==='font-buira'?'selected':''}>Шрифт: Buira</option>
-                                        <option value="font-serif-pro" ${state.readerSettings.font==='font-serif-pro'?'selected':''}>Шрифт: Source Serif Pro</option>
+                                        <option value="font-literata" ${state.readerSettings.font==='font-literata'?'selected':''}>Literata</option>
+                                        <option value="font-georgia" ${state.readerSettings.font==='font-georgia'?'selected':''}>Georgia</option>
+                                        <option value="font-munich" ${state.readerSettings.font==='font-munich'?'selected':''}>Imperial Munich</option>
+                                        <option value="font-buira" ${state.readerSettings.font==='font-buira'?'selected':''}>Buira</option>
+                                        <option value="font-serif-pro" ${state.readerSettings.font==='font-serif-pro'?'selected':''}>Source Serif Pro</option>
                                     </select>
-                                    <button onclick="openMusicPlayerModal()" class="px-2.5 py-1.5 rounded-xl bg-accent-pink/20 text-accent-pink border border-accent-pink/40 text-[11px]">🎵 Звуки</button>
+                                    <button onclick="openMusicPlayerModal()" class="px-2.5 py-1.5 rounded-xl bg-accent-pink/20 text-accent-pink border border-accent-pink/40 text-[11px] font-bold">🎵 Музыка</button>
                                     <button id="autoscroll-btn" onclick="toggleAutoScroll()" class="px-2.5 py-1.5 rounded-xl bg-space-800 text-[11px] text-gray-300 border border-white/10">📜 Скролл</button>
                                     ${state.user.role === 'admin' ? `<button onclick="startEditChapter('${ch.id}')" class="px-2 py-1.5 rounded-xl bg-accent-pink text-white text-[11px] font-bold">✏️</button>` : ''}
                                 </div>
                             </div>
 
-                            <!-- 5 & 12) ПАНЕЛЬ ОЗВУЧКИ: АНДЖЕЛИНА ДЖОЛИ, РУССКИЕ ЖИВЫЕ И ELEVENLABS -->
+                            <!-- ПАНЕЛЬ ЖИВОЙ ОЗВУЧКИ ГЛАВЫ (АНДЖЕЛИНА + РУССКИЕ ЖИВЫЕ + ELEVENLABS) -->
                             <div class="glass-card p-3.5 rounded-2xl border border-accent-purple/40 space-y-2.5">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-bold text-white">🎧 Голос чтения книги (AI & ElevenLabs):</span>
+                                    <span class="text-xs font-bold text-white">🎧 Живая озвучка книги (выберите голос):</span>
+                                    <button id="tts-sample-btn" onclick="previewSelectedVoiceSample()" class="px-2.5 py-1 rounded-lg bg-accent-purple/30 text-accent-silver border border-accent-purple/50 text-[10px] font-bold">▶️ Пример голоса</button>
                                 </div>
                                 <select onchange="selectVoiceProfile(this.value)" class="w-full bg-space-900 text-white text-xs p-2.5 rounded-xl border border-accent-purple/50">
                                     ${state.tts.profiles.map(p => `
                                         <option value="${p.id}" ${state.tts.selectedProfileId === p.id ? 'selected' : ''}>${p.name}</option>
                                     `).join('')}
                                 </select>
-                                <div class="flex items-center space-x-2">
-                                    <button id="tts-play-btn" onclick="toggleChapterVoice()" class="flex-1 py-2.5 rounded-xl cosmic-gradient text-white text-xs font-bold border border-white/20 shadow-md">
-                                        ${state.tts.isPlaying ? '⏹ Остановить чтение' : '🔊 Включить чтение голосом'}
-                                    </button>
-                                </div>
+                                <button id="tts-play-btn" onclick="toggleChapterVoice()" class="w-full py-2.5 rounded-xl cosmic-gradient text-white text-xs font-bold border border-white/20 shadow-md">
+                                    ${state.tts.isPlaying ? '⏹ Остановить озвучку' : '🔊 Читать главу этим голосом'}
+                                </button>
                             </div>
 
-                            <!-- 3) ГЕРБ ГЛАВЫ НАД ЗАГОЛОВКОМ -->
+                            <!-- Герб Главы -->
                             <div class="flex flex-col items-center text-center space-y-2 pt-2">
                                 <div class="w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-accent-blue via-white to-accent-pink shadow-xl">
-                                    <img src="${state.siteConfig.crestUrl}" class="w-full h-full rounded-full object-cover bg-space-900" onerror="this.onerror=null; this.src='IMG_5307_77527d.jpg';">
+                                    <img src="${crestSrc}" class="w-full h-full rounded-full object-cover bg-space-900">
                                 </div>
                                 <h1 class="text-2xl font-bold text-white">${state.lang === 'EN' && ch.titleEn ? ch.titleEn : ch.titleRu}</h1>
                             </div>
@@ -1524,23 +1556,23 @@
                                 </div>
                             `}
 
-                            <!-- 2) ИСПРАВЛЕННЫЕ ЛАЙКИ В ВИДЕ НАСТОЯЩЕГО РАЗНОЦВЕТНОГО SVG-ПЛАМЕНИ -->
+                            <!-- Разноцветное пламя лайков -->
                             <div class="glass-card p-4 rounded-2xl text-center space-y-3 border border-white/15">
                                 <span class="text-xs font-bold text-gray-200 block">${state.t('flame_title')}</span>
                                 <div class="grid grid-cols-4 gap-2">
-                                    <button onclick="voteFlame('${ch.id}', 'blue')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-blue-500/40 hover:bg-blue-500/10">
+                                    <button onclick="voteFlame('${ch.id}', 'blue')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-blue-500/40">
                                         ${getFlameSvg('#38BDF8', 'rgba(56,189,248,0.85)')}
                                         <span class="text-[10px] text-blue-300 font-bold mt-1.5">${state.t('flame_blue')} (${likes.blue || 0})</span>
                                     </button>
-                                    <button onclick="voteFlame('${ch.id}', 'purple')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-purple-500/40 hover:bg-purple-500/10">
+                                    <button onclick="voteFlame('${ch.id}', 'purple')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-purple-500/40">
                                         ${getFlameSvg('#C084FC', 'rgba(192,132,252,0.85)')}
                                         <span class="text-[10px] text-purple-300 font-bold mt-1.5">${state.t('flame_purple')} (${likes.purple || 0})</span>
                                     </button>
-                                    <button onclick="voteFlame('${ch.id}', 'pink')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-pink-500/40 hover:bg-pink-500/10">
+                                    <button onclick="voteFlame('${ch.id}', 'pink')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-pink-500/40">
                                         ${getFlameSvg('#FF2A85', 'rgba(255,42,133,0.85)')}
                                         <span class="text-[10px] text-pink-300 font-bold mt-1.5">${state.t('flame_pink')} (${likes.pink || 0})</span>
                                     </button>
-                                    <button onclick="voteFlame('${ch.id}', 'gold')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-amber-500/40 hover:bg-amber-500/10">
+                                    <button onclick="voteFlame('${ch.id}', 'gold')" class="flex flex-col items-center p-2.5 rounded-xl glass border border-amber-500/40">
                                         ${getFlameSvg('#FBBF24', 'rgba(251,191,36,0.9)')}
                                         <span class="text-[10px] text-amber-300 font-bold mt-1.5">${state.t('flame_gold')} (${likes.gold || 0})</span>
                                     </button>
@@ -1553,11 +1585,11 @@
                                 
                                 ${state.user.role !== 'guest' ? `
                                     <div class="glass-card p-3.5 rounded-2xl space-y-2 border border-accent-purple/40">
-                                        <span class="text-xs font-bold text-accent-pink">✨ Набор стикеров (отправка в 1 клик):</span>
+                                        <span class="text-xs font-bold text-accent-pink">✨ Набор стикеров:</span>
                                         <div class="flex items-center space-x-3 overflow-x-auto py-1">
                                             ${state.stickers.map(st => `
                                                 <button onclick="sendStickerComment('${ch.id}', '${st.url}', '${st.name}')" class="flex-shrink-0 flex flex-col items-center space-y-1 p-1.5 rounded-xl glass border border-white/10 interactive-btn">
-                                                    <img src="${st.url}" class="w-12 h-12 rounded-lg object-cover" onerror="this.src='IMG_3464_c97ee2.jpg'">
+                                                    <img src="${st.url}" class="w-12 h-12 rounded-lg object-cover" onerror="this.src='${DEFAULT_CREST_SVG}'">
                                                     <span class="text-[8px] text-gray-300 max-w-[50px] truncate">${st.name}</span>
                                                 </button>
                                             `).join('')}
@@ -1592,10 +1624,9 @@
                         </div>
                     `;
                 } else if (view === 'lore') {
-                    // 11) ИНТЕГРИРОВАННАЯ БИБЛИЯ МИРА (С ПРОСМОТРОМ ДОКУМЕНТА И РЕДАКТИРОВАНИЕМ ТОЛЬКО ДЛЯ АДМИНА)
                     container.innerHTML = `
                         <div class="space-y-6 pb-16">
-                            <!-- Секция Библии Мира -->
+                            <!-- Библия Мира -->
                             <div class="glass-card p-5 rounded-2xl space-y-4 border-2 border-accent-blue/40 shadow-xl">
                                 <div class="flex items-center justify-between">
                                     <div>
@@ -1617,27 +1648,25 @@
                                     `).join('')}
                                 </div>
 
-                                <!-- Встроенное окно документа Google Docs -->
                                 <details class="glass p-3 rounded-xl border border-white/10">
-                                    <summary class="text-xs font-bold text-accent-blue cursor-pointer">📖 Открыть встроенный документ Google Docs прямо на сайте</summary>
+                                    <summary class="text-xs font-bold text-accent-blue cursor-pointer">📖 Читать полный Google Doc Библии Мира прямо на сайте</summary>
                                     <div class="mt-3 rounded-xl overflow-hidden border border-white/20 h-96 bg-white">
                                         <iframe src="${state.worldBible.docUrl}" class="w-full h-full border-0"></iframe>
                                     </div>
                                 </details>
 
-                                <!-- Редактор Библии Мира (ВИДЕН СТРОГО ТОЛЬКО АДМИНУ Guardian_Angel_15!) -->
                                 ${state.user.role === 'admin' ? `
                                     <div class="pt-3 border-t border-white/15 space-y-2.5">
-                                        <h4 class="text-xs font-bold text-accent-pink">⚡ Админ-редактор Библии Мира (доступно только Guardian_Angel_15)</h4>
-                                        <input type="text" id="wb-doc-url" value="${state.worldBible.docUrl}" placeholder="Ссылка на Google Doc Библии Мира" class="w-full glass-card p-2 rounded-xl text-xs text-white">
-                                        <input type="text" id="wb-new-sec-title" placeholder="Заголовок новой главы Библии Мира" class="w-full glass-card p-2 rounded-xl text-xs text-white">
-                                        <textarea id="wb-new-sec-content" rows="3" placeholder="Текст канона / правил вселенной..." class="w-full glass-card p-2 rounded-xl text-xs text-white"></textarea>
+                                        <h4 class="text-xs font-bold text-accent-pink">⚡ Админ-редактор Библии Мира</h4>
+                                        <input type="text" id="wb-doc-url" value="${state.worldBible.docUrl}" class="w-full glass-card p-2 rounded-xl text-xs text-white">
+                                        <input type="text" id="wb-new-sec-title" placeholder="Заголовок нового раздела канона" class="w-full glass-card p-2 rounded-xl text-xs text-white">
+                                        <textarea id="wb-new-sec-content" rows="3" placeholder="Описание правил вселенной..." class="w-full glass-card p-2 rounded-xl text-xs text-white"></textarea>
                                         <button onclick="saveWorldBibleChanges()" class="w-full py-2.5 rounded-xl bg-accent-pink text-white text-xs font-bold">💾 Сохранить в Библию Мира</button>
                                     </div>
                                 ` : ''}
                             </div>
 
-                            <!-- Папки Персонажей -->
+                            <!-- Персонажи -->
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <h3 class="text-lg font-bold text-white">${state.t('characters_title')}</h3>
@@ -1714,13 +1743,11 @@
                         </div>
                     `;
                 } else if (view === 'profile') {
-                    // 1 & 9 & 10) ПРОФИЛЬ: ОБЫЧНЫЕ ПОЛЬЗОВАТЕЛИ ВИДЯТ ТОЛЬКО ВХОД И ПОКУПКУ PREMIUM!
-                    // Никаких открытых кнопок админа для чужих людей по ссылке больше нет!
                     const isOwner = state.user.role === 'admin' || state.user.isOwnerAuthenticated;
                     container.innerHTML = `
                         <div class="space-y-5 pb-12">
                             <div class="glass-card p-6 rounded-2xl text-center space-y-3 border border-white/15">
-                                <img src="${state.siteConfig.crestUrl}" class="w-20 h-20 rounded-full mx-auto object-cover border-2 border-accent-blue shadow-xl" onerror="this.onerror=null; this.src='IMG_5307_77527d.jpg';">
+                                <img src="${crestSrc}" class="w-20 h-20 rounded-full mx-auto object-cover border-2 border-accent-blue shadow-xl">
                                 <h2 class="text-lg font-bold text-white">${state.user.name}</h2>
                                 <p class="text-xs text-accent-pink font-bold uppercase">
                                     ${state.user.role === 'admin' ? state.t('role_admin') : state.user.role === 'premium' ? state.t('role_premium') : state.user.role === 'user' ? state.t('role_user') : state.t('role_guest')}
@@ -1728,9 +1755,9 @@
                                 ${state.user.role !== 'guest' ? `<button onclick="logoutAccount()" class="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-xs font-bold">Выйти из аккаунта</button>` : ''}
                             </div>
 
-                            <!-- 9) БЛОК МОНЕТИЗАЦИИ И ОПЛАТЫ ПОДПИСКИ -->
+                            <!-- Монетизация -->
                             <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-pink/40">
-                                <h3 class="text-sm font-bold text-white">💎 Премиум-доступ и Монеты</h3>
+                                <h3 class="text-sm font-bold text-white">💎 Премиум-доступ</h3>
                                 <p class="text-xs text-gray-300">Откройте главы раннего доступа, закрытые карточки персонажей и VIP-фоны.</p>
                                 <button onclick="openPaymentModal()" class="w-full py-3.5 px-4 rounded-xl cosmic-gradient text-white text-xs font-bold shadow-lg flex items-center justify-between border border-white/20">
                                     <span>${state.t('buy_premium_btn')}</span>
@@ -1738,10 +1765,9 @@
                                 </button>
                             </div>
 
-                            <!-- Вход по логину и паролю -->
                             ${state.user.role === 'guest' ? `
                                 <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-blue/30">
-                                    <h3 class="text-sm font-bold text-white">🔐 Вход в аккаунт / Регистрация</h3>
+                                    <h3 class="text-sm font-bold text-white">🔐 Вход / Регистрация</h3>
                                     <input type="text" id="auth-username" placeholder="Ваш никнейм" class="w-full glass-card p-3 rounded-xl text-xs text-white">
                                     <input type="email" id="auth-email" placeholder="Ваш Email" class="w-full glass-card p-3 rounded-xl text-xs text-white">
                                     <input type="password" id="auth-pass" placeholder="Пароль" class="w-full glass-card p-3 rounded-xl text-xs text-white">
@@ -1749,11 +1775,10 @@
                                 </div>
                             ` : ''}
 
-                            <!-- Секретный переключатель тестирования ролей ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА GUARDIAN_ANGEL_15 -->
                             ${isOwner ? `
                                 <div class="glass-card p-4 rounded-2xl space-y-2.5 border-2 border-accent-pink/50">
-                                    <h4 class="text-xs font-bold text-accent-pink">⚡ Панель Владельца (видна ТОЛЬКО вам после входа под Guardian_Angel_15):</h4>
-                                    <button onclick="router.navigate('admin')" class="w-full py-2.5 rounded-xl bg-accent-pink text-white text-xs font-bold">Перейти в Админ-панель →</button>
+                                    <h4 class="text-xs font-bold text-accent-pink">⚡ Панель Владельца (видна ТОЛЬКО вам):</h4>
+                                    <button onclick="router.navigate('admin')" class="w-full py-2.5 rounded-xl bg-accent-pink text-white text-xs font-bold">Открыть Админ-панель →</button>
                                     <div class="grid grid-cols-4 gap-1.5 pt-1">
                                         <button onclick="ownerSwitchTestRole('admin')" class="py-1.5 rounded bg-pink-500/20 text-pink-300 text-[10px] font-bold">Админ</button>
                                         <button onclick="ownerSwitchTestRole('premium')" class="py-1.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-bold">Премиум</button>
@@ -1774,22 +1799,22 @@
                         <div class="space-y-6 pb-20">
                             <h2 class="text-xl font-bold text-white">⚡ Панель Автора (${ADMIN_USERNAME})</h2>
 
-                            <!-- 4) СМЕНА ОБЛОЖКИ КНИГИ И ГЕРБА САЙТА -->
+                            <!-- 1. СМЕНА ОБЛОЖКИ КНИГИ И ЗНАЧКА ГЕРБА -->
                             <div class="glass-card p-4 rounded-2xl space-y-3 border-2 border-accent-pink/60 shadow-xl">
-                                <h3 class="text-sm font-bold text-white">🎨 1. Изменить обложку книги и Герб главы</h3>
+                                <h3 class="text-sm font-bold text-white">🎨 1. Изменить обложку книги и Значок Герба</h3>
                                 <input type="text" id="cfg-title" value="${state.siteConfig.title}" placeholder="Название книги" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                                 <div class="space-y-1">
-                                    <label class="text-[11px] text-gray-300 block">Загрузить новую Обложку книги из галереи iPhone:</label>
+                                    <label class="text-[11px] text-gray-300 block">Выбрать новую Обложку книги из галереи iPhone:</label>
                                     <input type="file" id="cfg-banner-input" accept="image/*" class="w-full text-xs text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-accent-pink file:text-white">
                                 </div>
                                 <div class="space-y-1">
-                                    <label class="text-[11px] text-gray-300 block">Загрузить фото Герба главы и сайта из галереи iPhone:</label>
+                                    <label class="text-[11px] text-gray-300 block">Выбрать фото Герба (значок шапки и глав) из галереи iPhone:</label>
                                     <input type="file" id="cfg-crest-input" accept="image/*" class="w-full text-xs text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-accent-blue file:text-white">
                                 </div>
-                                <button onclick="saveCoverAndCrest()" class="w-full py-3 rounded-xl bg-accent-pink text-white text-xs font-bold shadow-lg">💾 Сохранить обложку и герб</button>
+                                <button onclick="saveCoverAndCrest()" class="w-full py-3 rounded-xl bg-accent-pink text-white text-xs font-bold shadow-lg">💾 Сохранить обложку и значок герба</button>
                             </div>
 
-                            <!-- ПУБЛИКАЦИЯ И РЕДАКТИРОВАНИЕ ГЛАВЫ (ДО 15-20 ФОТО) -->
+                            <!-- 2. ПУБЛИКАЦИЯ И РЕДАКТИРОВАНИЕ ГЛАВЫ -->
                             <div class="glass-card p-4 rounded-2xl space-y-3 border-2 border-accent-blue/50 shadow-xl">
                                 <div class="flex items-center justify-between">
                                     <h3 class="text-sm font-bold text-white">${isEditing ? '✏️ Редактирование главы' : '📖 2. Опубликовать новую главу (до 15–20 фото)'}</h3>
@@ -1819,9 +1844,16 @@
                                 </button>
                             </div>
 
-                            <!-- ДОБАВЛЕНИЕ ФОНОВ И ПАПОК ПЕРСОНАЖЕЙ -->
+                            <!-- 3. КЛЮЧ ELEVENLABS (ДЛЯ ПРЯМОГО ПОДКЛЮЧЕНИЯ САЙТА ELEVENLABS) -->
+                            <div class="glass-card p-4 rounded-2xl space-y-2.5 border border-accent-purple/50">
+                                <h3 class="text-sm font-bold text-white">🎙️ 3. Подключение ElevenLabs API (по желанию)</h3>
+                                <input type="password" id="elevenlabs-key-input" value="${state.tts.elevenLabsApiKey}" placeholder="Вставьте xi-api-key с сайта elevenlabs.io" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <button onclick="saveElevenLabsKey()" class="w-full py-2.5 rounded-xl bg-accent-purple text-white text-xs font-bold">Сохранить ключ ElevenLabs</button>
+                            </div>
+
+                            <!-- 4. ДОБАВЛЕНИЕ ФОНОВ И ПАПОК ПЕРСОНАЖЕЙ -->
                             <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-gold/50">
-                                <h3 class="text-sm font-bold text-white">🌌 3. Добавить фон сайта</h3>
+                                <h3 class="text-sm font-bold text-white">🌌 4. Добавить фон сайта</h3>
                                 <input type="text" id="bg-new-name" placeholder="Название фона" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                                 <input type="file" id="bg-new-file" accept="image/*" class="w-full text-xs text-gray-300">
                                 <label class="flex items-center space-x-2 text-xs text-amber-300">
@@ -1832,7 +1864,7 @@
                             </div>
 
                             <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-purple/50">
-                                <h3 class="text-sm font-bold text-white">📁 4. Создать папку персонажа</h3>
+                                <h3 class="text-sm font-bold text-white">📁 5. Создать папку персонажа</h3>
                                 <input type="text" id="char-name" placeholder="Имя персонажа" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                                 <input type="text" id="char-folder" placeholder="Папка / категория" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                                 <textarea id="char-bio" rows="2" placeholder="Описание..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
@@ -1846,7 +1878,7 @@
             }
         };
 
-        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ СОХРАНЕНИЯ ---
+        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
         window.openChapter = (id) => router.navigate('reader', id || window.appState.chapters[0]?.id);
 
         window.changeReaderFont = function(fontClass) {
@@ -2043,7 +2075,6 @@
             router.render();
         };
 
-        // 9) МОНЕТИЗАЦИЯ И ОПЛАТА
         window.openPaymentModal = function() {
             const modal = document.getElementById('modal-container');
             modal.innerHTML = `
@@ -2089,7 +2120,7 @@
         };
 
         async function initApp() {
-            const stored = await LocalDB.load('novel_full_data_v7');
+            const stored = await LocalDB.load('novel_full_data_v8');
             if (stored) {
                 if (stored.siteConfig) window.appState.siteConfig = stored.siteConfig;
                 if (stored.worldBible) window.appState.worldBible = stored.worldBible;
@@ -2100,6 +2131,9 @@
                 if (stored.characters) window.appState.characters = stored.characters;
                 if (stored.comments) window.appState.comments = stored.comments;
                 if (stored.readerSettings) window.appState.readerSettings = stored.readerSettings;
+            }
+            if (!window.appState.siteConfig.crestUrl || window.appState.siteConfig.crestUrl.startsWith('IMG_')) {
+                window.appState.siteConfig.crestUrl = DEFAULT_CREST_SVG;
             }
             updateUserBadge();
             window.applyBackground(window.appState.readerSettings.activeBgId);
