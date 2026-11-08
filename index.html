@@ -98,10 +98,10 @@
             -webkit-user-select: none;
             cursor: pointer;
         }
-        button:hover, .interactive-btn:hover { filter: brightness(1.1); }
+        button:hover, .interactive-btn:hover { filter: brightness(1.12); }
         button:active, .interactive-btn:active, label.cursor-pointer:active {
-            transform: scale(0.92) translateY(1px) !important;
-            filter: brightness(1.3) !important;
+            transform: scale(0.93) translateY(1px) !important;
+            filter: brightness(1.25) !important;
         }
 
         /* УНИКАЛЬНЫЕ РАЗНЫЕ РАМКИ ДЛЯ PREMIUM И СПОЙЛЕРОВ */
@@ -178,6 +178,21 @@
         }
 
         input, textarea, select { font-size: 16px !important; }
+
+        /* ФЭНТЕЗИ АНИМАЦИЯ ЦВЕТНОГО ПЛАМЕНИ (ЛАЙКИ) */
+        @keyframes fantasyFlameDance {
+            0%, 100% { transform: scaleY(1) scaleX(1) translateY(0px) rotate(-1deg); filter: brightness(1.05); }
+            33% { transform: scaleY(1.16) scaleX(0.94) translateY(-3px) rotate(1.5deg); filter: brightness(1.25); }
+            66% { transform: scaleY(0.95) scaleX(1.06) translateY(-1px) rotate(-1.5deg); filter: brightness(1.15); }
+        }
+        .svg-flame {
+            animation: fantasyFlameDance 1.35s infinite ease-in-out;
+            transform-origin: bottom center;
+        }
+        .flame-btn-blue { box-shadow: 0 0 16px rgba(56, 189, 248, 0.35), inset 0 0 10px rgba(56, 189, 248, 0.2); }
+        .flame-btn-purple { box-shadow: 0 0 16px rgba(168, 85, 247, 0.35), inset 0 0 10px rgba(168, 85, 247, 0.2); }
+        .flame-btn-pink { box-shadow: 0 0 16px rgba(255, 42, 133, 0.38), inset 0 0 10px rgba(255, 42, 133, 0.22); }
+        .flame-btn-gold { box-shadow: 0 0 16px rgba(245, 158, 11, 0.38), inset 0 0 10px rgba(245, 158, 11, 0.22); }
 
         .dialogue-blue { border-left: 4px solid #4A90E2; background: rgba(74, 144, 226, 0.14); padding: 10px 14px; border-radius: 12px; }
         .dialogue-pink { border-left: 4px solid #FF2A85; background: rgba(255, 42, 133, 0.14); padding: 10px 14px; border-radius: 12px; }
@@ -361,12 +376,12 @@
                     const g = ctx.createGain();
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(freq, now + i * 0.03);
-                    g.gain.setValueAtTime(0.08, now + i * 0.03);
-                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+                    g.gain.setValueAtTime(0.09, now + i * 0.03);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
                     osc.connect(g);
                     g.connect(ctx.destination);
                     osc.start(now + i * 0.03);
-                    osc.stop(now + 0.44);
+                    osc.stop(now + 0.46);
                 });
             } catch (e) {}
         };
@@ -431,6 +446,43 @@
             </svg>
         `);
 
+        // 4 красивых встроенных SVG-стикера по умолчанию
+        function makeSvgSticker(title, color1, color2, symbol) {
+            return "data:image/svg+xml;utf8," + encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+                    <defs>
+                        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="${color1}"/>
+                            <stop offset="100%" stop-color="${color2}"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="8" y="8" width="144" height="144" rx="34" fill="url(#g)" stroke="#ffffff" stroke-width="4"/>
+                    <text x="80" y="88" font-size="54" text-anchor="middle" dominant-baseline="middle">${symbol}</text>
+                    <text x="80" y="134" font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#ffffff" text-anchor="middle">${title}</text>
+                </svg>
+            `);
+        }
+
+        // Генератор настоящего анимированного цветного фэнтези-пламени (SVG)
+        function getFantasyFlameSVG(type) {
+            const palettes = {
+                blue: { outer: '#0284C7', mid: '#38BDF8', core: '#E0F2FE', glow: '#38BDF8' },
+                purple: { outer: '#6B21A8', mid: '#C084FC', core: '#FAF5FF', glow: '#A855F7' },
+                pink: { outer: '#BE123C', mid: '#FF2A85', core: '#FFE4E6', glow: '#FF2A85' },
+                gold: { outer: '#B45309', mid: '#F59E0B', core: '#FEF08A', glow: '#FBBF24' }
+            };
+            const p = palettes[type] || palettes.gold;
+            return `
+                <svg class="w-8 h-8 svg-flame" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 8px ${p.glow});">
+                    <path d="M32 4C32 4 12 22 12 40C12 52 21 60 32 60C43 60 52 52 52 40C52 31 46 22 43 18C43 24 39 27 36 25C38 17 32 4 32 4Z" fill="${p.outer}"/>
+                    <path d="M32 14C32 14 18 27 18 41C18 50 24 57 32 57C40 57 46 50 46 41C46 33 40 25 37 22C37 27 33 30 30 28C33 21 32 14 32 14Z" fill="${p.mid}"/>
+                    <path d="M32 28C32 28 24 36 24 45C24 51 27.5 55 32 55C36.5 55 40 51 40 45C40 36 32 28 32 28Z" fill="${p.core}"/>
+                    <circle cx="22" cy="18" r="2" fill="${p.core}" opacity="0.85"/>
+                    <circle cx="45" cy="14" r="1.6" fill="${p.core}" opacity="0.75"/>
+                </svg>
+            `;
+        }
+
         function sanitizeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
@@ -439,7 +491,7 @@
         function isImageOrGif(str) {
             if (!str || typeof str !== 'string') return false;
             const s = str.trim();
-            return s.startsWith('data:image/') || /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(s) || s.startsWith('IMG_');
+            return s.startsWith('data:image/') || /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(s) || s.startsWith('IMG_') || s.startsWith('http');
         }
 
         const LocalDB = {
@@ -475,7 +527,7 @@
             }
         };
 
-        window.processImageFile = function(file, maxW = 900) {
+        window.processImageFile = function(file, maxW = 950) {
             return new Promise((resolve) => {
                 if (!file) return resolve(null);
                 if (file.type === "image/gif") {
@@ -495,7 +547,7 @@
                         canvas.width = w; canvas.height = h;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', 0.82));
+                        resolve(canvas.toDataURL('image/jpeg', 0.84));
                     };
                     img.onerror = () => resolve(event.target.result);
                     img.src = event.target.result;
@@ -568,10 +620,14 @@
             activeChapterId: lastSavedView === 'reader' ? lastSavedParam : null,
             activeEntityId: lastSavedView === 'character_detail' ? lastSavedParam : null,
             editingChapterId: null,
+            chapterBuilderBlocks: [
+                "Бесконечные коридоры космоса простирались за гранью человеческого понимания.",
+                "~blue [Ариэн] — Клинок Синей Луны готов к бою!"
+            ],
             progress: savedProgress,
-            draftChapterImages: [],
             draftChapterAudio: null,
             draftCommentMedia: null,
+            draftCommentIsSticker: false,
             notificationSubscribers: [
                 { id: "sub-1", user: "StarReader_VIP", channel: "Telegram", contact: "@star_reader", date: "07.11.2026" }
             ],
@@ -661,21 +717,22 @@
                     { id: "tx-1", user: "StarReader_VIP", method: "Карта МИР / СБП", amount: "+299 ₽ ($3.99)", date: "07.11.2026" }
                 ]
             },
+            // 10 УНИКАЛЬНЫХ ЖИВЫХ ГОЛОСОВ С СИЛЬНОЙ ДИФФЕРЕНЦИАЦИЕЙ ТЕМБРА, СКОРОСТИ И ПАУЗ
             tts: {
                 isPlaying: false,
                 selectedProfileId: 'ru_f_rachel',
                 elevenLabsApiKey: localStorage.getItem('elevenlabs_api_key') || '',
                 profiles: [
-                    { id: 'ru_f_rachel', name: '🇷🇺 Женский 1: Рашель (Бархатный, глубокий — ElevenLabs Rachel)', lang: 'ru-RU', gender: 'female', pitch: 0.86, rate: 0.92, pauseMs: 520, stability: 0.35, similarity: 0.88, styleExaggeration: 0.55, sampleText: 'Добро пожаловать в восемнадцать тысяч миров и одну Вечность... Слушай мой живой голос.', elevenVoiceId: '21m00Tcm4TlvDq8ikWAM' },
-                    { id: 'ru_f_sarah', name: '🇷🇺 Женский 2: Сара (Нежный, мягкий шепот звезд — ElevenLabs Sarah)', lang: 'ru-RU', gender: 'female', pitch: 0.98, rate: 0.94, pauseMs: 480, stability: 0.42, similarity: 0.85, styleExaggeration: 0.45, sampleText: 'Святой белый свет мягко опускается на ладони Императрицы Журен.', elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' },
-                    { id: 'ru_f_domi', name: '🇷🇺 Женский 3: Доминика (Энергичный, звонкий, боевой — ElevenLabs Domi)', lang: 'ru-RU', gender: 'female', pitch: 1.12, rate: 1.02, pauseMs: 410, stability: 0.30, similarity: 0.90, styleExaggeration: 0.65, sampleText: 'Пурпурные молнии Астер рассекли арену! Наше сражение начинается прямо сейчас!', elevenVoiceId: 'AZnzlk1XvdvUeBnXmlld' },
-                    { id: 'ru_m_antoni', name: '🇷🇺 Мужской 1: Антонио (Кинематографичный рассказчик — ElevenLabs Antoni)', lang: 'ru-RU', gender: 'male', pitch: 0.84, rate: 0.95, pauseMs: 470, stability: 0.40, similarity: 0.86, styleExaggeration: 0.50, sampleText: 'Ариэн сжал рукоять Клинка Синей Луны, и Небесные Письмена вспыхнули в его глазах.', elevenVoiceId: 'ErXwobaYiN019PkySvjV' },
-                    { id: 'ru_m_josh', name: '🇷🇺 Мужской 2: Джош (Глубокий императорский баритон — ElevenLabs Josh)', lang: 'ru-RU', gender: 'male', pitch: 0.72, rate: 0.89, pauseMs: 560, stability: 0.45, similarity: 0.92, styleExaggeration: 0.55, sampleText: 'Я прошел сквозь тысячи эпох. Ни один Король Ада не посмеет преградить мне путь.', elevenVoiceId: 'TxGEqnHWrfWFTfGW9XjX' },
-                    { id: 'en_f_charlotte', name: '🇬🇧 EN Female 1: Charlotte (Velvet & Mysterious — ElevenLabs Charlotte)', lang: 'en-US', gender: 'female', pitch: 0.88, rate: 0.92, pauseMs: 500, stability: 0.36, similarity: 0.88, styleExaggeration: 0.60, sampleText: 'Welcome to eighteen thousand worlds and one eternity... Walk with me among the stars.', elevenVoiceId: 'XB0fDUnXU5powFXDhCwa' },
-                    { id: 'en_f_dorothy', name: '🇬🇧 EN Female 2: Dorothy (Warm British Storytelling — ElevenLabs Dorothy)', lang: 'en-GB', gender: 'female', pitch: 1.02, rate: 0.95, pauseMs: 460, stability: 0.44, similarity: 0.84, styleExaggeration: 0.42, sampleText: 'Through the endless night, the Divine Eyes of Origin awakened a new power.', elevenVoiceId: 'ThT5KcBeYPX3keUQqHPh' },
-                    { id: 'en_f_freya', name: '🇬🇧 EN Female 3: Freya (Bright & Emotional — ElevenLabs Freya)', lang: 'en-US', gender: 'female', pitch: 1.14, rate: 1.01, pauseMs: 410, stability: 0.32, similarity: 0.89, styleExaggeration: 0.62, sampleText: 'Look at the sky! The celestial gates of the five dimensions are opening!', elevenVoiceId: 'jsCqWAovK2LkecY7zXl4' },
-                    { id: 'en_m_adam', name: '🇬🇧 EN Male 1: Adam (Deep Epic Narrator — ElevenLabs Adam)', lang: 'en-US', gender: 'male', pitch: 0.75, rate: 0.90, pauseMs: 540, stability: 0.42, similarity: 0.90, styleExaggeration: 0.58, sampleText: 'Across eighteen thousand realms, the Blue Moon Blade remembers every fallen god.', elevenVoiceId: 'pNInz6obpgDQGcFmaJgB' },
-                    { id: 'en_m_daniel', name: '🇬🇧 EN Male 2: Daniel (Noble British Voice — ElevenLabs Daniel)', lang: 'en-GB', gender: 'male', pitch: 0.89, rate: 0.95, pauseMs: 470, stability: 0.46, similarity: 0.87, styleExaggeration: 0.48, sampleText: 'In the beginning of time, the Creator forged eighteen thousand and one worlds.', elevenVoiceId: 'onwK4e9ZLuTAKqWW03F9' }
+                    { id: 'ru_f_rachel', name: '🇷🇺 Женский 1: Рашель (Бархатный, глубокий, манящий — ElevenLabs Rachel)', lang: 'ru-RU', gender: 'female', voiceIdx: 0, pitch: 0.82, rate: 0.90, pauseMs: 560, stability: 0.32, similarity: 0.90, styleExaggeration: 0.65, sampleText: 'Добро пожаловать в восемнадцать тысяч миров и одну Вечность... Слушай мой бархатный живой голос.', elevenVoiceId: '21m00Tcm4TlvDq8ikWAM' },
+                    { id: 'ru_f_sarah', name: '🇷🇺 Женский 2: Сара (Нежный, ласковый шепот звезд — ElevenLabs Sarah)', lang: 'ru-RU', gender: 'female', voiceIdx: 1, pitch: 1.08, rate: 0.93, pauseMs: 490, stability: 0.40, similarity: 0.88, styleExaggeration: 0.50, sampleText: 'Святой белый свет мягко опускается на ладони Императрицы Журен, исцеляя каждую рану.', elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' },
+                    { id: 'ru_f_domi', name: '🇷🇺 Женский 3: Доминика (Звонкий, страстный, боевой — ElevenLabs Domi)', lang: 'ru-RU', gender: 'female', voiceIdx: 2, pitch: 1.26, rate: 1.06, pauseMs: 360, stability: 0.28, similarity: 0.92, styleExaggeration: 0.75, sampleText: 'Пурпурные молнии Астер рассекли арену! Наше сражение начинается прямо сейчас!', elevenVoiceId: 'AZnzlk1XvdvUeBnXmlld' },
+                    { id: 'ru_m_antoni', name: '🇷🇺 Мужской 1: Антонио (Кинематографичный рассказчик — ElevenLabs Antoni)', lang: 'ru-RU', gender: 'male', voiceIdx: 0, pitch: 0.80, rate: 0.96, pauseMs: 460, stability: 0.38, similarity: 0.88, styleExaggeration: 0.55, sampleText: 'Ариэн сжал рукоять Клинка Синей Луны, и Небесные Письмена вспыхнули в его глазах.', elevenVoiceId: 'ErXwobaYiN019PkySvjV' },
+                    { id: 'ru_m_josh', name: '🇷🇺 Мужской 2: Джош (Мощный императорский бас-баритон — ElevenLabs Josh)', lang: 'ru-RU', gender: 'male', voiceIdx: 1, pitch: 0.62, rate: 0.85, pauseMs: 620, stability: 0.45, similarity: 0.94, styleExaggeration: 0.60, sampleText: 'Я прошел сквозь тысячи эпох. Ни один Король Ада не посмеет преградить мне путь.', elevenVoiceId: 'TxGEqnHWrfWFTfGW9XjX' },
+                    { id: 'en_f_charlotte', name: '🇬🇧 EN Female 1: Charlotte (Seductive Velvet & Mysterious — ElevenLabs)', lang: 'en-US', gender: 'female', voiceIdx: 0, pitch: 0.84, rate: 0.90, pauseMs: 530, stability: 0.34, similarity: 0.90, styleExaggeration: 0.65, sampleText: 'Welcome to eighteen thousand worlds and one eternity... Walk with me among the stars.', elevenVoiceId: 'XB0fDUnXU5powFXDhCwa' },
+                    { id: 'en_f_dorothy', name: '🇬🇧 EN Female 2: Dorothy (Warm British Storytelling — ElevenLabs)', lang: 'en-GB', gender: 'female', voiceIdx: 1, pitch: 1.06, rate: 0.95, pauseMs: 470, stability: 0.42, similarity: 0.86, styleExaggeration: 0.45, sampleText: 'Through the endless night, the Divine Eyes of Origin awakened a sacred power.', elevenVoiceId: 'ThT5KcBeYPX3keUQqHPh' },
+                    { id: 'en_f_freya', name: '🇬🇧 EN Female 3: Freya (Bright, Expressive & Emotional — ElevenLabs)', lang: 'en-US', gender: 'female', voiceIdx: 2, pitch: 1.24, rate: 1.05, pauseMs: 380, stability: 0.30, similarity: 0.90, styleExaggeration: 0.70, sampleText: 'Look at the sky! The celestial gates of the five dimensions are opening right now!', elevenVoiceId: 'jsCqWAovK2LkecY7zXl4' },
+                    { id: 'en_m_adam', name: '🇬🇧 EN Male 1: Adam (Deep Epic Movie Trailer Narrator — ElevenLabs)', lang: 'en-US', gender: 'male', voiceIdx: 0, pitch: 0.65, rate: 0.87, pauseMs: 580, stability: 0.42, similarity: 0.92, styleExaggeration: 0.62, sampleText: 'Across eighteen thousand realms, the Blue Moon Blade remembers every fallen god.', elevenVoiceId: 'pNInz6obpgDQGcFmaJgB' },
+                    { id: 'en_m_daniel', name: '🇬🇧 EN Male 2: Daniel (Noble British Royal Voice — ElevenLabs)', lang: 'en-GB', gender: 'male', voiceIdx: 1, pitch: 0.86, rate: 0.96, pauseMs: 470, stability: 0.46, similarity: 0.88, styleExaggeration: 0.50, sampleText: 'In the beginning of time, the Creator forged eighteen thousand and one worlds.', elevenVoiceId: 'onwK4e9ZLuTAKqWW03F9' }
                 ]
             },
             music: {
@@ -727,12 +784,16 @@
                 ]
             },
             stickers: [
-                { id: 'st-1', name: 'Герб Вечности', url: DEFAULT_CREST_SVG }
+                { id: 'st-1', name: 'Герб Вечности', url: DEFAULT_CREST_SVG },
+                { id: 'st-2', name: 'Клинок Луны', url: makeSvgSticker('КЛИНОК ЛУНЫ', '#1e3a8a', '#3b82f6', '⚔️') },
+                { id: 'st-3', name: 'Пламя Феникса', url: makeSvgSticker('ФЕНИКС', '#881337', '#f43f5e', '🔥') },
+                { id: 'st-4', name: 'Корона Империи', url: makeSvgSticker('ИМПЕРИЯ', '#78350f', '#f59e0b', '👑') }
             ],
             backgrounds: [
                 { id: 'bg-cosmic-night', name: 'Звездная Бездна', type: 'gradient', value: 'radial-gradient(circle at top, #121936 0%, #050508 85%)', isPremium: false },
                 { id: 'bg-deep-nebula', name: 'Туманность Вечности', type: 'gradient', value: 'linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #311042 100%)', isPremium: false },
-                { id: 'bg-ancient-parchment', name: 'Древний Свиток', type: 'gradient', value: 'linear-gradient(180deg, #1c1917 0%, #292524 100%)', isPremium: false }
+                { id: 'bg-ancient-parchment', name: 'Древний Свиток', type: 'gradient', value: 'linear-gradient(180deg, #1c1917 0%, #292524 100%)', isPremium: false },
+                { id: 'bg-crimson-void', name: 'Алый Разлом Кастоса (VIP)', type: 'gradient', value: 'radial-gradient(circle at top, #4c0519 0%, #090508 85%)', isPremium: true }
             ],
             characters: [
                 {
@@ -753,11 +814,11 @@
                     id: "char-zari",
                     category: "characters",
                     name: "Зари Диазура (Секретная Спойлер-Папка)",
-                    folder: "🔒 Спец-папка Спойлеров • Архангелы",
+                    folder: "🔒 Спец-папка Спойлеров • Арфангелы",
                     isPaidSpoilerFolder: true,
                     folderPriceRub: 249,
                     folderPriceUsd: 2.99,
-                    bioRu: "Эксклюзивное досье и закрытые концепт-арты. Папка открывается только при отдельной оплате.",
+                    bioRu: "Эксклюзивное досье и закрытые концепт-арты одного из легендарных Арфангелов. Папка открывается только при отдельной оплате.",
                     avatar: DEFAULT_CREST_SVG,
                     gallery: [
                         { id: "art-zari-1", url: DEFAULT_CREST_SVG, accessType: "free", priceRub: 0, priceUsd: 0 }
@@ -928,6 +989,7 @@
             router.render();
         };
 
+        // --- УПРАВЛЕНИЕ ФОНАМИ И ДОБАВЛЕНИЕ СВОИХ КАРТИНОК НА ФОН САЙТА ---
         window.applyGlobalBackground = function(bgId) {
             const state = window.appState;
             const bg = state.backgrounds.find(b => b.id === bgId) || state.backgrounds[0];
@@ -945,6 +1007,39 @@
                 }
             }
             state.saveAllData();
+            showToast(`🌌 Фон «${bg.name}» установлен!`);
+        };
+
+        window.addCustomBackgroundUpload = async function(inputElem, isFromModal = false) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const dataUrl = await window.processImageFile(file, 1200);
+            if (!dataUrl) return;
+            const nameInput = document.getElementById(isFromModal ? 'modal-bg-name' : 'adm-bg-name');
+            const premInput = document.getElementById(isFromModal ? 'modal-bg-prem' : 'adm-bg-prem');
+            const bgName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : `Фон ${window.appState.backgrounds.length + 1}`;
+            const isPrem = premInput ? premInput.checked : false;
+
+            const newBg = {
+                id: 'bg-custom-' + Date.now(),
+                name: bgName,
+                type: 'image',
+                value: dataUrl,
+                isPremium: isPrem
+            };
+            window.appState.backgrounds.push(newBg);
+            window.applyGlobalBackground(newBg.id);
+            await window.appState.saveAllData();
+            if (isFromModal) openBackgroundPickerModal();
+            else router.render();
+        };
+
+        window.deleteBackgroundItem = async function(bgId) {
+            if (window.appState.backgrounds.length <= 1) return alertCustom("Нельзя удалить последний фон!");
+            window.appState.backgrounds = window.appState.backgrounds.filter(b => b.id !== bgId);
+            window.applyGlobalBackground(window.appState.backgrounds[0].id);
+            await window.appState.saveAllData();
+            router.render();
         };
 
         window.openBackgroundPickerModal = function() {
@@ -952,29 +1047,41 @@
             const modal = document.getElementById('modal-container');
             modal.innerHTML = `
                 <div class="fixed inset-0 z-50 bg-space-900/85 backdrop-blur-md flex items-center justify-center p-4">
-                    <div class="glass-card p-5 rounded-2xl w-full max-w-md space-y-4 border border-accent-blue/50 max-h-[85vh] overflow-y-auto">
+                    <div class="glass-card p-5 rounded-2xl w-full max-w-md space-y-4 border border-accent-blue/50 max-h-[88vh] overflow-y-auto">
                         <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                            <h3 class="text-base font-bold text-white">🎨 Фоны и Режимы Чтения</h3>
+                            <h3 class="text-base font-bold text-white">🎨 Фоны сайта и Режимы Чтения</h3>
                             <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
-                            <button onclick="setReadingEyeTheme('dark')" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='dark'?'border-accent-blue bg-accent-blue/20 text-white':'border-white/10 text-gray-300'}">🌙 Темный</button>
-                            <button onclick="setReadingEyeTheme('eyecare')" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='eyecare'?'border-amber-500 bg-amber-500/20 text-amber-200':'border-white/10 text-gray-300'}">📜 Защита глаз</button>
-                            <button onclick="setReadingEyeTheme('light')" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='light'?'border-sky-400 bg-sky-400/20 text-white':'border-white/10 text-gray-300'}">☀️ Светлый</button>
+                            <button onclick="setReadingEyeTheme('dark'); closeModal();" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='dark'?'border-accent-blue bg-accent-blue/20 text-white':'border-white/10 text-gray-300'}">🌙 Темный</button>
+                            <button onclick="setReadingEyeTheme('eyecare'); closeModal();" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='eyecare'?'border-amber-500 bg-amber-500/20 text-amber-200':'border-white/10 text-gray-300'}">📜 Защита глаз</button>
+                            <button onclick="setReadingEyeTheme('light'); closeModal();" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='light'?'border-sky-400 bg-sky-400/20 text-white':'border-white/10 text-gray-300'}">☀️ Светлый</button>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-2 max-h-52 overflow-y-auto pr-1">
                             ${state.backgrounds.map(b => `
-                                <div onclick="applyGlobalBackground('${b.id}'); closeModal();" class="p-3 rounded-xl glass-card flex items-center justify-between cursor-pointer border ${state.readerSettings.activeBgId===b.id?'border-accent-blue':'border-white/10'}">
-                                    <span class="text-xs font-bold text-white">${b.name}</span>
-                                    <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-gray-300">${b.isPremium ? '👑 VIP' : 'Бесплатно'}</span>
+                                <div onclick="applyGlobalBackground('${b.id}'); closeModal();" class="p-3 rounded-xl glass-card flex items-center justify-between cursor-pointer border ${state.readerSettings.activeBgId===b.id?'border-accent-blue bg-accent-blue/15':'border-white/10'}">
+                                    <div class="flex items-center space-x-2.5">
+                                        <div class="w-8 h-8 rounded-lg border border-white/20" style="background:${b.type==='image'?`url('${b.value}') center/cover`:b.value}"></div>
+                                        <span class="text-xs font-bold text-white">${b.name}</span>
+                                    </div>
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-amber-300 font-bold">${b.isPremium ? '👑 VIP' : 'Выбрать'}</span>
                                 </div>
                             `).join('')}
+                        </div>
+                        <div class="pt-2 border-t border-white/10 space-y-2">
+                            <span class="text-xs font-extrabold text-accent-blue block">➕ Загрузить свою картинку на фон сайта:</span>
+                            <input id="modal-bg-name" type="text" placeholder="Название вашего фона..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                            <label class="cursor-pointer w-full py-2.5 px-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold flex items-center justify-center">
+                                🖼️ Выбрать картинку из галереи для фона
+                                <input type="file" accept="image/*" onchange="addCustomBackgroundUpload(this, true)" class="hidden">
+                            </label>
                         </div>
                     </div>
                 </div>
             `;
         };
 
+        // --- ПЛАТЕЖНАЯ СИСТЕМА ---
         window.openPaymentModal = function() {
             const p = window.appState.finance.prices;
             const d = window.appState.finance.payoutDetails;
@@ -999,14 +1106,22 @@
                             <button onclick="activatePremiumNow('Visa / MasterCard')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-extrabold flex justify-between">
                                 <span>💳 Visa / MasterCard</span><span>$${p.premiumMonthUsd} / ${p.premiumMonthRub} ₽ →</span>
                             </button>
+                            <button onclick="activatePremiumNow('UnionPay International')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 text-white text-xs font-extrabold flex justify-between">
+                                <span>🌏 UnionPay</span><span>${p.premiumMonthRub} ₽ / $${p.premiumMonthUsd} →</span>
+                            </button>
                             <button onclick="activatePremiumNow('Boosty')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-black text-xs font-extrabold flex justify-between">
                                 <span>🚀 Boosty</span><span>${p.premiumMonthRub} ₽ →</span>
                             </button>
-                            <button onclick="activatePremiumNow('PayPal / UnionPay')" class="w-full p-2.5 rounded-xl bg-sky-600 text-white text-xs font-extrabold flex justify-between">
-                                <span>🅿️ PayPal / UnionPay</span><span>$${p.premiumMonthUsd} →</span>
+                            <button onclick="activatePremiumNow('PayPal')" class="w-full p-2.5 rounded-xl bg-sky-600 text-white text-xs font-extrabold flex justify-between">
+                                <span>🅿️ PayPal</span><span>$${p.premiumMonthUsd} →</span>
                             </button>
                         </div>
-                        <p class="text-[10px] text-gray-400">Получатель: ${d.cardHolder}</p>
+                        <div class="text-[10px] text-gray-400 space-y-0.5 text-left bg-space-900/70 p-2.5 rounded-xl">
+                            <div>Получатель: <b>${d.cardHolder}</b></div>
+                            <div>МИР: ${d.mirCard}</div>
+                            <div>СБП: ${d.sbpPhone}</div>
+                            <div>Visa/MC: ${d.visaMastercard}</div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1118,7 +1233,7 @@
             showToast("💾 Бэкап базы сайта скачан!");
         };
 
-        // --- ФОНОВАЯ МУЗЫКА ---
+        // --- ФОНОВАЯ МУЗЫКА И ЗАГРУЗКА СВОИХ АУДИОФАЙЛОВ (MP3 / WAV) ---
         const wavCache = {};
         function buildAmbientWavBlobUrl(mode) {
             if (wavCache[mode]) return wavCache[mode];
@@ -1224,6 +1339,44 @@
             openMusicPlayerModal();
         };
 
+        window.setMusicVolume = function(val) {
+            const v = parseFloat(val);
+            window.appState.music.volume = v;
+            const player = document.getElementById('ambient-wav-player');
+            if (player) player.volume = v;
+        };
+
+        window.uploadCustomMusicTrack = async function(inputElem, isFromModal = false) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const titleEl = document.getElementById(isFromModal ? 'modal-music-title' : 'adm-music-title');
+            const trackName = (titleEl && titleEl.value.trim()) ? titleEl.value.trim() : file.name.replace(/\.[^/.]+$/, "");
+            const audioData = await window.processAudioFile(file);
+            if (!audioData) return alertCustom("Ошибка чтения аудиофайла.");
+
+            const newTrack = {
+                id: 'm-custom-' + Date.now(),
+                name: trackName,
+                icon: '🎧',
+                mode: 'custom',
+                customUrl: audioData
+            };
+            window.appState.music.tracks.unshift(newTrack);
+            await window.appState.saveAllData();
+            showToast(`🎵 Ваша мелодия «${trackName}» добавлена!`);
+            if (isFromModal) openMusicPlayerModal();
+            else router.render();
+        };
+
+        window.deleteMusicTrack = async function(trackId, e) {
+            if (e) e.stopPropagation();
+            if (window.appState.music.tracks.length <= 1) return;
+            window.appState.music.tracks = window.appState.music.tracks.filter(t => t.id !== trackId);
+            await window.appState.saveAllData();
+            showToast("🗑️ Мелодия удалена");
+            openMusicPlayerModal();
+        };
+
         function updateMusicStatusLabel() {
             const label = document.getElementById('header-music-status');
             if (!label) return;
@@ -1240,34 +1393,49 @@
             const modal = document.getElementById('modal-container');
             modal.innerHTML = `
                 <div class="fixed inset-0 z-50 bg-space-900/85 backdrop-blur-md flex items-center justify-center p-4">
-                    <div class="glass-card p-5 rounded-2xl w-full max-w-sm space-y-4 border border-accent-pink/50">
+                    <div class="glass-card p-5 rounded-2xl w-full max-w-md space-y-4 border border-accent-pink/50 max-h-[88vh] overflow-y-auto">
                         <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                            <h3 class="text-base font-bold text-white">🎵 Фоновая музыка и Природа</h3>
+                            <h3 class="text-base font-bold text-white">🎵 Фоновая музыка и Свои треки</h3>
                             <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
                         </div>
-                        <div class="space-y-2 max-h-[52vh] overflow-y-auto pr-1">
+                        <div class="flex items-center space-x-3 bg-space-900/70 p-2.5 rounded-xl">
+                            <span class="text-xs text-gray-300 font-bold">🔊 Громкость:</span>
+                            <input type="range" min="0.05" max="1" step="0.05" value="${state.music.volume}" oninput="setMusicVolume(this.value)" class="flex-1">
+                        </div>
+                        <div class="space-y-2 max-h-[42vh] overflow-y-auto pr-1">
                             ${state.music.tracks.map(t => {
                                 const isCurrent = state.music.currentId === t.id && state.music.isPlaying;
                                 return `
                                     <div onclick="playMusicTrack('${t.id}')" class="p-3 rounded-xl glass-card flex items-center justify-between cursor-pointer border ${isCurrent ? 'border-accent-pink bg-accent-pink/25 shadow-lg' : 'border-white/10'} interactive-btn">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-xl">${t.icon}</span>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-white">${t.name}</h4>
+                                        <div class="flex items-center space-x-3 min-w-0 pr-2">
+                                            <span class="text-xl shrink-0">${t.icon}</span>
+                                            <div class="min-w-0">
+                                                <h4 class="text-xs font-bold text-white truncate">${t.name}</h4>
                                                 <span class="text-[10px] ${isCurrent ? 'text-accent-pink font-bold' : 'text-gray-400'}">${isCurrent ? '🔊 Сейчас играет...' : 'Нажмите для запуска'}</span>
                                             </div>
                                         </div>
-                                        <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${isCurrent ? 'bg-accent-pink text-white' : 'bg-white/10 text-gray-200'}">${isCurrent ? '⏹' : '▶'}</span>
+                                        <div class="flex items-center space-x-1.5 shrink-0">
+                                            <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${isCurrent ? 'bg-accent-pink text-white' : 'bg-white/10 text-gray-200'}">${isCurrent ? '⏹' : '▶'}</span>
+                                            ${t.customUrl ? `<button onclick="deleteMusicTrack('${t.id}', event)" class="px-2 py-1 rounded-lg bg-red-600/30 text-red-300 text-xs">✕</button>` : ''}
+                                        </div>
                                     </div>
                                 `;
                             }).join('')}
+                        </div>
+                        <div class="pt-3 border-t border-white/10 space-y-2">
+                            <span class="text-xs font-extrabold text-amber-300 block">➕ Добавить свою фоновую музыку (MP3 / WAV / M4A):</span>
+                            <input id="modal-music-title" type="text" placeholder="Название мелодии (необязательно)..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                            <label class="cursor-pointer w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white text-xs font-extrabold flex items-center justify-center shadow-lg">
+                                🎼 Выбрать аудиофайл с устройства
+                                <input type="file" accept="audio/*" onchange="uploadCustomMusicTrack(this, true)" class="hidden">
+                            </label>
                         </div>
                     </div>
                 </div>
             `;
         };
 
-        // --- ОЗВУЧКА И 10 ГОЛОСОВ ELEVENLABS ---
+        // --- 10 ЖИВЫХ И РАЗНЫХ ГОЛОСОВ (ELEVENLABS + ВЫРАЗИТЕЛЬНЫЙ МНОГОГОЛОСЫЙ ДВИЖОК) ---
         let cachedVoices = [];
         function refreshVoices() {
             if ('speechSynthesis' in window) cachedVoices = window.speechSynthesis.getVoices();
@@ -1284,20 +1452,28 @@
             const langPool = cachedVoices.filter(v => v.lang.toLowerCase().startsWith(langPrefix));
             const pool = langPool.length > 0 ? langPool : cachedVoices;
 
-            const maleNames = /yuri|dmitry|pavel|maxim|alex|daniel|guy|christopher|david|mark|male|муж|юрий|дмитрий|артем/i;
-            const femaleNames = /milena|svetlana|irina|katya|alena|samantha|victoria|aria|jenny|zira|ava|female|жен|милена|светлана|ирина|катя/i;
+            const maleNames = /yuri|dmitry|pavel|maxim|alex|daniel|guy|christopher|david|mark|arthur|aaron|male|муж|юрий|дмитрий|артем|павел/i;
+            const femaleNames = /milena|svetlana|irina|katya|alena|dariya|samantha|victoria|aria|jenny|zira|ava|karen|moira|female|жен|милена|светлана|ирина|катя|алена/i;
 
-            const genderMatches = pool.filter(v => profile.gender === 'male' ? maleNames.test(v.name) : femaleNames.test(v.name));
-            const listToPick = genderMatches.length > 0 ? genderMatches : pool;
+            // Отдаем приоритет Enhanced / Premium / Natural голосам системы
+            const sortedPool = [...pool].sort((a, b) => {
+                const aScore = (/premium|enhanced|natural|online|siri/i.test(a.name) ? 10 : 0);
+                const bScore = (/premium|enhanced|natural|online|siri/i.test(b.name) ? 10 : 0);
+                return bScore - aScore;
+            });
 
-            const idxHash = profile.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-            return listToPick[idxHash % listToPick.length] || pool[0];
+            const genderMatches = sortedPool.filter(v => profile.gender === 'male' ? maleNames.test(v.name) : femaleNames.test(v.name));
+            const listToPick = genderMatches.length > 0 ? genderMatches : sortedPool;
+
+            const idx = (profile.voiceIdx || 0) % listToPick.length;
+            return listToPick[idx] || sortedPool[0];
         }
 
         async function speakExpressiveText(fullText, profile, onComplete) {
             const state = window.appState;
             const vp = document.getElementById('voice-tts-player');
 
+            // 1. Если введен ключ ElevenLabs — студийная генерация каждого из 10 голосов по его уникальному elevenVoiceId
             if (state.tts.elevenLabsApiKey && state.tts.elevenLabsApiKey.trim().length > 10) {
                 try {
                     const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${profile.elevenVoiceId}`, {
@@ -1308,12 +1484,12 @@
                             'Accept': 'audio/mpeg'
                         },
                         body: JSON.stringify({
-                            text: fullText.slice(0, 1200),
+                            text: fullText.slice(0, 1400),
                             model_id: "eleven_multilingual_v2",
                             voice_settings: { 
-                                stability: profile.stability ?? 0.38, 
+                                stability: profile.stability ?? 0.35, 
                                 similarity_boost: profile.similarity ?? 0.88, 
-                                style: profile.styleExaggeration ?? 0.50, 
+                                style: profile.styleExaggeration ?? 0.55, 
                                 use_speaker_boost: true 
                             }
                         })
@@ -1321,16 +1497,18 @@
                     if (resp.ok) {
                         const blob = await resp.blob();
                         vp.src = URL.createObjectURL(blob);
+                        vp.preservesPitch = false;
+                        vp.mozPreservesPitch = false;
+                        vp.webkitPreservesPitch = false;
                         vp.playbackRate = 1.0;
                         await vp.play();
                         vp.onended = () => { if (onComplete) onComplete(); };
                         return;
-                    } else {
-                        showToast("⚠️ Проверьте ключ ElevenLabs — включен резервный синтезатор", "error");
                     }
                 } catch(e) {}
             }
 
+            // 2. Живая выразительная интонационная речь с уникальной модуляцией тембра и художественными паузами для каждого из 10 профилей
             if (!('speechSynthesis' in window)) {
                 alertCustom("Ваш браузер не поддерживает голосовое чтение.");
                 if (onComplete) onComplete();
@@ -1340,36 +1518,58 @@
             window.speechSynthesis.cancel();
             window.speechSynthesis.resume();
 
-            const sentences = fullText.match(/[^.!?…]+[.!?…]*/g) || [fullText];
+            // Разбиваем текст на смысловые фразы, чтобы дыхание и интонации звучали живо, а не монотонно
+            const rawParts = fullText.match(/[^.!?…;—]+[.!?…;—]*/g) || [fullText];
+            const phrases = rawParts.map(s => s.trim()).filter(Boolean);
             let sIdx = 0;
 
-            function speakNextSentence() {
-                if (!state.tts.isPlaying || sIdx >= sentences.length) {
+            function speakNextPhrase() {
+                if (!state.tts.isPlaying || sIdx >= phrases.length) {
                     if (onComplete) onComplete();
                     return;
                 }
-                const sentence = sentences[sIdx].trim();
+                const phrase = phrases[sIdx];
                 sIdx++;
-                if (!sentence) { speakNextSentence(); return; }
 
-                const utter = new SpeechSynthesisUtterance(sentence);
+                const utter = new SpeechSynthesisUtterance(phrase);
                 utter.lang = profile.lang;
-                utter.pitch = Math.max(0.5, Math.min(1.6, profile.pitch));
-                utter.rate = Math.max(0.65, Math.min(1.35, profile.rate));
+
+                // Индивидуальная интонационная кривая для каждого из 10 голосов
+                let dynamicPitch = profile.pitch;
+                let dynamicRate = profile.rate;
+
+                if (phrase.endsWith('?')) {
+                    dynamicPitch += 0.12;
+                    dynamicRate += 0.03;
+                } else if (phrase.endsWith('!')) {
+                    dynamicPitch += 0.08;
+                    dynamicRate += 0.06;
+                } else if (phrase.includes('…') || phrase.includes('...')) {
+                    dynamicPitch -= 0.05;
+                    dynamicRate -= 0.07;
+                } else if (phrase.startsWith('—') || phrase.includes('[')) {
+                    dynamicPitch += (profile.gender === 'female' ? 0.07 : -0.06);
+                }
+
+                // Легкая естественная вариация между фразами, убирающая роботизированность
+                const microVariation = ((sIdx % 3) - 1) * 0.03;
+                utter.pitch = Math.max(0.45, Math.min(1.65, dynamicPitch + microVariation));
+                utter.rate = Math.max(0.65, Math.min(1.35, dynamicRate));
 
                 const chosenVoice = selectDistinctNativeVoice(profile);
                 if (chosenVoice) utter.voice = chosenVoice;
 
                 utter.onend = () => {
                     if (!state.tts.isPlaying) return;
-                    setTimeout(speakNextSentence, profile.pauseMs || 450);
+                    const extraPause = (phrase.endsWith('…') || phrase.endsWith('...')) ? 250 : 0;
+                    setTimeout(speakNextPhrase, (profile.pauseMs || 420) + extraPause);
                 };
-                utter.onerror = () => speakNextSentence();
+                utter.onerror = () => speakNextPhrase();
 
                 window._activeUtterance = utter;
                 window.speechSynthesis.speak(utter);
             }
-            speakNextSentence();
+            speakNextPhrase();
         }
 
         window.previewSelectedVoiceSample = function() {
@@ -1378,11 +1578,11 @@
             window.stopChapterVoice();
             state.tts.isPlaying = true;
             const sampleBtn = document.getElementById('tts-sample-btn');
-            if (sampleBtn) sampleBtn.innerText = '🔊 Звучит голос...';
+            if (sampleBtn) sampleBtn.innerText = '🔊 Звучит образец...';
 
             speakExpressiveText(profile.sampleText, profile, () => {
                 state.tts.isPlaying = false;
-                if (sampleBtn) sampleBtn.innerText = '▶️ Прослушать голос';
+                if (sampleBtn) sampleBtn.innerText = '▶️ Прослушать этот голос';
             });
         };
 
@@ -1425,7 +1625,7 @@
                 vp.src = ch.audioUrl;
                 vp.play().catch(()=>{});
                 vp.onended = () => window.stopChapterVoice();
-                showToast("🎧 Играет студийная MP3-озвучка главы!");
+                showToast("🎧 Играет прикрепленная автором студийная озвучка главы!");
                 return;
             }
 
@@ -1475,7 +1675,7 @@
             const key = document.getElementById('elevenlabs-key-input')?.value.trim() || '';
             window.appState.tts.elevenLabsApiKey = key;
             localStorage.setItem('elevenlabs_api_key', key);
-            showToast("✅ Ключ ElevenLabs сохранен! Все 10 голосов активны.");
+            showToast("✅ Платный ключ ElevenLabs сохранен! Все 10 голосов активны.");
         };
 
         // --- ПЛАТНЫЕ СПОЙЛЕР-ПАПКИ ---
@@ -1502,8 +1702,14 @@
                             <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Visa / MasterCard')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-extrabold flex justify-between">
                                 <span>💳 Visa / MasterCard</span><span>$${priceUsd} / ${priceRub} ₽ →</span>
                             </button>
+                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'UnionPay')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 text-white text-xs font-extrabold flex justify-between">
+                                <span>🌏 UnionPay</span><span>${priceRub} ₽ / $${priceUsd} →</span>
+                            </button>
                             <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Boosty')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-black text-xs font-extrabold flex justify-between">
                                 <span>🚀 Boosty</span><span>${priceRub} ₽ →</span>
+                            </button>
+                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'PayPal')" class="w-full p-2.5 rounded-xl bg-sky-600 text-white text-xs font-extrabold flex justify-between">
+                                <span>🅿️ PayPal</span><span>$${priceUsd} →</span>
                             </button>
                         </div>
                         <p class="text-[10px] text-gray-400">Получатель: ${p.cardHolder}</p>
@@ -1547,6 +1753,54 @@
                 return;
             }
             router.navigate('character_detail', entityId);
+        };
+
+        // --- ДОБАВЛЕНИЕ КАРТОЧЕК ПЕРСОНАЖЕЙ И СПОЙЛЕР-ПАПОК С КАРТИНКАМИ В АДМИНКЕ ---
+        window.createNewLoreCardAdmin = async function(inputElem) {
+            if (window.appState.user.role !== 'admin') return;
+            const name = document.getElementById('adm-lore-name')?.value.trim();
+            const folder = document.getElementById('adm-lore-folder')?.value.trim() || 'Персонажи Вселенной';
+            const bio = document.getElementById('adm-lore-bio')?.value.trim() || 'Описание засекречено...';
+            const isSpoiler = document.getElementById('adm-lore-spoiler')?.checked || false;
+            const priceRub = parseInt(document.getElementById('adm-lore-rub')?.value) || 249;
+
+            if (!name) return alertCustom("Укажите имя персонажа или название папки!");
+            let avaUrl = DEFAULT_CREST_SVG;
+            if (inputElem?.files?.[0]) {
+                const processed = await window.processImageFile(inputElem.files[0], 900);
+                if (processed) avaUrl = processed;
+            }
+
+            window.appState.characters.push({
+                id: 'char-' + Date.now(),
+                category: 'characters',
+                name,
+                folder: isSpoiler ? `🔒 ${folder}` : folder,
+                isPaidSpoilerFolder: isSpoiler,
+                folderPriceRub: isSpoiler ? priceRub : 0,
+                folderPriceUsd: isSpoiler ? 2.99 : 0,
+                bioRu: bio,
+                avatar: avaUrl,
+                gallery: [{ id: 'art-' + Date.now(), url: avaUrl, accessType: 'free', priceRub: 0, priceUsd: 0 }]
+            });
+            await window.appState.saveAllData();
+            showToast(`🦸 Карточка «${name}» добавлена во Вселенную!`);
+            router.render();
+        };
+
+        window.addArtToCharacterDetail = async function(entityId, inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const ent = window.appState.characters.find(c => c.id === entityId);
+            if (!ent) return;
+            const imgData = await window.processImageFile(file, 1000);
+            if (!imgData) return;
+            if (!ent.gallery) ent.gallery = [];
+            ent.gallery.push({ id: 'art-' + Date.now(), url: imgData, accessType: 'free', priceRub: 0, priceUsd: 0 });
+            ent.avatar = imgData;
+            await window.appState.saveAllData();
+            showToast("🖼️ Иллюстрация добавлена в галерею персонажа!");
+            router.render();
         };
 
         // --- МОДЕРАЦИЯ ---
@@ -1644,6 +1898,82 @@
             window.injectCustomCommentThemesCSS();
             await window.appState.saveAllData();
             showToast("🗑️ Окно сообщений удалено!");
+            router.render();
+        };
+
+        // --- ОБЛОЖКА НОВЕЛЛЫ, ГЕРБ САЙТА И ФИНАНСЫ ---
+        window.previewAndApplyCoverAdmin = async function(inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const compressed = await window.processImageFile(file, 950);
+            if (!compressed) return;
+            window.appState.siteConfig.bannerUrl = compressed;
+            await window.appState.saveAllData();
+            showToast("🎨 Новая обложка новеллы установлена!");
+            router.render();
+        };
+
+        window.previewAndApplyCrestAdmin = async function(inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const compressed = await window.processImageFile(file, 450);
+            if (!compressed) return;
+            window.appState.siteConfig.crestUrl = compressed;
+            await window.appState.saveAllData();
+            updateUserBadge();
+            showToast("🛡️ Новый Герб сайта установлен!");
+            router.render();
+        };
+
+        window.saveBookTitleAdmin = async function() {
+            const titleInput = document.getElementById('cfg-title')?.value.trim();
+            if (titleInput) {
+                window.appState.siteConfig.title = titleInput;
+                updateUserBadge();
+                await window.appState.saveAllData();
+                showToast("✅ Название новеллы обновлено!");
+                router.render();
+            }
+        };
+
+        window.saveFinanceAndPricesAdmin = async function() {
+            const fin = window.appState.finance;
+            fin.prices.premiumMonthRub = parseInt(document.getElementById('price-prem-rub')?.value) || 299;
+            fin.prices.premiumMonthUsd = parseFloat(document.getElementById('price-prem-usd')?.value) || 3.99;
+            fin.prices.chapterPriceRub = parseInt(document.getElementById('price-ch-rub')?.value) || 49;
+            fin.prices.chapterPriceUsd = parseFloat(document.getElementById('price-ch-usd')?.value) || 0.99;
+            fin.prices.spoilerFolderPriceRub = parseInt(document.getElementById('price-spoiler-rub')?.value) || 249;
+            fin.prices.spoilerFolderPriceUsd = parseFloat(document.getElementById('price-spoiler-usd')?.value) || 2.99;
+
+            fin.payoutDetails.cardHolder = document.getElementById('fin-holder')?.value.trim() || fin.payoutDetails.cardHolder;
+            fin.payoutDetails.visaMastercard = document.getElementById('fin-visa')?.value.trim() || fin.payoutDetails.visaMastercard;
+            fin.payoutDetails.mirCard = document.getElementById('fin-mir')?.value.trim() || fin.payoutDetails.mirCard;
+            fin.payoutDetails.sbpPhone = document.getElementById('fin-sbp')?.value.trim() || fin.payoutDetails.sbpPhone;
+            fin.payoutDetails.unionPayCard = document.getElementById('fin-unionpay')?.value.trim() || fin.payoutDetails.unionPayCard;
+            fin.payoutDetails.paypalEmail = document.getElementById('fin-paypal')?.value.trim() || fin.payoutDetails.paypalEmail;
+            fin.payoutDetails.boostyUrl = document.getElementById('fin-boosty')?.value.trim() || fin.payoutDetails.boostyUrl;
+
+            await window.appState.saveAllData();
+            showToast("💳 Все реквизиты и цены (МИР, СБП, Visa, UnionPay, PayPal, Boosty) сохранены!");
+            router.render();
+        };
+
+        window.withdrawAuthorFunds = async function() {
+            const f = window.appState.finance;
+            if (f.balanceRub <= 0 && f.balanceUsd <= 0) return alertCustom("На балансе пока 0 ₽ / $0.");
+            const sumRub = f.balanceRub;
+            const sumUsd = f.balanceUsd;
+            f.transactions.unshift({
+                id: "tx-" + Date.now(),
+                user: "💸 ВЫВОД НА РЕКВИЗИТЫ АВТОРА",
+                method: f.payoutDetails.mirCard,
+                amount: `-${sumRub} ₽ ($${sumUsd})`,
+                date: new Date().toLocaleDateString('ru-RU')
+            });
+            f.balanceRub = 0;
+            f.balanceUsd = 0;
+            await window.appState.saveAllData();
+            showToast(`💸 Выплата ${sumRub} ₽ ($${sumUsd}) отправлена на ваши реквизиты!`);
             router.render();
         };
 
@@ -1786,12 +2116,97 @@
             router.render();
         };
 
-        // --- КОММЕНТАРИИ И ЛАЙКИ ---
+        // --- СТИКЕРЫ, ГИФКИ, КАРТИНКИ И ЭМОДЗИ В КОММЕНТАРИЯХ ---
         window.insertEmojiToComment = function(emoji) {
             const input = document.getElementById('comment-input');
             if (!input) return;
             input.value += emoji;
             input.focus();
+        };
+
+        window.selectStickerForComment = function(stickerUrl, stickerName) {
+            window.appState.draftCommentMedia = stickerUrl;
+            window.appState.draftCommentIsSticker = true;
+            const box = document.getElementById('comment-media-preview');
+            if (box) {
+                box.classList.remove('hidden');
+                box.innerHTML = `
+                    <div class="inline-flex items-center space-x-2 bg-space-900/90 p-2 rounded-2xl border border-amber-400">
+                        <img src="${stickerUrl}" class="w-16 h-16 object-contain rounded-xl">
+                        <span class="text-xs font-bold text-amber-300">Стикер: ${stickerName}</span>
+                        <button onclick="clearCommentDraftMedia()" class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">✕</button>
+                    </div>
+                `;
+            }
+            showToast(`✨ Стикер «${stickerName}» прикреплен! Можете добавить текст и отправить.`);
+        };
+
+        window.selectQuickGifForComment = function(gifUrl, gifName) {
+            window.appState.draftCommentMedia = gifUrl;
+            window.appState.draftCommentIsSticker = false;
+            const box = document.getElementById('comment-media-preview');
+            if (box) {
+                box.classList.remove('hidden');
+                box.innerHTML = `
+                    <div class="inline-flex items-center space-x-2 bg-space-900/90 p-2 rounded-2xl border border-accent-pink">
+                        <img src="${gifUrl}" class="h-16 rounded-xl object-cover">
+                        <span class="text-xs font-bold text-accent-pink">GIF: ${gifName}</span>
+                        <button onclick="clearCommentDraftMedia()" class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">✕</button>
+                    </div>
+                `;
+            }
+            showToast(`🎬 GIF «${gifName}» прикреплена!`);
+        };
+
+        window.attachCommentMediaFile = async function(inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const data = await window.processImageFile(file, 650);
+            if (!data) return;
+            window.appState.draftCommentMedia = data;
+            window.appState.draftCommentIsSticker = false;
+            const box = document.getElementById('comment-media-preview');
+            if (box) {
+                box.classList.remove('hidden');
+                box.innerHTML = `
+                    <div class="inline-flex items-center space-x-2 bg-space-900/90 p-2 rounded-2xl border border-accent-blue">
+                        <img src="${data}" class="h-20 rounded-xl object-cover">
+                        <span class="text-xs font-bold text-accent-blue">Фото / GIF прикреплено</span>
+                        <button onclick="clearCommentDraftMedia()" class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">✕</button>
+                    </div>
+                `;
+            }
+            showToast("🖼️ Изображение прикреплено к комментарию!");
+        };
+
+        window.clearCommentDraftMedia = function() {
+            window.appState.draftCommentMedia = null;
+            window.appState.draftCommentIsSticker = false;
+            const box = document.getElementById('comment-media-preview');
+            if (box) {
+                box.classList.add('hidden');
+                box.innerHTML = '';
+            }
+        };
+
+        window.uploadNewStickerAdmin = async function(inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const nameEl = document.getElementById('adm-sticker-name');
+            const stName = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : `Стикер ${window.appState.stickers.length + 1}`;
+            const dataUrl = await window.processImageFile(file, 320);
+            if (!dataUrl) return;
+            window.appState.stickers.push({ id: 'st-' + Date.now(), name: stName, url: dataUrl });
+            await window.appState.saveAllData();
+            showToast(`✨ Новый стикер «${stName}» добавлен!`);
+            router.render();
+        };
+
+        window.deleteStickerAdmin = async function(stId) {
+            window.appState.stickers = window.appState.stickers.filter(s => s.id !== stId);
+            await window.appState.saveAllData();
+            showToast("🗑️ Стикер удален");
+            router.render();
         };
 
         window.addComment = async function(chId) {
@@ -1804,7 +2219,10 @@
 
             const input = document.getElementById('comment-input');
             const text = input ? sanitizeHTML(input.value.trim()) : '';
-            if (!text) return alertCustom("Напишите текст комментария!");
+            const mediaUrl = window.appState.draftCommentMedia;
+            const isSticker = window.appState.draftCommentIsSticker;
+
+            if (!text && !mediaUrl) return alertCustom("Напишите комментарий, выберите эмодзи, стикер или GIF!");
 
             window.appState.comments.unshift({
                 id: "com-" + Date.now(),
@@ -1815,10 +2233,13 @@
                 frameClass: u.frameClass || "frame-none",
                 themeClass: u.commentTheme || "comm-theme-default",
                 text,
+                mediaUrl: mediaUrl || null,
+                isSticker: !!isSticker,
                 date: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
                 timestamp: Date.now()
             });
             if (input) input.value = '';
+            window.clearCommentDraftMedia();
             await window.appState.saveAllData();
             showToast("💬 Комментарий опубликован!");
             router.render();
@@ -1902,33 +2323,118 @@
             router.navigate('home');
         };
 
-        // --- ПУБЛИКАЦИЯ НОВОЙ ГЛАВЫ В АДМИНКЕ ---
+        // =========================================================================
+        // ПО-АБЗАЦНЫЙ КОНСТРУКТОР ГЛАВ С РУЧНЫМ ПЕРЕМЕЩЕНИЕМ И ВСТАВКОЙ ФОТО ПОСЛЕ ЛЮБОГО АБЗАЦА
+        // =========================================================================
+        window.loadChapterIntoBuilder = function(chId) {
+            const ch = window.appState.chapters.find(c => c.id === chId);
+            if (!ch) return;
+            window.appState.editingChapterId = ch.id;
+            window.appState.chapterBuilderBlocks = [...(ch.contentRu || [])];
+            window.appState.draftChapterAudio = ch.audioUrl || null;
+            router.render();
+            setTimeout(() => {
+                const titleEl = document.getElementById('adm-ch-title');
+                const earlyEl = document.getElementById('adm-ch-early');
+                if (titleEl) titleEl.value = ch.titleRu;
+                if (earlyEl) earlyEl.checked = !!ch.isEarly;
+            }, 50);
+            showToast(`✏️ Глава «${ch.titleRu}» загружена в по-абзацный редактор!`);
+        };
+
+        window.updateBuilderParagraphText = function(idx, val) {
+            window.appState.chapterBuilderBlocks[idx] = val;
+        };
+
+        window.addParagraphAfterBuilderIdx = function(idx) {
+            window.appState.chapterBuilderBlocks.splice(idx + 1, 0, "Новый абзац текста...");
+            router.render();
+        };
+
+        window.insertPhotoAfterBuilderIdx = async function(idx, inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const imgData = await window.processImageFile(file, 950);
+            if (!imgData) return;
+            window.appState.chapterBuilderBlocks.splice(idx + 1, 0, imgData);
+            showToast(`📸 Фотография вставлена ровно после блока #${idx + 1}!`);
+            router.render();
+        };
+
+        window.moveBuilderBlock = function(idx, dir) {
+            const arr = window.appState.chapterBuilderBlocks;
+            const targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= arr.length) return;
+            const temp = arr[idx];
+            arr[idx] = arr[targetIdx];
+            arr[targetIdx] = temp;
+            router.render();
+        };
+
+        window.removeBuilderBlock = function(idx) {
+            if (window.appState.chapterBuilderBlocks.length <= 1) return alertCustom("В главе должен остаться хотя бы один блок!");
+            window.appState.chapterBuilderBlocks.splice(idx, 1);
+            router.render();
+        };
+
+        window.importRawTextToBuilder = function() {
+            const raw = document.getElementById('adm-ch-bulk-paste')?.value.trim();
+            if (!raw) return alertCustom("Вставьте текст для разбивки на абзацы!");
+            const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+            window.appState.chapterBuilderBlocks.push(...lines);
+            document.getElementById('adm-ch-bulk-paste').value = '';
+            showToast(`📑 Добавлено ${lines.length} абзацев! Теперь вы можете вставлять фото после любого из них.`);
+            router.render();
+        };
+
+        window.uploadChapterStudioMp3Admin = async function(inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const audioData = await window.processAudioFile(file);
+            if (!audioData) return;
+            window.appState.draftChapterAudio = audioData;
+            showToast("🎧 Студийная MP3-озвучка прикреплена к главе!");
+        };
+
         window.publishNewChapterAdmin = async function() {
             if (window.appState.user.role !== 'admin') return;
             const titleRu = document.getElementById('adm-ch-title')?.value.trim();
-            const rawText = document.getElementById('adm-ch-content')?.value.trim();
             const isEarly = document.getElementById('adm-ch-early')?.checked || false;
+            const blocks = (window.appState.chapterBuilderBlocks || []).map(b => b.trim()).filter(Boolean);
 
-            if (!titleRu || !rawText) return alertCustom("Заполните заголовок и текст главы!");
+            if (!titleRu || blocks.length === 0) return alertCustom("Укажите название главы и добавьте хотя бы один абзац или иллюстрацию!");
 
-            const paragraphs = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-            const newCh = {
-                id: "ch-" + Date.now(),
-                number: window.appState.chapters.length + 1,
-                titleRu,
-                titleEn: titleRu,
-                date: new Date().toLocaleDateString('ru-RU'),
-                isEarly,
-                priceRub: isEarly ? 49 : 0,
-                priceUsd: isEarly ? 0.99 : 0,
-                audioUrl: null,
-                contentRu: paragraphs,
-                likes: { blue: 1, purple: 1, pink: 1, gold: 1 }
-            };
+            if (window.appState.editingChapterId) {
+                const existing = window.appState.chapters.find(c => c.id === window.appState.editingChapterId);
+                if (existing) {
+                    existing.titleRu = titleRu;
+                    existing.titleEn = titleRu;
+                    existing.isEarly = isEarly;
+                    existing.contentRu = [...blocks];
+                    if (window.appState.draftChapterAudio) existing.audioUrl = window.appState.draftChapterAudio;
+                }
+                window.appState.editingChapterId = null;
+                showToast(`✅ Изменения в главе «${titleRu}» сохранены!`);
+            } else {
+                const newCh = {
+                    id: "ch-" + Date.now(),
+                    number: window.appState.chapters.length + 1,
+                    titleRu,
+                    titleEn: titleRu,
+                    date: new Date().toLocaleDateString('ru-RU'),
+                    isEarly,
+                    priceRub: isEarly ? window.appState.finance.prices.chapterPriceRub : 0,
+                    priceUsd: isEarly ? window.appState.finance.prices.chapterPriceUsd : 0,
+                    audioUrl: window.appState.draftChapterAudio || null,
+                    contentRu: [...blocks],
+                    likes: { blue: 1, purple: 1, pink: 1, gold: 1 }
+                };
+                window.appState.chapters.push(newCh);
+                showToast(`📖 Новая глава «${titleRu}» опубликована!`);
+            }
 
-            window.appState.chapters.push(newCh);
+            window.appState.draftChapterAudio = null;
             await window.appState.saveAllData();
-            showToast(`📖 Глава «${titleRu}» опубликована!`);
             router.navigate('chapters');
         };
 
@@ -1992,10 +2498,16 @@
             const lastCh = state.chapters[state.chapters.length - 1] || state.chapters[0];
             return `
                 <div class="space-y-5 pb-8">
-                    <!-- Главный баннер новеллы -->
+                    <!-- Главный баннер новеллы с возможностью быстрой смены обложки для Админа -->
                     <div class="relative rounded-3xl overflow-hidden glass-card border border-accent-blue/40 p-6 sm:p-8 text-center space-y-4 shadow-2xl">
-                        <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden border-2 border-amber-400 shadow-xl">
+                        <div class="relative w-32 h-44 mx-auto rounded-2xl overflow-hidden border-2 border-amber-400 shadow-2xl group">
                             <img src="${state.siteConfig.bannerUrl || DEFAULT_CREST_SVG}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-full h-full object-cover" alt="Cover">
+                            ${state.user.role === 'admin' ? `
+                                <label class="cursor-pointer absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] font-extrabold text-amber-300 p-2 transition">
+                                    📷 Сменить обложку
+                                    <input type="file" accept="image/*" onchange="previewAndApplyCoverAdmin(this)" class="hidden">
+                                </label>
+                            ` : ''}
                         </div>
                         <div class="space-y-1">
                             <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-accent-blue/20 text-accent-blue border border-accent-blue/40">Official Web Novel Portal</span>
@@ -2035,7 +2547,7 @@
                                 <div onclick="router.navigate('reader', '${ch.id}')" class="p-3.5 rounded-xl glass-card border border-white/10 hover:border-accent-blue/50 flex justify-between items-center cursor-pointer interactive-btn">
                                     <div>
                                         <span class="text-xs font-extrabold text-white block">${ch.titleRu}</span>
-                                        <span class="text-[10px] text-gray-400">${ch.date} • 🔊 10 голосов ElevenLabs</span>
+                                        <span class="text-[10px] text-gray-400">${ch.date} • 🔊 10 живых голосов</span>
                                     </div>
                                     <span class="px-3 py-1 rounded-lg bg-accent-blue/20 text-accent-blue text-xs font-bold">Читать →</span>
                                 </div>
@@ -2067,7 +2579,10 @@
                                     </div>
                                     <span class="text-[11px] text-gray-400 block">Дата выхода: ${ch.date}</span>
                                 </div>
-                                <span class="px-3.5 py-1.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Открыть</span>
+                                <div class="flex items-center space-x-2">
+                                    ${state.user.role === 'admin' ? `<button onclick="event.stopPropagation(); router.navigate('admin'); loadChapterIntoBuilder('${ch.id}');" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 text-xs font-bold">✏️ Ред.</button>` : ''}
+                                    <span class="px-3.5 py-1.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Открыть</span>
+                                </div>
                             </div>
                         `).join('')}
                     </div>
@@ -2094,7 +2609,7 @@
 
             return `
                 <div class="space-y-5 pb-10">
-                    <!-- Панель настроек чтения и 10 голосов ElevenLabs -->
+                    <!-- Панель настроек чтения и 10 живых голосов -->
                     <div class="glass-card p-4 rounded-2xl border border-accent-blue/40 space-y-3">
                         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                             <button onclick="router.navigate('chapters')" class="text-xs text-gray-300 font-bold">← К списку глав</button>
@@ -2128,7 +2643,7 @@
 
                         <!-- 10 Живых Голосов ElevenLabs -->
                         <div class="pt-2 border-t border-white/10 space-y-2">
-                            <label class="text-[11px] font-extrabold text-amber-300 block">🎙️ Живая озвучка (10 уникальных голосов ElevenLabs):</label>
+                            <label class="text-[11px] font-extrabold text-amber-300 block">🎙️ Живая озвучка (10 уникальных по тембру голосов):</label>
                             <select onchange="selectVoiceProfile(this.value)" class="w-full bg-space-900 text-white text-xs p-2.5 rounded-xl border border-accent-purple/50 font-semibold">
                                 ${state.tts.profiles.map(p => `
                                     <option value="${p.id}" ${state.tts.selectedProfileId === p.id ? 'selected' : ''}>${p.name}</option>
@@ -2139,18 +2654,18 @@
                                     ${state.tts.isPlaying ? '⏹ Остановить чтение' : '🔊 Читать главу этим живым голосом'}
                                 </button>
                                 <button id="tts-sample-btn" onclick="previewSelectedVoiceSample()" class="py-2.5 px-3 rounded-xl glass-card border border-amber-400/50 text-amber-300 text-xs font-bold">
-                                    ▶️ Прослушать голос
+                                    ▶️ Прослушать этот голос
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Текст главы -->
+                    <!-- Текст главы и иллюстрации между абзацами -->
                     <article id="novel-text-content" class="glass-card p-5 sm:p-8 rounded-3xl space-y-4 ${state.readerSettings.font}">
                         <h1 class="text-xl sm:text-2xl font-extrabold text-amber-300 border-b border-white/10 pb-3">${ch.titleRu}</h1>
                         ${(ch.contentRu || []).map((block, idx) => {
                             if (isImageOrGif(block)) {
-                                return `<div class="my-4 rounded-2xl overflow-hidden border border-white/15"><img src="${block}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-full max-h-96 object-cover"></div>`;
+                                return `<div class="my-5 rounded-2xl overflow-hidden border border-amber-400/30 shadow-2xl"><img src="${block}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-full max-h-[520px] object-contain bg-black/40 mx-auto"></div>`;
                             }
                             if (block.startsWith('~blue')) return `<p id="ch-block-${idx}" class="dialogue-blue">${sanitizeHTML(block.replace('~blue', '').trim())}</p>`;
                             if (block.startsWith('~pink')) return `<p id="ch-block-${idx}" class="dialogue-pink">${sanitizeHTML(block.replace('~pink', '').trim())}</p>`;
@@ -2160,33 +2675,80 @@
                         }).join('')}
                     </article>
 
-                    <!-- Огоньки реакций -->
-                    <div class="glass-card p-4 rounded-2xl text-center space-y-2">
-                        <span class="text-xs font-bold text-gray-300 block">🔥 Поддержите главу магическим пламенем:</span>
-                        <div class="flex justify-center gap-3">
-                            <button onclick="likeChapterFlame('${ch.id}', 'blue')" class="px-3.5 py-2 rounded-xl bg-blue-500/20 border border-blue-400/40 text-xs font-extrabold text-blue-300">💙 ${ch.likes?.blue || 0}</button>
-                            <button onclick="likeChapterFlame('${ch.id}', 'purple')" class="px-3.5 py-2 rounded-xl bg-purple-500/20 border border-purple-400/40 text-xs font-extrabold text-purple-300">💜 ${ch.likes?.purple || 0}</button>
-                            <button onclick="likeChapterFlame('${ch.id}', 'pink')" class="px-3.5 py-2 rounded-xl bg-pink-500/20 border border-pink-400/40 text-xs font-extrabold text-pink-300">❤️‍🔥 ${ch.likes?.pink || 0}</button>
-                            <button onclick="likeChapterFlame('${ch.id}', 'gold')" class="px-3.5 py-2 rounded-xl bg-amber-500/20 border border-amber-400/40 text-xs font-extrabold text-amber-300">💛 ${ch.likes?.gold || 0}</button>
+                    <!-- РАЗНОЦВЕТНЫЕ ФЭНТЕЗИ ПЛАМЕНИ (ЛАЙКИ) -->
+                    <div class="glass-card p-5 rounded-3xl text-center space-y-3 border border-amber-400/30">
+                        <span class="text-xs font-extrabold gold-shimmer uppercase tracking-wider block">🔥 Зажгите Священное Пламя Фэнтези в поддержку главы:</span>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                            <button onclick="likeChapterFlame('${ch.id}', 'blue')" class="flame-btn-blue p-3 rounded-2xl bg-sky-950/60 border border-sky-400/50 flex flex-col items-center space-y-1 interactive-btn">
+                                ${getFantasyFlameSVG('blue')}
+                                <span class="text-[11px] font-extrabold text-sky-300">Синее Пламя Луны</span>
+                                <span class="text-sm font-black text-white">${ch.likes?.blue || 0}</span>
+                            </button>
+                            <button onclick="likeChapterFlame('${ch.id}', 'purple')" class="flame-btn-purple p-3 rounded-2xl bg-purple-950/60 border border-purple-400/50 flex flex-col items-center space-y-1 interactive-btn">
+                                ${getFantasyFlameSVG('purple')}
+                                <span class="text-[11px] font-extrabold text-purple-300">Астральное Пламя</span>
+                                <span class="text-sm font-black text-white">${ch.likes?.purple || 0}</span>
+                            </button>
+                            <button onclick="likeChapterFlame('${ch.id}', 'pink')" class="flame-btn-pink p-3 rounded-2xl bg-rose-950/60 border border-rose-400/50 flex flex-col items-center space-y-1 interactive-btn">
+                                ${getFantasyFlameSVG('pink')}
+                                <span class="text-[11px] font-extrabold text-rose-300">Пламя Феникса</span>
+                                <span class="text-sm font-black text-white">${ch.likes?.pink || 0}</span>
+                            </button>
+                            <button onclick="likeChapterFlame('${ch.id}', 'gold')" class="flame-btn-gold p-3 rounded-2xl bg-amber-950/60 border border-amber-400/50 flex flex-col items-center space-y-1 interactive-btn">
+                                ${getFantasyFlameSVG('gold')}
+                                <span class="text-[11px] font-extrabold text-amber-300">Золотое Пламя Бога</span>
+                                <span class="text-sm font-black text-white">${ch.likes?.gold || 0}</span>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Комментарии к главе -->
-                    <div class="glass-card p-5 rounded-2xl space-y-4">
-                        <h3 class="text-sm font-extrabold text-white">💬 Комментарии читателей (${chComments.length})</h3>
+                    <!-- КОММЕНТАРИИ С ЭМОДЗИ, СТИКЕРАМИ И GIF -->
+                    <div class="glass-card p-5 rounded-3xl space-y-4 border border-white/15">
+                        <h3 class="text-sm font-extrabold text-white">💬 Комментарии, Стикеры и GIF (${chComments.length})</h3>
+                        
+                        <!-- Быстрые эмодзи -->
                         <div class="flex flex-wrap gap-1.5">
-                            ${['🔥','❤️','⚡','👑','🌌','😭','👏','⚔️'].map(em => `
-                                <button onclick="insertEmojiToComment('${em}')" class="px-2.5 py-1 rounded-lg bg-white/10 text-sm">${em}</button>
+                            ${['🔥','❤️','⚡','👑','🌌','😭','👏','⚔️','🐉','✨','😍','🛡️'].map(em => `
+                                <button onclick="insertEmojiToComment('${em}')" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-sm">${em}</button>
                             `).join('')}
                         </div>
-                        <div class="flex gap-2">
-                            <input id="comment-input" type="text" placeholder="Напишите ваш отзыв о главе..." class="flex-1 glass-card p-3 rounded-xl text-xs text-white">
-                            <button onclick="addComment('${ch.id}')" class="px-4 py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Отправить</button>
+
+                        <!-- Панель выбора Стикеров новеллы -->
+                        <div class="space-y-1.5">
+                            <span class="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider block">✨ Нажмите на стикер, чтобы прикрепить к комментарию:</span>
+                            <div class="flex gap-2.5 overflow-x-auto pb-1">
+                                ${state.stickers.map(st => `
+                                    <button onclick="selectStickerForComment('${st.url}', '${st.name}')" class="p-1.5 rounded-2xl glass-card border border-white/15 hover:border-amber-400 shrink-0 flex flex-col items-center w-20">
+                                        <img src="${st.url}" class="w-12 h-12 object-contain rounded-lg">
+                                        <span class="text-[9px] text-gray-300 truncate w-full text-center mt-1">${st.name}</span>
+                                    </button>
+                                `).join('')}
+                            </div>
                         </div>
 
+                        <!-- Быстрые GIF и загрузка своего фото/GIF -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            ${QUICK_GIFS.map(g => `
+                                <button onclick="selectQuickGifForComment('${g.url}', '${g.name}')" class="px-2.5 py-1 rounded-xl bg-accent-pink/20 border border-accent-pink/40 text-[10px] font-extrabold text-pink-200">🎬 ${g.name}</button>
+                            `).join('')}
+                            <label class="cursor-pointer px-3 py-1 rounded-xl bg-accent-blue/20 border border-accent-blue/40 text-[10px] font-extrabold text-sky-200">
+                                📷 Прикрепить своё Фото / GIF
+                                <input type="file" accept="image/*" onchange="attachCommentMediaFile(this)" class="hidden">
+                            </label>
+                        </div>
+
+                        <!-- Предпросмотр выбранного стикера или GIF перед отправкой -->
+                        <div id="comment-media-preview" class="hidden relative"></div>
+
+                        <div class="flex gap-2">
+                            <input id="comment-input" type="text" placeholder="Напишите комментарий (можно вместе со стикером, эмодзи и GIF)..." class="flex-1 glass-card p-3 rounded-xl text-xs text-white">
+                            <button onclick="addComment('${ch.id}')" class="px-5 py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold shadow-lg">Отправить</button>
+                        </div>
+
+                        <!-- Список комментариев -->
                         <div class="space-y-3 pt-2">
                             ${chComments.map(c => `
-                                <div class="p-3.5 rounded-2xl ${c.themeClass || 'comm-theme-default'} space-y-1.5">
+                                <div class="p-3.5 rounded-2xl ${c.themeClass || 'comm-theme-default'} space-y-2">
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center space-x-2">
                                             <img src="${c.avatar || DEFAULT_CREST_SVG}" class="w-7 h-7 rounded-full object-cover ${c.frameClass || 'frame-none'}">
@@ -2201,8 +2763,12 @@
                                             ` : ''}
                                         </div>
                                     </div>
-                                    <p class="text-xs text-gray-100 pl-9">${c.text}</p>
-                                    ${c.mediaUrl ? `<div class="pl-9 pt-1"><img src="${c.mediaUrl}" class="max-h-40 rounded-xl border border-white/20"></div>` : ''}
+                                    ${c.text ? `<p class="text-xs text-gray-100 pl-9 leading-relaxed">${c.text}</p>` : ''}
+                                    ${c.mediaUrl ? `
+                                        <div class="pl-9 pt-1">
+                                            <img src="${c.mediaUrl}" class="${c.isSticker ? 'w-28 h-28 object-contain' : 'max-h-52 rounded-xl border border-white/20 object-cover'}">
+                                        </div>
+                                    ` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -2251,7 +2817,7 @@
                                         <div class="space-y-1 flex-1 min-w-0">
                                             <span class="text-[10px] font-extrabold ${c.isPaidSpoilerFolder ? 'text-amber-300' : 'text-accent-blue'} block truncate">${c.folder}</span>
                                             <h3 class="text-sm font-extrabold text-white truncate">${c.name}</h3>
-                                            <p class="text-[11px] text-gray-400 line-clamp-2">${locked ? '🔒 Секретная спойлер-папка. Нажмите для разблокировки.' : c.bioRu}</p>
+                                            <p class="text-[11px] text-gray-400 line-clamp-2">${locked ? `🔒 Платная спойлер-папка (${c.folderPriceRub || 249} ₽). Нажмите для открытия.` : c.bioRu}</p>
                                         </div>
                                     </div>
                                 `;
@@ -2270,14 +2836,29 @@
                 <div class="space-y-4 pb-10">
                     <button onclick="router.navigate('lore')" class="text-xs text-accent-blue font-bold">← Назад во Вселенную</button>
                     <div class="glass-card p-6 rounded-3xl border border-accent-blue/40 space-y-4">
-                        <div class="flex items-center space-x-4">
-                            <img src="${ent.avatar || DEFAULT_CREST_SVG}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-20 h-20 rounded-2xl object-cover border-2 border-amber-400">
-                            <div>
-                                <span class="text-[10px] text-amber-300 font-extrabold uppercase">${ent.folder}</span>
-                                <h1 class="text-lg font-extrabold text-white">${ent.name}</h1>
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center space-x-4">
+                                <img src="${ent.avatar || DEFAULT_CREST_SVG}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-20 h-20 rounded-2xl object-cover border-2 border-amber-400">
+                                <div>
+                                    <span class="text-[10px] text-amber-300 font-extrabold uppercase">${ent.folder}</span>
+                                    <h1 class="text-lg font-extrabold text-white">${ent.name}</h1>
+                                </div>
                             </div>
+                            ${state.user.role === 'admin' ? `
+                                <label class="cursor-pointer px-3.5 py-2 rounded-xl bg-amber-500 text-black text-xs font-extrabold">
+                                    ➕ Добавить арт в папку
+                                    <input type="file" accept="image/*" onchange="addArtToCharacterDetail('${ent.id}', this)" class="hidden">
+                                </label>
+                            ` : ''}
                         </div>
                         <p class="text-xs text-gray-200 leading-relaxed">${ent.bioRu}</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                            ${(ent.gallery || []).map(art => `
+                                <div class="rounded-2xl overflow-hidden border border-white/15 bg-black/40">
+                                    <img src="${art.url}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-full max-h-80 object-contain mx-auto">
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
             `;
@@ -2451,16 +3032,217 @@
             }
 
             const isFullOwner = role === 'admin';
+            const fin = state.finance;
 
             return `
                 <div class="space-y-6 pb-12">
                     <div class="glass-card p-5 rounded-2xl border border-accent-pink/50 flex flex-wrap justify-between items-center gap-2">
                         <div>
                             <h1 class="text-lg font-extrabold text-white">⚙️ Панель Управления (${isFullOwner ? 'Владелец — Уровень 5' : 'Саб-админ — Уровень 4'})</h1>
-                            <p class="text-xs text-gray-400">Все изменения мгновенно сохраняются в базе</p>
+                            <p class="text-xs text-gray-400">Все изменения мгновенно сохраняются на сайте</p>
                         </div>
                         <button onclick="exportFullSiteBackup()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">💾 Скачать Бэкап</button>
                     </div>
+
+                    ${isFullOwner ? `
+                        <!-- 1. ОБЛОЖКА НОВЕЛЛЫ, ГЕРБ САЙТА И НАЗВАНИЕ -->
+                        <div class="glass-card p-5 rounded-2xl space-y-4 border border-amber-400/50">
+                            <h2 class="text-sm font-extrabold text-amber-300">👑 Обложка Новеллы, Герб Сайта и Название</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="p-3.5 rounded-2xl bg-space-900/80 border border-white/10 flex items-center space-x-3.5">
+                                    <img src="${state.siteConfig.bannerUrl || DEFAULT_CREST_SVG}" class="w-16 h-20 rounded-xl object-cover border border-amber-400 shrink-0">
+                                    <div class="space-y-2 flex-1">
+                                        <span class="text-xs font-extrabold text-white block">Обложка новеллы</span>
+                                        <label class="cursor-pointer inline-block px-3 py-2 rounded-xl bg-amber-500 text-black text-xs font-extrabold">
+                                            🖼️ Загрузить обложку
+                                            <input type="file" accept="image/*" onchange="previewAndApplyCoverAdmin(this)" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="p-3.5 rounded-2xl bg-space-900/80 border border-white/10 flex items-center space-x-3.5">
+                                    <img src="${state.siteConfig.crestUrl || DEFAULT_CREST_SVG}" class="w-16 h-16 rounded-full object-cover border-2 border-accent-blue shrink-0">
+                                    <div class="space-y-2 flex-1">
+                                        <span class="text-xs font-extrabold text-white block">Герб сайта (в шапке)</span>
+                                        <label class="cursor-pointer inline-block px-3 py-2 rounded-xl bg-accent-blue text-white text-xs font-extrabold">
+                                            🛡️ Сменить Герб
+                                            <input type="file" accept="image/*" onchange="previewAndApplyCrestAdmin(this)" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <input id="cfg-title" type="text" value="${state.siteConfig.title}" class="flex-1 glass-card p-2.5 rounded-xl text-xs text-white">
+                                <button onclick="saveBookTitleAdmin()" class="px-4 py-2.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Сохранить название</button>
+                            </div>
+                        </div>
+
+                        <!-- 2. ПО-АБЗАЦНЫЙ КОНСТРУКТОР ГЛАВ С РУЧНЫМ ПЕРЕМЕЩЕНИЕМ ФОТОГРАФИЙ -->
+                        <div class="glass-card p-5 rounded-2xl space-y-4 border-2 border-accent-blue/60">
+                            <div class="flex flex-wrap justify-between items-center gap-2">
+                                <div>
+                                    <h2 class="text-sm font-extrabold text-white">📖 По-абзацный Конструктор Главы (Вставка фото после любого абзаца)</h2>
+                                    <p class="text-[11px] text-gray-400">Добавляйте фото после нужного абзаца и двигайте блоки стрелками ⬆️ ⬇️ куда угодно</p>
+                                </div>
+                                <select onchange="if(this.value) loadChapterIntoBuilder(this.value)" class="bg-space-900 text-amber-300 text-xs p-2 rounded-xl border border-amber-400/40 font-bold">
+                                    <option value="">✏️ Редактировать существующую главу...</option>
+                                    ${state.chapters.map(c => `<option value="${c.id}">${c.titleRu}</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <input id="adm-ch-title" type="text" placeholder="Название главы (напр. Глава 2: Пробуждение Клинка)" class="w-full glass-card p-3 rounded-xl text-xs text-white font-bold">
+
+                            <!-- Быстрая вставка большого текста с авто-разбивкой на абзацы -->
+                            <div class="p-3 rounded-xl bg-space-900/70 border border-white/10 space-y-2">
+                                <span class="text-[11px] font-bold text-accent-blue block">📋 Быстрая вставка текста целиком (автоматически разобьется на отдельные абзацы):</span>
+                                <textarea id="adm-ch-bulk-paste" rows="3" placeholder="Вставьте сюда весь текст главы — он разобьется по абзацам, и вы сможете вставить фото между любыми из них..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
+                                <button onclick="importRawTextToBuilder()" class="px-4 py-2 rounded-xl bg-accent-blue/30 border border-accent-blue text-white text-xs font-extrabold">➕ Разбить текст на абзацы</button>
+                            </div>
+
+                            <!-- Список блоков (абзацев и фото) с кнопками перемещения и вставки фото после каждого абзаца -->
+                            <div class="space-y-2.5 max-h-[55vh] overflow-y-auto pr-1">
+                                ${(state.chapterBuilderBlocks || []).map((block, idx) => {
+                                    const isImg = isImageOrGif(block);
+                                    return `
+                                        <div class="p-3 rounded-2xl bg-space-900/90 border ${isImg ? 'border-amber-400/60' : 'border-white/15'} space-y-2">
+                                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded ${isImg ? 'bg-amber-500 text-black' : 'bg-white/10 text-accent-blue'}">
+                                                    ${isImg ? `🖼️ ИЛЛЮСТРАЦИЯ (Блок #${idx + 1})` : `📝 АБЗАЦ #${idx + 1}`}
+                                                </span>
+                                                <div class="flex items-center gap-1.5">
+                                                    <button onclick="moveBuilderBlock(${idx}, -1)" class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-bold" title="Переместить выше">⬆️ Вверх</button>
+                                                    <button onclick="moveBuilderBlock(${idx}, 1)" class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-bold" title="Переместить ниже">⬇️ Вниз</button>
+                                                    <button onclick="addParagraphAfterBuilderIdx(${idx})" class="px-2 py-1 rounded bg-accent-blue/25 border border-accent-blue/50 text-[10px] font-extrabold text-sky-200">+ Абзац ниже</button>
+                                                    <label class="cursor-pointer px-2.5 py-1 rounded bg-amber-500/25 border border-amber-400/60 text-[10px] font-extrabold text-amber-300">
+                                                        📸 + Фото после этого абзаца
+                                                        <input type="file" accept="image/*" onchange="insertPhotoAfterBuilderIdx(${idx}, this)" class="hidden">
+                                                    </label>
+                                                    <button onclick="removeBuilderBlock(${idx})" class="px-2 py-1 rounded bg-red-600/30 text-red-300 text-xs font-bold">✕</button>
+                                                </div>
+                                            </div>
+                                            ${isImg ? `
+                                                <div class="rounded-xl overflow-hidden border border-white/10 bg-black/40 p-1">
+                                                    <img src="${block}" class="max-h-48 object-contain mx-auto rounded-lg">
+                                                </div>
+                                            ` : `
+                                                <textarea rows="2" oninput="updateBuilderParagraphText(${idx}, this.value)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">${block}</textarea>
+                                            `}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
+                                <label class="flex items-center space-x-2 text-xs text-amber-300 font-bold">
+                                    <input id="adm-ch-early" type="checkbox" class="rounded">
+                                    <span>👑 Ранний VIP-доступ (только для Premium)</span>
+                                </label>
+                                <label class="cursor-pointer px-3.5 py-2 rounded-xl glass-card border border-accent-pink/50 text-accent-pink text-xs font-extrabold">
+                                    🎧 Прикрепить MP3-озвучку главы
+                                    <input type="file" accept="audio/*" onchange="uploadChapterStudioMp3Admin(this)" class="hidden">
+                                </label>
+                            </div>
+
+                            <button onclick="publishNewChapterAdmin()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-accent-blue via-accent-purple to-accent-pink text-white text-xs font-extrabold shadow-xl">
+                                🚀 ${state.editingChapterId ? 'Сохранить изменения в главе' : 'Опубликовать главу на сайте'}
+                            </button>
+                        </div>
+
+                        <!-- 3. ДОБАВЛЕНИЕ СВОЕЙ ФОНОВОЙ МУЗЫКИ И СВОИХ ФОНОВ САЙТА -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-pink/40">
+                                <h2 class="text-sm font-extrabold text-accent-pink">🎵 Добавить фоновую музыку</h2>
+                                <input id="adm-music-title" type="text" placeholder="Название трека..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <label class="cursor-pointer w-full py-2.5 px-3 rounded-xl bg-accent-pink text-white text-xs font-extrabold flex items-center justify-center">
+                                    🎼 Загрузить MP3 / WAV трек
+                                    <input type="file" accept="audio/*" onchange="uploadCustomMusicTrack(this, false)" class="hidden">
+                                </label>
+                            </div>
+
+                            <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-blue/40">
+                                <h2 class="text-sm font-extrabold text-accent-blue">🌌 Добавить фон сайта (Картинку)</h2>
+                                <input id="adm-bg-name" type="text" placeholder="Название фона..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                    <input id="adm-bg-prem" type="checkbox">
+                                    <span>Сделать фон эксклюзивным для VIP</span>
+                                </label>
+                                <label class="cursor-pointer w-full py-2.5 px-3 rounded-xl bg-accent-blue text-white text-xs font-extrabold flex items-center justify-center">
+                                    🖼️ Загрузить картинку фона
+                                    <input type="file" accept="image/*" onchange="addCustomBackgroundUpload(this, false)" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 4. УПРАВЛЕНИЕ СТИКЕРАМИ ДЛЯ КОММЕНТАРИЕВ -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-amber-400/40">
+                            <h2 class="text-sm font-extrabold text-amber-300">✨ Добавить стикеры для комментариев читателей</h2>
+                            <div class="flex flex-wrap gap-2">
+                                <input id="adm-sticker-name" type="text" placeholder="Название стикера..." class="flex-1 glass-card p-2.5 rounded-xl text-xs text-white">
+                                <label class="cursor-pointer px-4 py-2.5 rounded-xl bg-amber-500 text-black text-xs font-extrabold">
+                                    ➕ Загрузить картинку стикера
+                                    <input type="file" accept="image/*" onchange="uploadNewStickerAdmin(this)" class="hidden">
+                                </label>
+                            </div>
+                            <div class="flex gap-2.5 overflow-x-auto pt-2">
+                                ${state.stickers.map(st => `
+                                    <div class="p-2 rounded-xl bg-space-900 border border-white/10 flex flex-col items-center w-24 shrink-0 relative">
+                                        <img src="${st.url}" class="w-12 h-12 object-contain">
+                                        <span class="text-[9px] text-gray-300 truncate w-full text-center mt-1">${st.name}</span>
+                                        <button onclick="deleteStickerAdmin('${st.id}')" class="mt-1 text-[9px] text-red-400 font-bold">Удалить</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- 5. ДОБАВЛЕНИЕ КАРТОЧЕК ПЕРСОНАЖЕЙ И ПЛАТНЫХ СПОЙЛЕР-ПАПОК -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-purple-400/40">
+                            <h2 class="text-sm font-extrabold text-purple-300">🦸 Добавить Персонажа / Локацию / 🔒 Платную Спойлер-папку</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <input id="adm-lore-name" type="text" placeholder="Имя персонажа или название папки..." class="glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="adm-lore-folder" type="text" placeholder="Раздел (напр. Арфангелы / Империи)..." class="glass-card p-2.5 rounded-xl text-xs text-white">
+                            </div>
+                            <textarea id="adm-lore-bio" rows="2" placeholder="Описание персонажа или секретного досье..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <label class="flex items-center space-x-2 text-xs text-amber-300 font-bold">
+                                    <input id="adm-lore-spoiler" type="checkbox">
+                                    <span>🔒 Сделать закрытой платной Спойлер-папкой</span>
+                                </label>
+                                <input id="adm-lore-rub" type="number" value="249" placeholder="Цена ₽" class="w-28 glass-card p-2 rounded-xl text-xs text-white">
+                            </div>
+                            <label class="cursor-pointer w-full py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold flex items-center justify-center shadow-lg">
+                                📸 Выбрать арт и создать карточку во Вселенной
+                                <input type="file" accept="image/*" onchange="createNewLoreCardAdmin(this)" class="hidden">
+                            </label>
+                        </div>
+
+                        <!-- 6. ПЛАТЕЖНАЯ СИСТЕМА, ЦЕНЫ И ВЫВОД СРЕДСТВ АВТОРА -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-emerald-400/50">
+                            <div class="flex flex-wrap justify-between items-center gap-2">
+                                <div>
+                                    <h2 class="text-sm font-extrabold text-emerald-300">💳 Платежная система, Цены и Баланс Автора</h2>
+                                    <p class="text-xs text-white font-bold">Доступно к выводу: <span class="text-emerald-400">${fin.balanceRub} ₽ ($${fin.balanceUsd})</span> • Подписчиков VIP: ${fin.premiumSubscribers}</p>
+                                </div>
+                                <button onclick="withdrawAuthorFunds()" class="px-4 py-2 rounded-xl bg-emerald-500 text-black text-xs font-extrabold">💸 Вывести средства</button>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                                <div><span class="text-[10px] text-gray-400 block">VIP Месяц (₽)</span><input id="price-prem-rub" type="number" value="${fin.prices.premiumMonthRub}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">VIP Месяц ($)</span><input id="price-prem-usd" type="number" step="0.1" value="${fin.prices.premiumMonthUsd}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Ранние главы (₽)</span><input id="price-ch-rub" type="number" value="${fin.prices.chapterPriceRub}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Ранние главы ($)</span><input id="price-ch-usd" type="number" step="0.1" value="${fin.prices.chapterPriceUsd}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Спойлер-папка (₽)</span><input id="price-spoiler-rub" type="number" value="${fin.prices.spoilerFolderPriceRub}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Спойлер-папка ($)</span><input id="price-spoiler-usd" type="number" step="0.1" value="${fin.prices.spoilerFolderPriceUsd}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                            </div>
+                            <div class="space-y-2 pt-2">
+                                <input id="fin-holder" type="text" value="${fin.payoutDetails.cardHolder}" placeholder="Имя получателя" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-mir" type="text" value="${fin.payoutDetails.mirCard}" placeholder="Карта МИР" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-sbp" type="text" value="${fin.payoutDetails.sbpPhone}" placeholder="Телефон СБП" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-visa" type="text" value="${fin.payoutDetails.visaMastercard}" placeholder="Visa / MasterCard" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-unionpay" type="text" value="${fin.payoutDetails.unionPayCard}" placeholder="UnionPay" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-paypal" type="text" value="${fin.payoutDetails.paypalEmail}" placeholder="PayPal Email" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-boosty" type="text" value="${fin.payoutDetails.boostyUrl}" placeholder="Ссылка на Boosty" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <button onclick="saveFinanceAndPricesAdmin()" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">💾 Сохранить реквизиты и цены</button>
+                            </div>
+                        </div>
+                    ` : ''}
 
                     <!-- Модерация пользователей (Мьют доступен Саб-админу, Бан и назначение Саб-админа — только Владельцу) -->
                     <div class="glass-card p-5 rounded-2xl space-y-3 border border-white/15">
@@ -2487,19 +3269,7 @@
                     </div>
 
                     ${isFullOwner ? `
-                        <!-- Публикация новой главы -->
-                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-blue/40">
-                            <h2 class="text-sm font-extrabold text-white">📖 Опубликовать новую главу</h2>
-                            <input id="adm-ch-title" type="text" placeholder="Название главы (напр. Глава 2: Клинок Синей Луны)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
-                            <textarea id="adm-ch-content" rows="5" placeholder="Текст главы (каждый абзац с новой строки; для реплик можно начинать со ~blue, ~pink, ~gold)..." class="w-full glass-card p-3 rounded-xl text-xs text-white"></textarea>
-                            <label class="flex items-center space-x-2 text-xs text-gray-300">
-                                <input id="adm-ch-early" type="checkbox" class="rounded">
-                                <span>👑 Сделать главу ранним VIP-доступом (Premium)</span>
-                            </label>
-                            <button onclick="publishNewChapterAdmin()" class="w-full py-3 rounded-xl bg-gradient-to-r from-accent-blue to-accent-pink text-white text-xs font-extrabold">🚀 Опубликовать главу</button>
-                        </div>
-
-                        <!-- Создание и удаление эксклюзивных окон сообщений для Premium -->
+                        <!-- Конструктор эксклюзивных окон сообщений для Premium -->
                         <div class="glass-card p-5 rounded-2xl space-y-3 border border-amber-400/40">
                             <h2 class="text-sm font-extrabold text-amber-300">💬 Конструктор эксклюзивных окон сообщений (VIP)</h2>
                             <input id="new-comm-win-name" type="text" placeholder="Название окна (напр. Изумрудное Пламя)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
@@ -2558,6 +3328,13 @@
             }
             window.injectCustomCommentThemesCSS();
             window.applyReaderTypography();
+            if (window.appState.readerSettings?.activeBgId) {
+                const bg = window.appState.backgrounds.find(b => b.id === window.appState.readerSettings.activeBgId);
+                const layer = document.getElementById('global-bg-layer');
+                if (bg && layer) {
+                    layer.style.background = bg.type === 'image' ? `url('${bg.value}') center/cover no-repeat fixed` : bg.value;
+                }
+            }
             window.updateUserBadge();
             window.router.render();
         }
