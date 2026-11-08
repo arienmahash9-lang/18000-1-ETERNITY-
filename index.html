@@ -120,35 +120,30 @@
 
         .frame-none { border: 2px solid rgba(255,255,255,0.25); }
         .frame-neon { border: 2.5px solid #38BDF8 !important; box-shadow: 0 0 12px rgba(56, 189, 248, 0.7) !important; }
-        /* VIP 1: Королевская Золотая Корона (Двойной золотой контур с пульсацией) */
         .frame-gold {
             border: 3px double #FDE047 !important;
             outline: 2px solid #D97706 !important;
             outline-offset: 2px;
             animation: pulseGoldGlow 2.4s infinite ease-in-out;
         }
-        /* VIP 2: Багровое Пламя Феникса */
         .frame-crimson {
             border: 3px solid #FF2A85 !important;
             outline: 2px dashed #FB7185 !important;
             outline-offset: 2px;
             animation: crimsonFire 2s infinite ease-in-out;
         }
-        /* VIP 3: Астральный Вихрь Вечности */
         .frame-astral-ring {
             border: 3px solid #C084FC !important;
             outline: 2px solid #38BDF8 !important;
             outline-offset: 2px;
             animation: astralPulse 2.6s infinite ease-in-out;
         }
-        /* VIP 4: Изумрудный Дракон */
         .frame-emerald {
             border: 3px solid #10B981 !important;
             outline: 2px dotted #6EE7B7 !important;
             outline-offset: 2px;
             box-shadow: 0 0 18px #10B981, inset 0 0 10px #059669 !important;
         }
-        /* ПЛАТНАЯ АРКА: Первородный Бог */
         .frame-spoiler-god {
             border: 3px solid #F0ABFC !important;
             outline: 2.5px solid #FACC15 !important;
@@ -156,7 +151,7 @@
             box-shadow: 0 0 25px #E879F9, 0 0 40px rgba(250, 204, 21, 0.8), inset 0 0 12px #FFFFFF !important;
         }
 
-        /* БАЗОВЫЕ И ПРЕМИУМ ОКНА СООБЩЕНИЙ (ТЕМЫ КОММЕНТАРИЕВ) */
+        /* БАЗОВЫЕ И ПРЕМИУМ ОКНА СООБЩЕНИЙ */
         .comm-theme-default { background: rgba(15, 22, 48, 0.78); border: 1px solid rgba(255,255,255,0.1); }
         .comm-theme-gold { background: linear-gradient(135deg, rgba(69, 26, 3, 0.92), rgba(120, 53, 15, 0.75)); border: 1.5px solid #F59E0B; box-shadow: 0 0 18px rgba(245, 158, 11, 0.28); }
         .comm-theme-astral { background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(88, 28, 135, 0.82)); border: 1.5px solid #C084FC; box-shadow: 0 0 18px rgba(192, 132, 252, 0.3); }
@@ -184,15 +179,6 @@
 
         input, textarea, select { font-size: 16px !important; }
 
-        @keyframes realFlame {
-            0%, 100% { transform: scaleY(1) translateY(0); }
-            50% { transform: scaleY(1.18) translateY(-4px); }
-        }
-        .svg-flame {
-            animation: realFlame 1.4s infinite ease-in-out;
-            transform-origin: bottom center;
-        }
-
         .dialogue-blue { border-left: 4px solid #4A90E2; background: rgba(74, 144, 226, 0.14); padding: 10px 14px; border-radius: 12px; }
         .dialogue-pink { border-left: 4px solid #FF2A85; background: rgba(255, 42, 133, 0.14); padding: 10px 14px; border-radius: 12px; }
         .dialogue-gold { border-left: 4px solid #F59E0B; background: rgba(245, 158, 11, 0.14); padding: 10px 14px; border-radius: 12px; }
@@ -206,6 +192,7 @@
             background-position: center;
             transition: background-image 0.35s ease, background 0.35s ease;
             will-change: transform;
+            pointer-events: none;
         }
         #global-bg-overlay {
             position: fixed;
@@ -236,7 +223,7 @@
     <div id="global-bg-layer" style="background: radial-gradient(circle at top, #121936 0%, #050508 80%);"></div>
     <div id="global-bg-overlay"></div>
 
-    <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-accent-blue via-accent-pink to-accent-gold z-50 transition-all duration-75" style="width: 0%;"></div>
+    <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-accent-blue via-accent-pink to-accent-gold z-50 transition-all duration-75 pointer-events-none" style="width: 0%;"></div>
 
     <!-- Шапка сайта -->
     <header class="sticky top-0 z-40 glass border-b border-white/10 px-3 sm:px-6 py-2.5">
@@ -338,10 +325,8 @@
         const ADMIN_EMAIL = "arien.mahash.9@gmail.com";
         const SUBADMIN_USERNAME = "SubAdmin_Helper";
         const SUBADMIN_EMAIL = "helper@eternity.com";
-
         const REAL_BIBLE_URL = "https://docs.google.com/document/u/0/d/1YTNjJYCKK5WOxFfYqkb3UriSXidOvNudN75esemEzdc/mobilebasic";
 
-        // Быстрый аудио-движок
         let sfxCtx = null;
         function getSfxContext() {
             const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -404,6 +389,24 @@
             setTimeout(() => { if (container) container.innerHTML = ''; }, 2600);
         };
 
+        window.closeModal = function() {
+            const m = document.getElementById('modal-container');
+            if (m) m.innerHTML = '';
+        };
+
+        window.alertCustom = function(msg) {
+            const modal = document.getElementById('modal-container');
+            if (!modal) return alert(msg);
+            modal.innerHTML = `
+                <div class="fixed inset-0 z-50 bg-space-900/85 backdrop-blur-md flex items-center justify-center p-4">
+                    <div class="glass-card p-6 rounded-2xl w-full max-w-sm text-center space-y-4 border border-accent-blue/50">
+                        <p class="text-sm font-bold text-white leading-relaxed">${msg}</p>
+                        <button onclick="closeModal()" class="w-full py-2.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Понятно</button>
+                    </div>
+                </div>
+            `;
+        };
+
         const DEFAULT_CREST_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(`
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
                 <defs>
@@ -431,6 +434,12 @@
         function sanitizeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        function isImageOrGif(str) {
+            if (!str || typeof str !== 'string') return false;
+            const s = str.trim();
+            return s.startsWith('data:image/') || /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(s) || s.startsWith('IMG_');
         }
 
         const LocalDB = {
@@ -530,8 +539,7 @@
             { name: "Шок / Эпик", url: "https://media.giphy.com/media/5VKbvrjxpVJCM/giphy.gif" }
         ];
 
-        // 5 УРОВНЕЙ ДОСТУПА: 'guest' (1) | 'user' (2) | 'premium' (3) | 'subadmin' (4 - Помощник/Саб-админ) | 'admin' (5 - Полный доступ владельца)
-        window. hasPremiumPrivileges = function(role) {
+        window.hasPremiumPrivileges = function(role) {
             return role === 'premium' || role === 'subadmin' || role === 'admin';
         };
         window.canModerateSupportAndMute = function(role) {
@@ -571,7 +579,6 @@
                 { id: "lc-1", user: "StarReader_VIP", role: "premium", avatar: DEFAULT_CREST_SVG, frameClass: "frame-gold", text: "Всем привет! Кто уже изучил новую Библию Мира? 30 Столпов и 8 Империй прописаны нереально круто! 🔥", time: "19:40" },
                 { id: "lc-2", user: "Помощница Автора", role: "subadmin", avatar: DEFAULT_CREST_SVG, frameClass: "frame-astral-ring", text: "Добро пожаловать в Таверну! Напоминаю о правилах вежливости. Если есть вопросы — пишите во вкладку Поддержки 🛡️", time: "19:45" }
             ],
-            // НАСТРОЙКИ АВТООТВЕТЧИКА И ЗАКРЕПЛЕННОЙ ИНСТРУКЦИИ ДЛЯ ЧАТА ПОДДЕРЖКИ
             supportSettings: {
                 autoReplyEnabled: true,
                 pinnedInstruction: "📌 ЗАКРЕПЛЕННАЯ ИНСТРУКЦИЯ ПОДДЕРЖКИ:\n1. Ответ от Автора или Помощника (Саб-админа) поступит в течение 24 часов.\n2. Если ваш вопрос касается открытия Premium или Спойлер-папок — после оплаты через Visa, MasterCard, МИР, СБП, UnionPay, PayPal или Boosty доступ открывается автоматически.\n3. Если не грузится озвучка — проверьте звук на устройстве или выберите другой голос из 10 профилей ElevenLabs.",
@@ -596,7 +603,6 @@
                 { id: "u-2", name: "AstralKnight", email: "knight@mail.com", role: "user", avatar: DEFAULT_CREST_SVG, frameClass: "frame-neon", isBanned: false, isMuted: false, premiumUntil: null },
                 { id: "u-3", name: "DarkTroll_99", email: "troll@mail.com", role: "user", avatar: DEFAULT_CREST_SVG, frameClass: "frame-none", isBanned: false, isMuted: false, premiumUntil: null }
             ],
-            // РАЗНЫЕ ВИЗУАЛЬНЫЕ РАМКИ НА ПРЕМИУМ ДОСТУПЕ
             avatarFrames: [
                 { id: "fr-none", name: "Без рамки", cssClass: "frame-none", accessType: "free", priceRub: 0, priceUsd: 0 },
                 { id: "fr-neon", name: "💎 Неоновый Кристалл", cssClass: "frame-neon", accessType: "free", priceRub: 0, priceUsd: 0 },
@@ -606,7 +612,6 @@
                 { id: "fr-emerald", name: "🐉 Изумрудный Щит Дракона (VIP)", cssClass: "frame-emerald", accessType: "premium", priceRub: 0, priceUsd: 0 },
                 { id: "fr-spoiler", name: "🌌 Арка Первородного Бога (Спец-Спойлер)", cssClass: "frame-spoiler-god", accessType: "paid_only", priceRub: 149, priceUsd: 1.99 }
             ],
-            // ЭКСКЛЮЗИВНЫЕ ОКНА СООБЩЕНИЙ ДЛЯ PREMIUM (АДМИН МОЖЕТ СОЗДАВАТЬ И УДАЛЯТЬ)
             commentThemes: [
                 { id: "ct-default", name: "Космический Стандарт", cssClass: "comm-theme-default", isPremium: false, customStyle: "" },
                 { id: "ct-gold", name: "👑 Золотой Император (VIP)", cssClass: "comm-theme-gold", isPremium: true, customStyle: "" },
@@ -622,11 +627,10 @@
             adBanner: {
                 enabled: false,
                 title: "Партнерский проект / Анонс автора",
-                imageUrl: "IMG_3466_c97ee2.jpg",
+                imageUrl: DEFAULT_CREST_SVG,
                 linkUrl: "https://t.me/",
                 buttonText: "Перейти →"
             },
-            // ПЛАТЕЖНАЯ СИСТЕМА И МОНЕТИЗАЦИЯ (VISA, MASTERCARD, PAYPAL, UNIONPAY, BOOSTY, МИР, СБП)
             finance: {
                 prices: {
                     premiumMonthRub: 299,
@@ -657,22 +661,21 @@
                     { id: "tx-1", user: "StarReader_VIP", method: "Карта МИР / СБП", amount: "+299 ₽ ($3.99)", date: "07.11.2026" }
                 ]
             },
-            // 10 УНИКАЛЬНЫХ ЖИВЫХ ГОЛОСОВ ELEVENLABS (КАЖДЫЙ ГОЛОС ИМЕЕТ СВОЙ УНИКАЛЬНЫЙ elevenVoiceId И СВОИ НАСТРОЙКИ)
             tts: {
                 isPlaying: false,
                 selectedProfileId: 'ru_f_rachel',
                 elevenLabsApiKey: localStorage.getItem('elevenlabs_api_key') || '',
                 profiles: [
-                    { id: 'ru_f_rachel', name: '🇷🇺 Женский 1: Рашель (Бархатный, глубокий, манящий — ElevenLabs Rachel)', lang: 'ru-RU', gender: 'female', pitch: 0.86, rate: 0.92, pauseMs: 520, stability: 0.35, similarity: 0.88, styleExaggeration: 0.55, sampleText: 'Добро пожаловать в восемнадцать тысяч миров и одну Вечность... Слушай мой живой голос.', elevenVoiceId: '21m00Tcm4TlvDq8ikWAM' },
-                    { id: 'ru_f_sarah', name: '🇷🇺 Женский 2: Сара (Нежный, мягкий, ласковый шепот звезд — ElevenLabs Sarah)', lang: 'ru-RU', gender: 'female', pitch: 0.98, rate: 0.94, pauseMs: 480, stability: 0.42, similarity: 0.85, styleExaggeration: 0.45, sampleText: 'Святой белый свет мягко опускается на ладони Императрицы Журен.', elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' },
+                    { id: 'ru_f_rachel', name: '🇷🇺 Женский 1: Рашель (Бархатный, глубокий — ElevenLabs Rachel)', lang: 'ru-RU', gender: 'female', pitch: 0.86, rate: 0.92, pauseMs: 520, stability: 0.35, similarity: 0.88, styleExaggeration: 0.55, sampleText: 'Добро пожаловать в восемнадцать тысяч миров и одну Вечность... Слушай мой живой голос.', elevenVoiceId: '21m00Tcm4TlvDq8ikWAM' },
+                    { id: 'ru_f_sarah', name: '🇷🇺 Женский 2: Сара (Нежный, мягкий шепот звезд — ElevenLabs Sarah)', lang: 'ru-RU', gender: 'female', pitch: 0.98, rate: 0.94, pauseMs: 480, stability: 0.42, similarity: 0.85, styleExaggeration: 0.45, sampleText: 'Святой белый свет мягко опускается на ладони Императрицы Журен.', elevenVoiceId: 'EXAVITQu4vr4xnSDxMaL' },
                     { id: 'ru_f_domi', name: '🇷🇺 Женский 3: Доминика (Энергичный, звонкий, боевой — ElevenLabs Domi)', lang: 'ru-RU', gender: 'female', pitch: 1.12, rate: 1.02, pauseMs: 410, stability: 0.30, similarity: 0.90, styleExaggeration: 0.65, sampleText: 'Пурпурные молнии Астер рассекли арену! Наше сражение начинается прямо сейчас!', elevenVoiceId: 'AZnzlk1XvdvUeBnXmlld' },
-                    { id: 'ru_m_antoni', name: '🇷🇺 Мужской 1: Антонио (Кинематографичный, живой рассказчик — ElevenLabs Antoni)', lang: 'ru-RU', gender: 'male', pitch: 0.84, rate: 0.95, pauseMs: 470, stability: 0.40, similarity: 0.86, styleExaggeration: 0.50, sampleText: 'Ариэн сжал рукоять Клинка Синей Луны, и Небесные Письмена вспыхнули в его глазах.', elevenVoiceId: 'ErXwobaYiN019PkySvjV' },
-                    { id: 'ru_m_josh', name: '🇷🇺 Мужской 2: Джош (Глубокий, мощный императорский баритон — ElevenLabs Josh)', lang: 'ru-RU', gender: 'male', pitch: 0.72, rate: 0.89, pauseMs: 560, stability: 0.45, similarity: 0.92, styleExaggeration: 0.55, sampleText: 'Я прошел сквозь тысячи эпох. Ни один Король Ада не посмеет преградить мне путь.', elevenVoiceId: 'TxGEqnHWrfWFTfGW9XjX' },
-                    { id: 'en_f_charlotte', name: '🇬🇧 EN Female 1: Charlotte (Seductive, Velvet & Mysterious — ElevenLabs Charlotte)', lang: 'en-US', gender: 'female', pitch: 0.88, rate: 0.92, pauseMs: 500, stability: 0.36, similarity: 0.88, styleExaggeration: 0.60, sampleText: 'Welcome to eighteen thousand worlds and one eternity... Walk with me among the stars.', elevenVoiceId: 'XB0fDUnXU5powFXDhCwa' },
+                    { id: 'ru_m_antoni', name: '🇷🇺 Мужской 1: Антонио (Кинематографичный рассказчик — ElevenLabs Antoni)', lang: 'ru-RU', gender: 'male', pitch: 0.84, rate: 0.95, pauseMs: 470, stability: 0.40, similarity: 0.86, styleExaggeration: 0.50, sampleText: 'Ариэн сжал рукоять Клинка Синей Луны, и Небесные Письмена вспыхнули в его глазах.', elevenVoiceId: 'ErXwobaYiN019PkySvjV' },
+                    { id: 'ru_m_josh', name: '🇷🇺 Мужской 2: Джош (Глубокий императорский баритон — ElevenLabs Josh)', lang: 'ru-RU', gender: 'male', pitch: 0.72, rate: 0.89, pauseMs: 560, stability: 0.45, similarity: 0.92, styleExaggeration: 0.55, sampleText: 'Я прошел сквозь тысячи эпох. Ни один Король Ада не посмеет преградить мне путь.', elevenVoiceId: 'TxGEqnHWrfWFTfGW9XjX' },
+                    { id: 'en_f_charlotte', name: '🇬🇧 EN Female 1: Charlotte (Velvet & Mysterious — ElevenLabs Charlotte)', lang: 'en-US', gender: 'female', pitch: 0.88, rate: 0.92, pauseMs: 500, stability: 0.36, similarity: 0.88, styleExaggeration: 0.60, sampleText: 'Welcome to eighteen thousand worlds and one eternity... Walk with me among the stars.', elevenVoiceId: 'XB0fDUnXU5powFXDhCwa' },
                     { id: 'en_f_dorothy', name: '🇬🇧 EN Female 2: Dorothy (Warm British Storytelling — ElevenLabs Dorothy)', lang: 'en-GB', gender: 'female', pitch: 1.02, rate: 0.95, pauseMs: 460, stability: 0.44, similarity: 0.84, styleExaggeration: 0.42, sampleText: 'Through the endless night, the Divine Eyes of Origin awakened a new power.', elevenVoiceId: 'ThT5KcBeYPX3keUQqHPh' },
-                    { id: 'en_f_freya', name: '🇬🇧 EN Female 3: Freya (Bright, Expressive & Emotional — ElevenLabs Freya)', lang: 'en-US', gender: 'female', pitch: 1.14, rate: 1.01, pauseMs: 410, stability: 0.32, similarity: 0.89, styleExaggeration: 0.62, sampleText: 'Look at the sky! The celestial gates of the five dimensions are opening!', elevenVoiceId: 'jsCqWAovK2LkecY7zXl4' },
-                    { id: 'en_m_adam', name: '🇬🇧 EN Male 1: Adam (Deep Epic Trailer Narrator — ElevenLabs Adam)', lang: 'en-US', gender: 'male', pitch: 0.75, rate: 0.90, pauseMs: 540, stability: 0.42, similarity: 0.90, styleExaggeration: 0.58, sampleText: 'Across eighteen thousand realms, the Blue Moon Blade remembers every fallen god.', elevenVoiceId: 'pNInz6obpgDQGcFmaJgB' },
-                    { id: 'en_m_daniel', name: '🇬🇧 EN Male 2: Daniel (Noble British Royal Voice — ElevenLabs Daniel)', lang: 'en-GB', gender: 'male', pitch: 0.89, rate: 0.95, pauseMs: 470, stability: 0.46, similarity: 0.87, styleExaggeration: 0.48, sampleText: 'In the beginning of time, the Creator forged eighteen thousand and one worlds.', elevenVoiceId: 'onwK4e9ZLuTAKqWW03F9' }
+                    { id: 'en_f_freya', name: '🇬🇧 EN Female 3: Freya (Bright & Emotional — ElevenLabs Freya)', lang: 'en-US', gender: 'female', pitch: 1.14, rate: 1.01, pauseMs: 410, stability: 0.32, similarity: 0.89, styleExaggeration: 0.62, sampleText: 'Look at the sky! The celestial gates of the five dimensions are opening!', elevenVoiceId: 'jsCqWAovK2LkecY7zXl4' },
+                    { id: 'en_m_adam', name: '🇬🇧 EN Male 1: Adam (Deep Epic Narrator — ElevenLabs Adam)', lang: 'en-US', gender: 'male', pitch: 0.75, rate: 0.90, pauseMs: 540, stability: 0.42, similarity: 0.90, styleExaggeration: 0.58, sampleText: 'Across eighteen thousand realms, the Blue Moon Blade remembers every fallen god.', elevenVoiceId: 'pNInz6obpgDQGcFmaJgB' },
+                    { id: 'en_m_daniel', name: '🇬🇧 EN Male 2: Daniel (Noble British Voice — ElevenLabs Daniel)', lang: 'en-GB', gender: 'male', pitch: 0.89, rate: 0.95, pauseMs: 470, stability: 0.46, similarity: 0.87, styleExaggeration: 0.48, sampleText: 'In the beginning of time, the Creator forged eighteen thousand and one worlds.', elevenVoiceId: 'onwK4e9ZLuTAKqWW03F9' }
                 ]
             },
             music: {
@@ -700,9 +703,8 @@
             siteConfig: {
                 title: "18 000 + 1 Eternity",
                 crestUrl: DEFAULT_CREST_SVG,
-                bannerUrl: "IMG_3464_c97ee2.jpg"
+                bannerUrl: DEFAULT_CREST_SVG
             },
-            // НАСТОЯЩАЯ БИБЛИЯ МИРА ПО ВАШЕЙ ССЫЛКЕ (СТАРАЯ УДАЛЕНА)
             worldBible: {
                 docUrl: REAL_BIBLE_URL,
                 subtitle: "Официальный Справочный Компендиум Веб-Новеллы «18.000 + 1 Вечность» (Первая Арка, Главы 1–45)",
@@ -710,44 +712,28 @@
                     {
                         badge: "Раздел I • Космология, Время и 5 Божественных Измерений",
                         heading: "Макрокосм (18 001 Мир) и Календарь Свободных Людей",
-                        content: "• Эпоха: ~598 115 год до н.э. (1015 год — рождение принца Расса Ди Ариэна; 1020 год — Великий Банкет; 1030 год — после 10-летнего таймскипа). Год состоит из 372 дней (4 сезона по 3 цикла ровно по 31 дню).\n• В начале времен Единый Бог-Творец создал 18 001 мир. Над мирами смертных возвышаются 5 Божественных Измерений:\n1) Измерение Рая: 108 высокоуровневых ангелов, 37 Высших ангелов и 5 Архангелов — Микаил (всезнание и мудрость, «Таинственные аметистовые письмена»), Азраил (смерть и покой, «Безукоризненные черные письмена», нарек принца именем Расса Ди Ариэн), Гавриил (жизнь и сотворение), Уриэль (надежда и справедливость), Рафаэль (бескорыстие и любовь).\n2) Измерение Ада (Геенна, 9 кругов): 72 Короля Ада и 7 Первородных Грехов — Люцифер (Гордыня), Сатана (Гнев), Бельфегор (Лень), Асмодей (Похоть), Лилит (Зависть, свергла Афараса, разделившегося на Агареса и Зехно), Маммон (Алчность), Вельзевул (Чревоугодие). Некоронованные монархи: Абаддон и Азазель. Стражи Ада: теневой змей Деха и первый гибрид Левиафан.\n3) Измерение Зверей и Существ: 13 Первородных Родов (10 Первородных Драконов, включая 3-го Бахамута; Фениксы, Птицы Рух, Феи-духи, Тигры, Девятихвостые Лисы, Кирины, Киты, Львы, Олени, Волки, Эмидрасы, Морские Драконы) и Проклятый змеиный клан Дракна (Неккаа, Драканна, Аурумхей, Деха, Лиимхаат, Яхан, Сахирас, Нилано-Акаль и 9-й скрытый).\n4) Измерение Легенд и 5) Изначальное Божественное Измерение Единого Бога-Творца (более 3 000 серафимов)."
+                        content: "• Эпоха: ~598 115 год до н.э. (1015 год — рождение принца Расса Ди Ариэна; 1020 год — Великий Банкет; 1030 год — после 10-летнего таймскипа). Год состоит из 372 дней (4 сезона по 3 цикла ровно по 31 дню).\n• В начале времен Единый Бог-Творец создал 18 001 мир. Над мирами смертных возвышаются 5 Божественных Измерений:\n1) Измерение Рая: 108 высокоуровневых ангелов, 37 Высших ангелов и 5 Архангелов — Микаил, Азраил (нарек принца именем Расса Ди Ариэн), Гавриил, Уриэль, Рафаэль.\n2) Измерение Ада (Геенна, 9 кругов): 72 Короля Ада и 7 Первородных Грехов — Люцифер, Сатана, Бельфегор, Асмодей, Лилит, Маммон, Вельзевул.\n3) Измерение Зверей и Существ: 13 Первородных Родов и Проклятый змеиный клан Дракна.\n4) Измерение Легенд и 5) Изначальное Божественное Измерение Единого Бога-Творца."
                     },
                     {
                         badge: "Раздел II • Система Сил (27 Уровней), Особые Глаза и 515 Артефактов",
                         heading: "Путь Пробужденных, Глаза Начала и Артефакты Энпатуара",
-                        content: "• 27 Уровней Пробужденных (по 9 ступеней): Смертные (1–13): 1. Уровень Начал → 2. Уровень Основы → 3. Воин → 4. Истинный Воин → 5. Высший Воин → 6. Лорд → 7. Высший Лорд → 8. Король → 9. Верховный Король → 10. Император (телепатия) → 11. Верховный Император → 12. Монарх → 13. Верховный Монарх. Божественные (14–27): 14. Полубог → 15. Бог → 16. Истинный Бог → 17. Воинственный Бог → 18. Божественный Лорд → 19. Божественный Король → 20. Божественный Верховный Король → 21. Божественный Император → 22. Божественный Верховный Император → 23. Божественный Монарх → 24. Верховный Божественный Монарх → 25–26. [Скрытые] → 27. Вечный Бог.\n• Особые Глаза Начала: Божественного, Демонического и Звериного Начала. Во всем мироздании существует 8 обладателей Дара «Письмен», включая Императрицу Журен («Святые Белые Письмена») и принца Ариэна («Небесные Письмена» — 100% совместимость с любой энергией).\n• 515 Номерных Артефактов Бога Кузнецов Энпатуара (с №103 по №1 созданы при участии Творца и недоступны демонам, кроме Люцифера): №91 «Кольцо Первого Монарха», №138 «Кольцо Скрытого Нефрита» (у Ариэна), №201 «Клинок Синей Луны» (двуручный меч Ариэна с 99% энергопроводимости и душевной привязкой), №218 (у Велкадии), №277 (пистолеты Сэта)."
+                        content: "• 27 Уровней Пробужденных (по 9 ступеней): Смертные (1–13) от Уровня Начал до Верховного Монарха и Божественные (14–27) от Полубога до Вечного Бога.\n• Особые Глаза Начала: Божественного, Демонического и Звериного Начала. Принц Ариэн владеет даром «Небесные Письмена» (100% совместимость с любой энергией).\n• 515 Номерных Артефактов Бога Кузнецов Энпатуара: №91 «Кольцо Первого Монарха», №138 «Кольцо Скрытого Нефрита», №201 «Клинок Синей Луны»."
                     },
                     {
                         badge: "Раздел III • Геополитика и 8 Великих Империй",
-                        heading: "Рейтинг 8 Империй Людей (24 Вассальных Королевства) и 9 Кланов Зверей",
-                        content: "1 место — Великая Фиолетовая Империя Молнии (Тройственный Альянс): Император Рису Л. Агарес (Верховный Король 9 ст.), Наследная принцесса Рису Л. Астер (Глаза Божественного Начала — дар «Альтернативный путь монарха», до 10 живых клонов с 90% силы).\n2 место — Великая Империя Черной Тени (Тройственный Альянс): Император Аксенус Н. Маркус, 1-й Столп Аксенус Н. Тиара (дар Глаз «Последний Читатель»), принцесса Виксена (кандидатка в жены Ариэна).\n3 место — Великая Святая Белая Империя (Тройственный Альянс): Императрица Расса Ди Журен и принц Расса Ди Ариэн. Единственная империя с 11 этапами Великого Искусства, 30 Столпами и монополией на исцеление и генерацию святых белых слитков.\n4 место — Великая Империя Изумрудного Ветра: Император Нотус Дж. Джеронимо, принцесса Аниз (подарила Ариэну окарину), 2-й Столп Вайанару (скрывает мощь пика 8-й ступени Верховного Короля).\n5 место — Великая Кроваво-Красная Империя (Главный скрытый враг): 4-й Император Грена В. Кастос (Глаза Демонического Начала), принцесса Грена В. Кармила (Глаза Божественного Начала — дар «Сторонний Наблюдатель»).\n6 место — Империя Бронзового Пламени; 7 место — Империя Лазурных Морей; 8 место — Империя Желтой Земли (Император Теран З. Бхуми)."
-                    },
-                    {
-                        badge: "Раздел IV • Святая Белая Империя: Правящая Династия и 30 Столпов",
-                        heading: "Императрица Журен, Наследный Принц Ариэн и 30 Столпов Света",
-                        content: "• Императрица Расса Ди Журен (533 года после таймскипа, Верховная Королева пика 8-й ступени): единственная освоила все 11 этапов Святого Белого Искусства (включая 11-й «Снисхождение Бога: Кара Святого Белого Света»).\n• Наследный Принц Расса Ди Ариэн (род. 15 августа 1015 г.; после таймскипа 15 лет, рост 188 см, Пробужденный Король 7-й ступени, резерв энергии в 37–38 раз выше нормы): пробудил Глаза Божественного Начала («Небесные Письмена») и 7 собственных техник («Святые белые ласточки», «Круг щитов белого света x-3», «Белые когти разрыва», «Серебряный рев святого клинка», «Святая Броня Белого Дракона», «Святые белые клоны» до 50 копий, «Святое возмездие белого Ангела»).\n• 30 Столпов Империи: 18 Королей Белого Света (Азиль, Баан, Джин, Сэт, Гаррисон, Димария, Зара, Велкадия, Мишель, Одетта, Гримсон, Ясмин, Ирбис, Хорин, Скарлетт, Тина, Син, Дикрион), 10 Святых Белых Дев-Хранительниц (Анали, Алета, Марин, Рейна, Сера, Виктория, Айиша, Дарина, Лайла, Ремия) и 2 Предводительницы Святых Дев (Госпожа Геката и Госпожа Грис)."
-                    },
-                    {
-                        badge: "Раздел V • Древние Легенды и 8-е Плавание Синдбада",
-                        heading: "Энмесоргеус, Давид, Печать Соломона и Падшие Черные Короли",
-                        content: "• Первый Монарх Энмесоргеус: пробудил дары «Абсолютный Монарх» и «Бессмертный путь монарха», владелец Кольца №91.\n• Царь Давид (дар «Сотворение звезд») и Царь Соломон (дары «Сотворение звезд» и «Железная печать мира»): Соломон подчинил 72 Королей Ада для постройки Храма и запечатал их внутри собственного тела, ставшего Золотым Звездным Сосудом в Подводной Гробнице.\n• Царь Ровоам и Синдбад (дар «Все дороги открыты»): в ходе тайного 8-го плавания Синдбад достал Золотой Сосуд и по приказу завистливого Ровоама сломал печать Соломона, выпустив 72 Королей Ада, за что оба были обращены в проклятых бессмертных Падших Черных Королей."
+                        heading: "Рейтинг 8 Империй Людей и Тройственный Альянс",
+                        content: "1 место — Фиолетовая Империя Молнии (Император Рису Л. Агарес, принцесса Астер).\n2 место — Империя Черной Тени (Император Маркус, 1-й Столп Тиара, принцесса Виксена).\n3 место — Святая Белая Империя (Императрица Расса Ди Журен и Наследный Принц Расса Ди Ариэн; 30 Столпов и 11 этапов Великого Искусства).\n4 место — Империя Изумрудного Ветра; 5 место — Кроваво-Красная Империя (Император Кастос, принцесса Кармила); 6–8 места — Бронзовое Пламя, Лазурные Моря, Желтая Земля."
                     }
                 ]
             },
             stickers: [
-                { id: 'st-1', name: 'Герб Вечности', url: DEFAULT_CREST_SVG },
-                { id: 'st-2', name: 'Звездный Воин', url: 'IMG_3464_c97ee2.jpg' },
-                { id: 'st-3', name: 'Сила Клинка', url: 'IMG_3463_c97ee2.jpg' },
-                { id: 'st-4', name: 'Ангелы и Демоны', url: 'IMG_3466_c97ee2.jpg' }
+                { id: 'st-1', name: 'Герб Вечности', url: DEFAULT_CREST_SVG }
             ],
             backgrounds: [
                 { id: 'bg-cosmic-night', name: 'Звездная Бездна', type: 'gradient', value: 'radial-gradient(circle at top, #121936 0%, #050508 85%)', isPremium: false },
                 { id: 'bg-deep-nebula', name: 'Туманность Вечности', type: 'gradient', value: 'linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #311042 100%)', isPremium: false },
-                { id: 'bg-ancient-parchment', name: 'Древний Свиток', type: 'gradient', value: 'linear-gradient(180deg, #1c1917 0%, #292524 100%)', isPremium: false },
-                { id: 'bg-royal-astral', name: 'Королевский Астрал (VIP)', type: 'image', value: 'IMG_3463_c97ee2.jpg', isPremium: true },
-                { id: 'bg-celestial-throne', name: 'Небесный Трон (VIP)', type: 'image', value: 'IMG_3466_c97ee2.jpg', isPremium: true }
+                { id: 'bg-ancient-parchment', name: 'Древний Свиток', type: 'gradient', value: 'linear-gradient(180deg, #1c1917 0%, #292524 100%)', isPremium: false }
             ],
-            // КАРТОЧКИ ВСЕЛЕННОЙ И СПЕЦИАЛЬНЫЕ ПЛАТНЫЕ СПОЙЛЕР-ПАПКИ (isPaidSpoilerFolder: true)
             characters: [
                 {
                     id: "char-1",
@@ -758,63 +744,24 @@
                     folderPriceRub: 0,
                     folderPriceUsd: 0,
                     bioRu: "Пробужденный Король 7-й ступени (после таймскипа), обладатель Глаз Божественного Начала, дара «Небесные Письмена» и Клинка Синей Луны (№201).",
-                    avatar: "IMG_3464_c97ee2.jpg",
+                    avatar: DEFAULT_CREST_SVG,
                     gallery: [
-                        { id: "art-1", url: "IMG_3464_c97ee2.jpg", accessType: "free", priceRub: 0, priceUsd: 0 },
-                        { id: "art-2", url: "IMG_3463_c97ee2.jpg", accessType: "premium", priceRub: 99, priceUsd: 1.49 },
-                        { id: "art-3", url: "IMG_3466_c97ee2.jpg", accessType: "spoiler_paid", priceRub: 199, priceUsd: 2.49 }
+                        { id: "art-1", url: DEFAULT_CREST_SVG, accessType: "free", priceRub: 0, priceUsd: 0 }
                     ]
                 },
                 {
                     id: "char-zari",
                     category: "characters",
                     name: "Зари Диазура (Секретная Спойлер-Папка)",
-                    folder: "🔒 Спец-папка Спойлеров • Арфангелы",
+                    folder: "🔒 Спец-папка Спойлеров • Архангелы",
                     isPaidSpoilerFolder: true,
                     folderPriceRub: 249,
                     folderPriceUsd: 2.99,
-                    bioRu: "Эксклюзивное досье и закрытые концепт-арты одного из легендарных Арфангелов, защищающих планету. Папка открывается только при отдельной оплате.",
-                    avatar: "IMG_3466_c97ee2.jpg",
+                    bioRu: "Эксклюзивное досье и закрытые концепт-арты. Папка открывается только при отдельной оплате.",
+                    avatar: DEFAULT_CREST_SVG,
                     gallery: [
-                        { id: "art-zari-1", url: "IMG_3466_c97ee2.jpg", accessType: "free", priceRub: 0, priceUsd: 0 },
-                        { id: "art-zari-2", url: "IMG_3463_c97ee2.jpg", accessType: "free", priceRub: 0, priceUsd: 0 }
+                        { id: "art-zari-1", url: DEFAULT_CREST_SVG, accessType: "free", priceRub: 0, priceUsd: 0 }
                     ]
-                },
-                {
-                    id: "loc-1",
-                    category: "locations",
-                    name: "Императорский Дворец Святого Белого Света",
-                    folder: "Арты Локаций • Столица Расс",
-                    isPaidSpoilerFolder: false,
-                    folderPriceRub: 0,
-                    folderPriceUsd: 0,
-                    bioRu: "26 Именных Дворцов, 8 гостевых дворцов и 5 Особых Тайных Областей, выстроенных из святых белых слитков.",
-                    avatar: "IMG_3463_c97ee2.jpg",
-                    gallery: [{ id: "art-loc-1", url: "IMG_3463_c97ee2.jpg", accessType: "free", priceRub: 0, priceUsd: 0 }]
-                },
-                {
-                    id: "artf-1",
-                    category: "artifacts",
-                    name: "№201 Клинок Синей Луны",
-                    folder: "Номерные Артефакты Энпатуара",
-                    isPaidSpoilerFolder: false,
-                    folderPriceRub: 0,
-                    folderPriceUsd: 0,
-                    bioRu: "Двуручный меч Ариэна с клинком цвета звездного неба, гардой-полумесяцем, 99% энергопроводимости и бесконечной саморегенерацией.",
-                    avatar: "IMG_3464_c97ee2.jpg",
-                    gallery: [{ id: "art-artf-1", url: "IMG_3464_c97ee2.jpg", accessType: "free", priceRub: 0, priceUsd: 0 }]
-                },
-                {
-                    id: "abil-1",
-                    category: "abilities",
-                    name: "Глаза Божественного Начала: Небесные Письмена",
-                    folder: "🔒 Спец-папка Спойлеров • Божественные Дары",
-                    isPaidSpoilerFolder: true,
-                    folderPriceRub: 249,
-                    folderPriceUsd: 2.99,
-                    bioRu: "Секретная папка высших божественных техник и письмен, переписывающих законы реальности.",
-                    avatar: "IMG_3466_c97ee2.jpg",
-                    gallery: [{ id: "art-abil-1", url: "IMG_3466_c97ee2.jpg", accessType: "free", priceRub: 0, priceUsd: 0 }]
                 }
             ],
             chapters: [
@@ -831,7 +778,6 @@
                     contentRu: [
                         "Бесконечные коридоры космоса простирались за гранью человеческого понимания. Пыль мириадов миров оседала на плечах одинокого странника, сжимающего звездный клинок.",
                         "~blue [Страж] — Кто посмел нарушить покой этой Вечности?",
-                        "IMG_3463_c97ee2.jpg",
                         "~pink [Голос Звезд] — Его путь начался восемнадцать тысяч перерождений назад...",
                         "~gold [Путник] — Я пройду сквозь каждое испытание, пока не разрушу последнюю печать."
                     ],
@@ -847,7 +793,7 @@
                     avatar: DEFAULT_CREST_SVG,
                     frameClass: "frame-gold",
                     themeClass: "comm-theme-gold",
-                    text: "Невероятная атмосфера космоса и потрясающие арты! 🔥❤️",
+                    text: "Невероятная атмосфера космоса и потрясающая вселенная! 🔥❤️",
                     date: "19:30",
                     timestamp: Date.now()
                 }
@@ -904,7 +850,27 @@
             }
         };
 
-        // --- ДИНАМИЧЕСКАЯ ИНЪЕКЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ ЭКСКЛЮЗИВНЫХ ОКОН СООБЩЕНИЙ ---
+        window.updateUserBadge = function() {
+            const u = window.appState.user;
+            const nameEl = document.getElementById('user-badge-name');
+            const avaEl = document.getElementById('header-user-avatar');
+            const crestEl = document.getElementById('header-crest-img');
+            const titleEl = document.getElementById('header-site-title');
+            const adminBtn = document.getElementById('nav-admin');
+
+            if (nameEl) nameEl.innerText = u.name || 'Гость';
+            if (avaEl) {
+                avaEl.src = u.avatar || DEFAULT_CREST_SVG;
+                avaEl.className = `w-6 h-6 rounded-full object-cover ${u.frameClass || 'frame-gold'}`;
+            }
+            if (crestEl) crestEl.src = window.appState.siteConfig.crestUrl || DEFAULT_CREST_SVG;
+            if (titleEl) titleEl.innerText = window.appState.siteConfig.title || '18 000 + 1 Eternity';
+            if (adminBtn) {
+                if (u.role === 'admin' || u.role === 'subadmin') adminBtn.classList.remove('hidden');
+                else adminBtn.classList.add('hidden');
+            }
+        };
+
         window.injectCustomCommentThemesCSS = function() {
             let styleTag = document.getElementById('dynamic-comment-themes-css');
             if (!styleTag) {
@@ -962,7 +928,115 @@
             router.render();
         };
 
-        // Таймер обратного отсчета (работает только когда виден на экране)
+        window.applyGlobalBackground = function(bgId) {
+            const state = window.appState;
+            const bg = state.backgrounds.find(b => b.id === bgId) || state.backgrounds[0];
+            if (!bg) return;
+            if (bg.isPremium && !window.hasPremiumPrivileges(state.user.role)) {
+                return openPaymentModal();
+            }
+            state.readerSettings.activeBgId = bg.id;
+            const layer = document.getElementById('global-bg-layer');
+            if (layer) {
+                if (bg.type === 'image') {
+                    layer.style.background = `url('${bg.value}') center/cover no-repeat fixed`;
+                } else {
+                    layer.style.background = bg.value;
+                }
+            }
+            state.saveAllData();
+        };
+
+        window.openBackgroundPickerModal = function() {
+            const state = window.appState;
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 z-50 bg-space-900/85 backdrop-blur-md flex items-center justify-center p-4">
+                    <div class="glass-card p-5 rounded-2xl w-full max-w-md space-y-4 border border-accent-blue/50 max-h-[85vh] overflow-y-auto">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                            <h3 class="text-base font-bold text-white">🎨 Фоны и Режимы Чтения</h3>
+                            <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setReadingEyeTheme('dark')" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='dark'?'border-accent-blue bg-accent-blue/20 text-white':'border-white/10 text-gray-300'}">🌙 Темный</button>
+                            <button onclick="setReadingEyeTheme('eyecare')" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='eyecare'?'border-amber-500 bg-amber-500/20 text-amber-200':'border-white/10 text-gray-300'}">📜 Защита глаз</button>
+                            <button onclick="setReadingEyeTheme('light')" class="p-2.5 rounded-xl text-xs font-bold border ${state.readerSettings.readingTheme==='light'?'border-sky-400 bg-sky-400/20 text-white':'border-white/10 text-gray-300'}">☀️ Светлый</button>
+                        </div>
+                        <div class="space-y-2">
+                            ${state.backgrounds.map(b => `
+                                <div onclick="applyGlobalBackground('${b.id}'); closeModal();" class="p-3 rounded-xl glass-card flex items-center justify-between cursor-pointer border ${state.readerSettings.activeBgId===b.id?'border-accent-blue':'border-white/10'}">
+                                    <span class="text-xs font-bold text-white">${b.name}</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-gray-300">${b.isPremium ? '👑 VIP' : 'Бесплатно'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.openPaymentModal = function() {
+            const p = window.appState.finance.prices;
+            const d = window.appState.finance.payoutDetails;
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 z-50 bg-space-900/90 backdrop-blur-md flex items-center justify-center p-4">
+                    <div class="glass-card p-6 rounded-2xl w-full max-w-sm space-y-4 border-2 border-amber-400 text-center max-h-[90vh] overflow-y-auto">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                            <h3 class="text-base font-extrabold text-amber-300">👑 Статус Premium (VIP)</h3>
+                            <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
+                        </div>
+                        <p class="text-xs text-gray-200 leading-relaxed">
+                            Откройте все VIP-рамки, эксклюзивные окна сообщений, ранние главы и VIP-фоны на 30 дней!
+                        </p>
+                        <div class="p-3 rounded-xl bg-space-900 border border-amber-500/40">
+                            <span class="text-base font-extrabold text-white block">${p.premiumMonthRub} ₽ / $${p.premiumMonthUsd}</span>
+                        </div>
+                        <div class="space-y-2 text-left">
+                            <button onclick="activatePremiumNow('Карта МИР / СБП')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-extrabold flex justify-between">
+                                <span>🇷🇺 Карта МИР / СБП</span><span>${p.premiumMonthRub} ₽ →</span>
+                            </button>
+                            <button onclick="activatePremiumNow('Visa / MasterCard')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-extrabold flex justify-between">
+                                <span>💳 Visa / MasterCard</span><span>$${p.premiumMonthUsd} / ${p.premiumMonthRub} ₽ →</span>
+                            </button>
+                            <button onclick="activatePremiumNow('Boosty')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-black text-xs font-extrabold flex justify-between">
+                                <span>🚀 Boosty</span><span>${p.premiumMonthRub} ₽ →</span>
+                            </button>
+                            <button onclick="activatePremiumNow('PayPal / UnionPay')" class="w-full p-2.5 rounded-xl bg-sky-600 text-white text-xs font-extrabold flex justify-between">
+                                <span>🅿️ PayPal / UnionPay</span><span>$${p.premiumMonthUsd} →</span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-gray-400">Получатель: ${d.cardHolder}</p>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.activatePremiumNow = async function(method) {
+            closeModal();
+            const state = window.appState;
+            const p = state.finance.prices;
+            if (state.user.role === 'guest') state.user.name = "Звездный Читатель";
+            if (state.user.role !== 'admin' && state.user.role !== 'subadmin') {
+                state.user.role = 'premium';
+            }
+            state.user.premiumUntil = new Date(Date.now() + 30 * 86400000).toLocaleDateString('ru-RU');
+            state.finance.balanceRub += Number(p.premiumMonthRub);
+            state.finance.balanceUsd = +(state.finance.balanceUsd + Number(p.premiumMonthUsd)).toFixed(2);
+            state.finance.premiumSubscribers += 1;
+            state.finance.transactions.unshift({
+                id: "tx-" + Date.now(),
+                user: state.user.name,
+                method: `Premium VIP (${method})`,
+                amount: `+${p.premiumMonthRub} ₽ ($${p.premiumMonthUsd})`,
+                date: new Date().toLocaleDateString('ru-RU')
+            });
+            state.saveSession(state.user);
+            await state.saveAllData();
+            showToast("👑 Поздравляем! Статус Premium (VIP) активирован!");
+            router.render();
+        };
+
         setInterval(() => {
             if (window.appState.currentView !== 'home' || !window.appState.countdown.enabled) return;
             const box = document.getElementById('live-countdown-box');
@@ -1002,7 +1076,6 @@
                                 <option value="Telegram">✈️ Telegram (@username или телефон)</option>
                                 <option value="Instagram">📸 Instagram (@username)</option>
                                 <option value="Twitter / X">🐦 Twitter / X (@handle)</option>
-                                <option value="Facebook">📘 Facebook (профиль)</option>
                                 <option value="Email">✉️ На электронную почту (Email)</option>
                             </select>
                             <input type="text" id="notify-contact" placeholder="Укажите ваш @никнейм или Email..." class="w-full glass-card p-3 rounded-xl text-xs text-white">
@@ -1194,9 +1267,7 @@
             `;
         };
 
-        // =========================================================================
-        // 10 УНИКАЛЬНЫХ ЖИВЫХ ГОЛОСОВ ELEVENLABS (КАЖДЫЙ ГОЛОС ИНДИВИДУАЛЕН!)
-        // =========================================================================
+        // --- ОЗВУЧКА И 10 ГОЛОСОВ ELEVENLABS ---
         let cachedVoices = [];
         function refreshVoices() {
             if ('speechSynthesis' in window) cachedVoices = window.speechSynthesis.getVoices();
@@ -1219,7 +1290,6 @@
             const genderMatches = pool.filter(v => profile.gender === 'male' ? maleNames.test(v.name) : femaleNames.test(v.name));
             const listToPick = genderMatches.length > 0 ? genderMatches : pool;
 
-            // Чтобы даже без ключа голоса звучали по-разному, выбираем разные индексы из доступного пула + уникальный pitch/rate
             const idxHash = profile.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
             return listToPick[idxHash % listToPick.length] || pool[0];
         }
@@ -1228,7 +1298,6 @@
             const state = window.appState;
             const vp = document.getElementById('voice-tts-player');
 
-            // 1. Прямой запрос к ElevenLabs API с уникальным elevenVoiceId и индивидуальной экспрессией!
             if (state.tts.elevenLabsApiKey && state.tts.elevenLabsApiKey.trim().length > 10) {
                 try {
                     const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${profile.elevenVoiceId}`, {
@@ -1257,12 +1326,11 @@
                         vp.onended = () => { if (onComplete) onComplete(); };
                         return;
                     } else {
-                        showToast("⚠️ Проверьте баланс или ключ ElevenLabs — включен резервный синтезатор", "error");
+                        showToast("⚠️ Проверьте ключ ElevenLabs — включен резервный синтезатор", "error");
                     }
                 } catch(e) {}
             }
 
-            // 2. Резервный многоголосый режим с индивидуальным тембром
             if (!('speechSynthesis' in window)) {
                 alertCustom("Ваш браузер не поддерживает голосовое чтение.");
                 if (onComplete) onComplete();
@@ -1286,15 +1354,8 @@
 
                 const utter = new SpeechSynthesisUtterance(sentence);
                 utter.lang = profile.lang;
-
-                let dynamicPitch = profile.pitch;
-                let dynamicRate = profile.rate;
-                if (sentence.endsWith('?')) dynamicPitch += 0.08;
-                else if (sentence.endsWith('!')) { dynamicPitch += 0.05; dynamicRate += 0.04; }
-                else if (sentence.includes('…') || sentence.includes('...')) dynamicRate -= 0.05;
-
-                utter.pitch = Math.max(0.5, Math.min(1.6, dynamicPitch));
-                utter.rate = Math.max(0.65, Math.min(1.35, dynamicRate));
+                utter.pitch = Math.max(0.5, Math.min(1.6, profile.pitch));
+                utter.rate = Math.max(0.65, Math.min(1.35, profile.rate));
 
                 const chosenVoice = selectDistinctNativeVoice(profile);
                 if (chosenVoice) utter.voice = chosenVoice;
@@ -1414,10 +1475,10 @@
             const key = document.getElementById('elevenlabs-key-input')?.value.trim() || '';
             window.appState.tts.elevenLabsApiKey = key;
             localStorage.setItem('elevenlabs_api_key', key);
-            showToast("✅ Ваш платный ключ ElevenLabs подключен! Все 10 голосов активны.");
+            showToast("✅ Ключ ElevenLabs сохранен! Все 10 голосов активны.");
         };
 
-        // --- СПЕЦИАЛЬНЫЕ ПЛАТНЫЕ СПОЙЛЕР-ПАПКИ, АРТЫ И РАМКИ (ОТКРЫВАЮТСЯ ТОЛЬКО ПРИ ОПЛАТЕ) ---
+        // --- ПЛАТНЫЕ СПОЙЛЕР-ПАПКИ ---
         window.openUnlockSpoilerModal = function(itemId, itemTitle, priceRub, priceUsd) {
             const p = window.appState.finance.payoutDetails;
             const modal = document.getElementById('modal-container');
@@ -1429,26 +1490,20 @@
                             <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
                         </div>
                         <p class="text-xs text-gray-200 leading-relaxed">
-                            <b>«${itemTitle}»</b> — это закрытая спойлер-папка / эксклюзив, который открывается <b>только при отдельной оплате</b> навсегда.
+                            <b>«${itemTitle}»</b> — закрытый эксклюзив, который открывается <b>навсегда</b> после отдельной оплаты.
                         </p>
                         <div class="p-2.5 rounded-xl bg-space-900 border border-amber-500/40">
                             <span class="text-sm font-extrabold text-white block">К оплате: ${priceRub} ₽ / $${priceUsd}</span>
                         </div>
                         <div class="space-y-2 text-left">
-                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Карта МИР / СБП (₽)')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-extrabold flex justify-between">
+                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Карта МИР / СБП')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-extrabold flex justify-between">
                                 <span>🇷🇺 Карта МИР / СБП</span><span>${priceRub} ₽ →</span>
                             </button>
                             <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Visa / MasterCard')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-extrabold flex justify-between">
                                 <span>💳 Visa / MasterCard</span><span>$${priceUsd} / ${priceRub} ₽ →</span>
                             </button>
-                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Boosty (Бусти)')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-black text-xs font-extrabold flex justify-between">
-                                <span>🚀 Boosty (Бусти)</span><span>${priceRub} ₽ →</span>
-                            </button>
-                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'UnionPay')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 text-white text-xs font-extrabold flex justify-between">
-                                <span>🌏 UnionPay</span><span>${priceRub} ₽ / $${priceUsd} →</span>
-                            </button>
-                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'PayPal')" class="w-full p-2.5 rounded-xl bg-sky-600 text-white text-xs font-extrabold flex justify-between">
-                                <span>🅿️ PayPal</span><span>$${priceUsd} →</span>
+                            <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Boosty')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-black text-xs font-extrabold flex justify-between">
+                                <span>🚀 Boosty</span><span>${priceRub} ₽ →</span>
                             </button>
                         </div>
                         <p class="text-[10px] text-gray-400">Получатель: ${p.cardHolder}</p>
@@ -1494,7 +1549,7 @@
             router.navigate('character_detail', entityId);
         };
 
-        // --- МОДЕРАЦИЯ ПОЛЬЗОВАТЕЛЕЙ, БАН, МУТ И НАЗНАЧЕНИЕ САБ-АДМИНА (5 УРОВЕНЬ) ---
+        // --- МОДЕРАЦИЯ ---
         window.toggleBanUser = async function(userId) {
             if (window.appState.user.role !== 'admin') return alertCustom("Бан доступен только главному Админу!");
             const u = window.appState.registeredUsers.find(x => x.id === userId);
@@ -1518,7 +1573,6 @@
             router.render();
         };
 
-        // Быстрый мьют по имени прямо из комментария или чата (для Админа и Саб-админа)
         window.muteUserByNameQuick = async function(userName) {
             if (!window.canModerateSupportAndMute(window.appState.user.role)) return;
             if (userName.toLowerCase() === ADMIN_USERNAME.toLowerCase()) return alertCustom("Нельзя замутить владельца сайта!");
@@ -1541,11 +1595,10 @@
                 u.isMuted = !u.isMuted;
             }
             await window.appState.saveAllData();
-            showToast(u.isMuted ? `🔇 Пользователь ${userName} поставлен в МЬЮТ (не может писать комментарии)!` : `🔊 Мьют снят с пользователя ${userName}!`);
+            showToast(u.isMuted ? `🔇 Пользователь ${userName} поставлен в МЬЮТ!` : `🔊 Мьют снят с ${userName}!`);
             router.render();
         };
 
-        // Назначение 5-го уровня доступа (Саб-админ / Помощник) — только для главного Админа
         window.setSubAdminRole = async function(userId) {
             if (window.appState.user.role !== 'admin') return alertCustom("Назначать Саб-админа может только владелец сайта!");
             const u = window.appState.registeredUsers.find(x => x.id === userId);
@@ -1553,23 +1606,10 @@
             u.role = u.role === 'subadmin' ? 'premium' : 'subadmin';
             u.premiumUntil = u.role === 'subadmin' ? 'Бессрочно (Саб-админ)' : u.premiumUntil;
             await window.appState.saveAllData();
-            showToast(u.role === 'subadmin' ? `🛡️ ${u.name} назначена Саб-админом (Помощником)!` : `Роль Саб-админа снята с ${u.name}`);
+            showToast(u.role === 'subadmin' ? `🛡️ ${u.name} назначена Саб-админом!` : `Роль Саб-админа снята с ${u.name}`);
             router.render();
         };
 
-        window.giftPremiumToUser = async function(userId, days) {
-            if (window.appState.user.role !== 'admin') return;
-            const u = window.appState.registeredUsers.find(x => x.id === userId);
-            if (!u) return;
-            const expDate = new Date(Date.now() + days * 86400000).toLocaleDateString('ru-RU');
-            u.role = 'premium';
-            u.premiumUntil = expDate;
-            await window.appState.saveAllData();
-            showToast(`🎁 Подарен Premium для ${u.name} до ${expDate}!`);
-            router.render();
-        };
-
-        // --- ЭКСКЛЮЗИВНЫЕ ОКНА СООБЩЕНИЙ ДЛЯ PREMIUM (СОЗДАНИЕ И УДАЛЕНИЕ АДМИНОМ) ---
         window.createExclusiveCommentWindowAdmin = async function() {
             if (window.appState.user.role !== 'admin') return;
             const name = document.getElementById('new-comm-win-name')?.value.trim();
@@ -1607,7 +1647,6 @@
             router.render();
         };
 
-        // --- РАМКИ И АВАТАРКИ ---
         window.uploadUserAvatar = async function(inputElem) {
             const file = inputElem?.files?.[0];
             if (!file) return;
@@ -1618,7 +1657,7 @@
             await window.appState.saveAllData();
             updateUserBadge();
             router.render();
-            showToast("🖼️ Аватарка мгновенно обновлена!");
+            showToast("🖼️ Аватарка обновлена!");
         };
 
         window.selectUserFrame = async function(frameId) {
@@ -1651,29 +1690,10 @@
             window.appState.saveSession(u);
             await window.appState.saveAllData();
             router.render();
-            showToast(`💬 Эксклюзивное окно сообщений «${themeName}» выбрано!`);
+            showToast(`💬 Окно сообщений «${themeName}» выбрано!`);
         };
 
-        window.addCustomFrameAdmin = async function() {
-            const name = document.getElementById('new-frame-name')?.value.trim();
-            const color = document.getElementById('new-frame-color')?.value || '#F59E0B';
-            const accessType = document.getElementById('new-frame-access')?.value || 'premium';
-            const priceRub = parseInt(document.getElementById('new-frame-rub')?.value) || 149;
-            const priceUsd = parseFloat(document.getElementById('new-frame-usd')?.value) || 1.99;
-
-            if (!name) return alertCustom("Введите название рамки!");
-            const customClass = 'frame-custom-' + Date.now();
-            const styleEl = document.createElement('style');
-            styleEl.innerHTML = `.${customClass} { border: 3px solid ${color} !important; outline: 2px dashed ${color} !important; outline-offset: 2px; box-shadow: 0 0 18px ${color} !important; }`;
-            document.head.appendChild(styleEl);
-
-            window.appState.avatarFrames.push({ id: customClass, name, cssClass: customClass, accessType, priceRub, priceUsd });
-            await window.appState.saveAllData();
-            showToast(`🖼️ Рамка «${name}» создана!`);
-            router.render();
-        };
-
-        // --- ЧАТ ЧИТАТЕЛЕЙ И ЧАТ ПОДДЕРЖКИ С АВТООТВЕТЧИКОМ И ЗАКРЕПЛЕННОЙ ИНСТРУКЦИЕЙ ---
+        // --- ЧАТ И ПОДДЕРЖКА ---
         window.sendLiveChatMessage = async function() {
             const u = window.appState.user;
             if (u.role === 'guest') return alertCustom("Войдите в Профиле, чтобы писать в живой чат читателей!");
@@ -1700,7 +1720,6 @@
             router.render();
         };
 
-        // Отправка обращения в Поддержку — мгновенно срабатывает автоматический ответ с инструкцией (24 часа)!
         window.sendSupportTicket = async function() {
             const input = document.getElementById('support-msg-input');
             const text = input ? sanitizeHTML(input.value.trim()) : '';
@@ -1722,11 +1741,10 @@
             });
             input.value = '';
             await window.appState.saveAllData();
-            showToast("🤖 Мгновенный авто-ответ с инструкцией получен! Ожидайте ответа в течение 24ч.");
+            showToast("🤖 Авто-ответ с инструкцией получен! Ожидайте ответа в течение 24ч.");
             router.render();
         };
 
-        // Ответ на вопрос в Поддержке (может отвечать и Админ, и Саб-админ со своей пометкой!)
         window.replySupportTicketAdmin = async function(ticketId) {
             const u = window.appState.user;
             if (!window.canModerateSupportAndMute(u.role)) return;
@@ -1739,14 +1757,13 @@
             if (!ticket) return;
             ticket.reply = replyText;
             ticket.repliedBy = u.name;
-            ticket.repliedByRole = u.role; // 'admin' или 'subadmin'
+            ticket.repliedByRole = u.role;
             ticket.status = "answered";
             await window.appState.saveAllData();
             showToast(`✅ Ответ отправлен пользователю ${ticket.fromUser}!`);
             router.render();
         };
 
-        // Сохранение настроек автоответчика и закрепленной инструкции + массовая рассылка всем чатам
         window.saveSupportAutoReplySettings = async function(broadcastAll = false) {
             if (window.appState.user.role !== 'admin') return;
             const enabled = document.getElementById('sup-auto-enabled')?.checked ?? true;
@@ -1761,92 +1778,15 @@
                 window.appState.supportTickets.forEach(t => {
                     t.autoReply = window.appState.supportSettings.autoReplyTemplate;
                 });
-                showToast("📢 Инструкция закреплена и мгновенно разослана во все чаты поддержки!");
+                showToast("📢 Инструкция закреплена и разослана во все чаты поддержки!");
             } else {
-                showToast("✅ Настройки автоответчика и закрепленной инструкции сохранены!");
+                showToast("✅ Настройки автоответчика сохранены!");
             }
             await window.appState.saveAllData();
             router.render();
         };
 
-        // --- ОБЛОЖКА, ГЕРБ И ЦЕНЫ ---
-        window.previewAndApplyCoverAdmin = async function(inputElem) {
-            const file = inputElem?.files?.[0];
-            if (!file) return;
-            const compressed = await window.processImageFile(file, 950);
-            if (!compressed) return;
-            window.appState.siteConfig.bannerUrl = compressed;
-            await window.appState.saveAllData();
-            showToast("🎨 Новая обложка книги мгновенно установлена!");
-            router.render();
-        };
-
-        window.previewAndApplyCrestAdmin = async function(inputElem) {
-            const file = inputElem?.files?.[0];
-            if (!file) return;
-            const compressed = await window.processImageFile(file, 450);
-            if (!compressed) return;
-            window.appState.siteConfig.crestUrl = compressed;
-            await window.appState.saveAllData();
-            updateUserBadge();
-            showToast("🛡️ Новый Герб сайта установлен!");
-            router.render();
-        };
-
-        window.saveBookTitleAdmin = async function() {
-            const titleInput = document.getElementById('cfg-title')?.value.trim();
-            if (titleInput) {
-                window.appState.siteConfig.title = titleInput;
-                document.getElementById('header-site-title').innerText = titleInput;
-                await window.appState.saveAllData();
-                showToast("✅ Название книги обновлено!");
-                router.render();
-            }
-        };
-
-        window.saveFinanceAndPricesAdmin = async function() {
-            const fin = window.appState.finance;
-            fin.prices.premiumMonthRub = parseInt(document.getElementById('price-prem-rub')?.value) || 299;
-            fin.prices.premiumMonthUsd = parseFloat(document.getElementById('price-prem-usd')?.value) || 3.99;
-            fin.prices.chapterPriceRub = parseInt(document.getElementById('price-ch-rub')?.value) || 49;
-            fin.prices.chapterPriceUsd = parseFloat(document.getElementById('price-ch-usd')?.value) || 0.99;
-            fin.prices.artPriceRub = parseInt(document.getElementById('price-art-rub')?.value) || 99;
-            fin.prices.artPriceUsd = parseFloat(document.getElementById('price-art-usd')?.value) || 1.49;
-            fin.prices.spoilerArtPriceRub = parseInt(document.getElementById('price-spoiler-rub')?.value) || 199;
-            fin.prices.spoilerArtPriceUsd = parseFloat(document.getElementById('price-spoiler-usd')?.value) || 2.49;
-
-            fin.payoutDetails.visaMastercard = document.getElementById('fin-visa')?.value.trim() || fin.payoutDetails.visaMastercard;
-            fin.payoutDetails.mirCard = document.getElementById('fin-mir')?.value.trim() || fin.payoutDetails.mirCard;
-            fin.payoutDetails.sbpPhone = document.getElementById('fin-sbp')?.value.trim() || fin.payoutDetails.sbpPhone;
-            fin.payoutDetails.unionPayCard = document.getElementById('fin-unionpay')?.value.trim() || fin.payoutDetails.unionPayCard;
-            fin.payoutDetails.paypalEmail = document.getElementById('fin-paypal')?.value.trim() || fin.payoutDetails.paypalEmail;
-            fin.payoutDetails.boostyUrl = document.getElementById('fin-boosty')?.value.trim() || fin.payoutDetails.boostyUrl;
-
-            await window.appState.saveAllData();
-            showToast("💳 Платежная система (Visa, MasterCard, МИР, СБП, UnionPay, PayPal, Boosty) сохранена!");
-            router.render();
-        };
-
-        window.withdrawAuthorFunds = async function() {
-            const f = window.appState.finance;
-            if (f.balanceRub <= 0 && f.balanceUsd <= 0) return alertCustom("На балансе пока 0 ₽ / $0.");
-            const sumRub = f.balanceRub;
-            const sumUsd = f.balanceUsd;
-            f.transactions.unshift({
-                id: "tx-" + Date.now(),
-                user: "💸 ВЫВОД НА РЕКВИЗИТЫ АВТОРА",
-                method: f.payoutDetails.mirCard,
-                amount: `-${sumRub} ₽ ($${sumUsd})`,
-                date: new Date().toLocaleDateString('ru-RU')
-            });
-            f.balanceRub = 0;
-            f.balanceUsd = 0;
-            await window.appState.saveAllData();
-            showToast(`💸 Выплата ${sumRub} ₽ ($${sumUsd}) отправлена на ваши реквизиты!`);
-            router.render();
-        };
-
-        // --- КОММЕНТАРИИ ---
+        // --- КОММЕНТАРИИ И ЛАЙКИ ---
         window.insertEmojiToComment = function(emoji) {
             const input = document.getElementById('comment-input');
             if (!input) return;
@@ -1854,61 +1794,775 @@
             input.focus();
         };
 
-        window.attachCommentMediaFile = async function(inputElem) {
-            const file = inputElem?.files?.[0];
-            if (!file) return;
-            const data = await window.processImageFile(file, 600);
-            if (!data) return;
-            window.appState.draftCommentMedia = data;
-            const box = document.getElementById('comment-media-preview');
-            if (box) {
-                box.classList.remove('hidden');
-                box.innerHTML = `<img src="${data}" class="h-24 rounded-xl object-cover border border-accent-blue"><button onclick="window.appState.draftCommentMedia=null; document.getElementById('comment-media-preview').classList.add('hidden');" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs">✕</button>`;
-            }
-            showToast("🖼️ GIF / Фото прикреплено к комментарию!");
-        };
-
-        window.sendQuickGifComment = async function(chapterId, gifUrl, gifTitle) {
-            const u = window.appState.user;
-            if (u.role === 'guest') return alertCustom("Войдите в Профиле, чтобы отправлять GIF!");
-            const regRecord = window.appState.registeredUsers.find(x => x.name.toLowerCase() === u.name.toLowerCase());
-            if (u.isMuted || (regRecord && regRecord.isMuted)) return alertCustom("🔇 Вам отключены комментарии (Мьют)!");
-
-            window.appState.comments.unshift({
-                id: "com-" + Date.now(),
-                chapterId,
-                user: u.name,
-                role: u.role,
-                avatar: u.avatar || DEFAULT_CREST_SVG,
-                frameClass: u.frameClass || "frame-none",
-                themeClass: u.commentTheme || "comm-theme-default",
-                text: `🎬 GIF: ${gifTitle}`,
-                mediaUrl: gifUrl,
-                isSticker: false,
-                date: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-                timestamp: Date.now()
-            });
-            await window.appState.saveAllData();
-            showToast("🎬 GIF отправлена!");
-            router.render();
-        };
-
         window.addComment = async function(chId) {
             const u = window.appState.user;
             if (u.isBanned) return alertCustom("🚫 Ваш аккаунт заблокирован!");
             const regRecord = window.appState.registeredUsers.find(x => x.name.toLowerCase() === u.name.toLowerCase());
             if (u.isMuted || (regRecord && regRecord.isMuted)) {
-                return alertCustom("🔇 Администратор или Саб-админ поставил вас в мьют — вы не можете оставлять комментарии!");
+                return alertCustom("🔇 Вы находитесь в мьюте и не можете оставлять комментарии!");
             }
 
             const input = document.getElementById('comment-input');
-            const gifUrlInput = document.getElementById('comment-gif-url');
             const text = input ? sanitizeHTML(input.value.trim()) : '';
-            const customGif = gifUrlInput ? gifUrlInput.value.trim() : '';
-            const mediaUrl = window.appState.draftCommentMedia || (customGif ? customGif : null);
-
-            if (!text && !mediaUrl) return alertCustom("Напишите комментарий, выберите эмодзи или прикрепите GIF!");
+            if (!text) return alertCustom("Напишите текст комментария!");
 
             window.appState.comments.unshift({
                 id: "com-" + Date.now(),
-                chapterId: ch
+                chapterId: chId,
+                user: u.name,
+                role: u.role,
+                avatar: u.avatar || DEFAULT_CREST_SVG,
+                frameClass: u.frameClass || "frame-none",
+                themeClass: u.commentTheme || "comm-theme-default",
+                text,
+                date: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+                timestamp: Date.now()
+            });
+            if (input) input.value = '';
+            await window.appState.saveAllData();
+            showToast("💬 Комментарий опубликован!");
+            router.render();
+        };
+
+        window.deleteCommentById = async function(comId) {
+            if (!window.canModerateSupportAndMute(window.appState.user.role)) return;
+            window.appState.comments = window.appState.comments.filter(c => c.id !== comId);
+            await window.appState.saveAllData();
+            showToast("🗑️ Комментарий удален");
+            router.render();
+        };
+
+        window.likeChapterFlame = async function(chId, colorKey) {
+            const ch = window.appState.chapters.find(c => c.id === chId);
+            if (!ch) return;
+            if (!ch.likes) ch.likes = { blue: 10, purple: 10, pink: 10, gold: 10 };
+            ch.likes[colorKey] = (ch.likes[colorKey] || 0) + 1;
+            window.playFantasyFlameSound();
+            await window.appState.saveAllData();
+            router.render();
+        };
+
+        // --- АВТОРИЗАЦИЯ И ПРОФИЛЬ ---
+        window.loginUserAccount = async function() {
+            const nameInput = document.getElementById('auth-name-input')?.value.trim();
+            const emailInput = document.getElementById('auth-email-input')?.value.trim();
+            if (!nameInput) return alertCustom("Введите ваше имя или никнейм!");
+
+            const state = window.appState;
+            let role = 'user';
+            let frameClass = 'frame-neon';
+            let isOwner = false;
+
+            if (nameInput.toLowerCase() === ADMIN_USERNAME.toLowerCase() || (emailInput && emailInput.toLowerCase() === ADMIN_EMAIL.toLowerCase())) {
+                role = 'admin';
+                frameClass = 'frame-gold';
+                isOwner = true;
+            } else if (nameInput.toLowerCase() === SUBADMIN_USERNAME.toLowerCase() || (emailInput && emailInput.toLowerCase() === SUBADMIN_EMAIL.toLowerCase())) {
+                role = 'subadmin';
+                frameClass = 'frame-astral-ring';
+            }
+
+            const newUser = {
+                uid: "u-" + Date.now(),
+                name: sanitizeHTML(nameInput),
+                email: sanitizeHTML(emailInput || 'reader@eternity.com'),
+                role,
+                avatar: state.user.avatar || DEFAULT_CREST_SVG,
+                frameClass,
+                commentTheme: role === 'admin' ? 'comm-theme-gold' : 'comm-theme-default',
+                unlockedSpoilers: state.user.unlockedSpoilers || [],
+                isBanned: false,
+                isMuted: false,
+                premiumUntil: role === 'admin' ? 'Владелец сайта' : (role === 'subadmin' ? 'Саб-админ' : null),
+                isOwnerAuthenticated: isOwner
+            };
+
+            state.saveSession(newUser);
+            await state.saveAllData();
+            showToast(`✨ Добро пожаловать, ${newUser.name}!`);
+            router.render();
+        };
+
+        window.logoutUserAccount = function() {
+            window.appState.saveSession({
+                uid: null,
+                name: "Гость",
+                email: null,
+                role: "guest",
+                avatar: DEFAULT_CREST_SVG,
+                frameClass: "frame-none",
+                commentTheme: "comm-theme-default",
+                unlockedSpoilers: [],
+                isBanned: false,
+                isMuted: false,
+                premiumUntil: null,
+                isOwnerAuthenticated: false
+            });
+            showToast("Вы вышли из аккаунта");
+            router.navigate('home');
+        };
+
+        // --- ПУБЛИКАЦИЯ НОВОЙ ГЛАВЫ В АДМИНКЕ ---
+        window.publishNewChapterAdmin = async function() {
+            if (window.appState.user.role !== 'admin') return;
+            const titleRu = document.getElementById('adm-ch-title')?.value.trim();
+            const rawText = document.getElementById('adm-ch-content')?.value.trim();
+            const isEarly = document.getElementById('adm-ch-early')?.checked || false;
+
+            if (!titleRu || !rawText) return alertCustom("Заполните заголовок и текст главы!");
+
+            const paragraphs = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+            const newCh = {
+                id: "ch-" + Date.now(),
+                number: window.appState.chapters.length + 1,
+                titleRu,
+                titleEn: titleRu,
+                date: new Date().toLocaleDateString('ru-RU'),
+                isEarly,
+                priceRub: isEarly ? 49 : 0,
+                priceUsd: isEarly ? 0.99 : 0,
+                audioUrl: null,
+                contentRu: paragraphs,
+                likes: { blue: 1, purple: 1, pink: 1, gold: 1 }
+            };
+
+            window.appState.chapters.push(newCh);
+            await window.appState.saveAllData();
+            showToast(`📖 Глава «${titleRu}» опубликована!`);
+            router.navigate('chapters');
+        };
+
+        // --- РОУТЕР И ОТРИСОВКА ВСЕХ ЭКРАНОВ ---
+        window.router = {
+            navigate(view, param = null) {
+                window.stopChapterVoice();
+                window.appState.currentView = view;
+                if (view === 'reader' && param) {
+                    window.appState.activeChapterId = param;
+                    window.appState.saveProgress(param);
+                }
+                if (view === 'character_detail' && param) {
+                    window.appState.activeEntityId = param;
+                }
+                sessionStorage.setItem('eternity_current_view', view);
+                if (param) sessionStorage.setItem('eternity_current_param', param);
+
+                ['home', 'chapters', 'lore', 'chat', 'profile', 'admin'].forEach(id => {
+                    const btn = document.getElementById('nav-' + id);
+                    if (btn) {
+                        if (id === view || (view === 'reader' && id === 'chapters') || (view === 'character_detail' && id === 'lore')) {
+                            btn.className = "flex flex-col items-center py-1 px-2 text-accent-blue";
+                        } else {
+                            btn.className = "flex flex-col items-center py-1 px-2 text-gray-400";
+                        }
+                    }
+                });
+
+                this.render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            render() {
+                const container = document.getElementById('app-container');
+                if (!container) return;
+                const state = window.appState;
+                const view = state.currentView;
+
+                if (view === 'home') container.innerHTML = renderHomeView();
+                else if (view === 'chapters') container.innerHTML = renderChaptersView();
+                else if (view === 'reader') container.innerHTML = renderReaderView();
+                else if (view === 'lore') container.innerHTML = renderLoreView();
+                else if (view === 'character_detail') container.innerHTML = renderCharacterDetailView();
+                else if (view === 'chat') container.innerHTML = renderChatView();
+                else if (view === 'profile') container.innerHTML = renderProfileView();
+                else if (view === 'admin') container.innerHTML = renderAdminView();
+                else container.innerHTML = renderHomeView();
+            }
+        };
+
+        function getRoleBadgeHTML(role) {
+            if (role === 'admin') return `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-gradient-to-r from-amber-400 to-accent-pink text-black">👑 ВЛАДЕЛЕЦ</span>`;
+            if (role === 'subadmin') return `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-purple-600 text-white border border-sky-300">🛡️ САБ-АДМИН</span>`;
+            if (role === 'premium') return `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/50">⭐ VIP</span>`;
+            return `<span class="px-2 py-0.5 rounded-full text-[9px] bg-white/10 text-gray-300">Читатель</span>`;
+        }
+
+        function renderHomeView() {
+            const state = window.appState;
+            const lastCh = state.chapters[state.chapters.length - 1] || state.chapters[0];
+            return `
+                <div class="space-y-5 pb-8">
+                    <!-- Главный баннер новеллы -->
+                    <div class="relative rounded-3xl overflow-hidden glass-card border border-accent-blue/40 p-6 sm:p-8 text-center space-y-4 shadow-2xl">
+                        <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden border-2 border-amber-400 shadow-xl">
+                            <img src="${state.siteConfig.bannerUrl || DEFAULT_CREST_SVG}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-full h-full object-cover" alt="Cover">
+                        </div>
+                        <div class="space-y-1">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-accent-blue/20 text-accent-blue border border-accent-blue/40">Official Web Novel Portal</span>
+                            <h1 class="text-2xl sm:text-3xl font-extrabold gold-shimmer pt-1">${state.siteConfig.title}</h1>
+                            <p class="text-xs text-gray-300 max-w-xl mx-auto leading-relaxed">
+                                В начале времен Единый Бог-Творец сотворил 18 001 мир и 5 Божественных Измерений. Следуйте за Наследным Принцем Расса Ди Ариэном сквозь эпохи, битвы Империй и тайны Первородных Богов.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-2.5 pt-2">
+                            <button onclick="router.navigate('reader', '${lastCh ? lastCh.id : 'ch-1'}')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-accent-blue via-accent-purple to-accent-pink text-white text-xs font-extrabold shadow-xl">
+                                📖 Читать сейчас
+                            </button>
+                            <button onclick="router.navigate('lore')" class="px-5 py-3 rounded-2xl glass-card border border-amber-400/50 text-amber-300 text-xs font-extrabold">
+                                📜 Библия Мира & Лор
+                            </button>
+                            <button onclick="openPaymentModal()" class="px-4 py-3 rounded-2xl glass-card border border-accent-pink/50 text-accent-pink text-xs font-extrabold">
+                                👑 VIP Доступ
+                            </button>
+                        </div>
+                    </div>
+
+                    ${state.countdown.enabled ? `
+                        <div class="glass-card p-4 rounded-2xl border border-accent-purple/40 text-center space-y-2">
+                            <h3 class="text-xs font-extrabold text-amber-300 uppercase tracking-wider">⏳ ${state.countdown.title}</h3>
+                            <div id="live-countdown-box" class="text-xs text-gray-300">Загрузка таймера...</div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Список последних глав -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border border-white/10">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-sm font-extrabold text-white">📚 Опубликованные главы</h2>
+                            <button onclick="router.navigate('chapters')" class="text-xs text-accent-blue font-bold">Все главы →</button>
+                        </div>
+                        <div class="space-y-2">
+                            ${state.chapters.map(ch => `
+                                <div onclick="router.navigate('reader', '${ch.id}')" class="p-3.5 rounded-xl glass-card border border-white/10 hover:border-accent-blue/50 flex justify-between items-center cursor-pointer interactive-btn">
+                                    <div>
+                                        <span class="text-xs font-extrabold text-white block">${ch.titleRu}</span>
+                                        <span class="text-[10px] text-gray-400">${ch.date} • 🔊 10 голосов ElevenLabs</span>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-lg bg-accent-blue/20 text-accent-blue text-xs font-bold">Читать →</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderChaptersView() {
+            const state = window.appState;
+            return `
+                <div class="space-y-4 pb-8">
+                    <div class="glass-card p-5 rounded-2xl border border-accent-blue/30 flex justify-between items-center">
+                        <div>
+                            <h1 class="text-lg font-extrabold text-white">📖 Оглавление Новеллы</h1>
+                            <p class="text-xs text-gray-400">Выберите главу для чтения и живой озвучки</p>
+                        </div>
+                        <button onclick="openNotifySubscribeModal()" class="px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-bold">🔔 Подписаться</button>
+                    </div>
+                    <div class="space-y-2.5">
+                        ${state.chapters.map(ch => `
+                            <div onclick="router.navigate('reader', '${ch.id}')" class="p-4 rounded-2xl glass-card border border-white/10 flex justify-between items-center cursor-pointer interactive-btn">
+                                <div class="space-y-1">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-extrabold text-white">${ch.titleRu}</span>
+                                        ${ch.isEarly ? `<span class="px-2 py-0.5 rounded bg-amber-500 text-black text-[9px] font-extrabold">👑 РАННИЙ ДОСТУП</span>` : ''}
+                                    </div>
+                                    <span class="text-[11px] text-gray-400 block">Дата выхода: ${ch.date}</span>
+                                </div>
+                                <span class="px-3.5 py-1.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Открыть</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReaderView() {
+            const state = window.appState;
+            const ch = state.chapters.find(c => c.id === state.activeChapterId) || state.chapters[0];
+            if (!ch) return `<div class="p-6 text-center">Глава не найдена</div>`;
+
+            if (ch.isEarly && !window.hasPremiumPrivileges(state.user.role)) {
+                return `
+                    <div class="glass-card p-8 rounded-3xl text-center space-y-4 border-2 border-amber-400">
+                        <h2 class="text-lg font-extrabold text-amber-300">🔒 Глава в раннем VIP-доступе</h2>
+                        <p class="text-xs text-gray-300">Активируйте статус Premium, чтобы читать новые главы раньше всех!</p>
+                        <button onclick="openPaymentModal()" class="px-6 py-3 rounded-xl bg-amber-500 text-black font-extrabold text-xs">👑 Открыть VIP доступ</button>
+                    </div>
+                `;
+            }
+
+            const chComments = state.comments.filter(c => c.chapterId === ch.id);
+
+            return `
+                <div class="space-y-5 pb-10">
+                    <!-- Панель настроек чтения и 10 голосов ElevenLabs -->
+                    <div class="glass-card p-4 rounded-2xl border border-accent-blue/40 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                            <button onclick="router.navigate('chapters')" class="text-xs text-gray-300 font-bold">← К списку глав</button>
+                            <div class="flex items-center space-x-1.5">
+                                <button onclick="setReaderFontSize(-1)" class="px-2.5 py-1 rounded-lg bg-white/10 text-xs font-bold">A-</button>
+                                <span id="font-size-val" class="text-xs font-bold text-amber-300">${state.readerSettings.fontSize}px</span>
+                                <button onclick="setReaderFontSize(1)" class="px-2.5 py-1 rounded-lg bg-white/10 text-xs font-bold">A+</button>
+                            </div>
+                        </div>
+
+                        <!-- Выбор 5 шрифтов -->
+                        <div class="flex flex-wrap gap-1.5">
+                            ${[
+                                { id: 'font-literata', name: 'Literata' },
+                                { id: 'font-georgia', name: 'Georgia' },
+                                { id: 'font-munich', name: 'Munich Royal' },
+                                { id: 'font-buira', name: 'Buira Italic' },
+                                { id: 'font-serif-pro', name: 'Source Serif' }
+                            ].map(f => `
+                                <button onclick="window.appState.readerSettings.font='${f.id}'; router.render();" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border ${state.readerSettings.font===f.id?'border-accent-blue bg-accent-blue/25 text-white':'border-white/10 text-gray-300'}">${f.name}</button>
+                            `).join('')}
+                        </div>
+
+                        <!-- Палитра из 9 цветов шрифта -->
+                        <div class="flex items-center space-x-2 overflow-x-auto py-1">
+                            <span class="text-[10px] text-gray-400 shrink-0">Цвет текста:</span>
+                            ${FONT_COLORS.map(c => `
+                                <button onclick="setReaderFontColor('${c.hex}', '${c.name}')" title="${c.name}" class="w-5 h-5 rounded-full shrink-0 border border-white/40" style="background:${c.hex};"></button>
+                            `).join('')}
+                        </div>
+
+                        <!-- 10 Живых Голосов ElevenLabs -->
+                        <div class="pt-2 border-t border-white/10 space-y-2">
+                            <label class="text-[11px] font-extrabold text-amber-300 block">🎙️ Живая озвучка (10 уникальных голосов ElevenLabs):</label>
+                            <select onchange="selectVoiceProfile(this.value)" class="w-full bg-space-900 text-white text-xs p-2.5 rounded-xl border border-accent-purple/50 font-semibold">
+                                ${state.tts.profiles.map(p => `
+                                    <option value="${p.id}" ${state.tts.selectedProfileId === p.id ? 'selected' : ''}>${p.name}</option>
+                                `).join('')}
+                            </select>
+                            <div class="flex flex-wrap gap-2">
+                                <button id="tts-play-btn" onclick="toggleChapterVoice()" class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-accent-blue to-accent-pink text-white text-xs font-extrabold shadow-lg">
+                                    ${state.tts.isPlaying ? '⏹ Остановить чтение' : '🔊 Читать главу этим живым голосом'}
+                                </button>
+                                <button id="tts-sample-btn" onclick="previewSelectedVoiceSample()" class="py-2.5 px-3 rounded-xl glass-card border border-amber-400/50 text-amber-300 text-xs font-bold">
+                                    ▶️ Прослушать голос
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Текст главы -->
+                    <article id="novel-text-content" class="glass-card p-5 sm:p-8 rounded-3xl space-y-4 ${state.readerSettings.font}">
+                        <h1 class="text-xl sm:text-2xl font-extrabold text-amber-300 border-b border-white/10 pb-3">${ch.titleRu}</h1>
+                        ${(ch.contentRu || []).map((block, idx) => {
+                            if (isImageOrGif(block)) {
+                                return `<div class="my-4 rounded-2xl overflow-hidden border border-white/15"><img src="${block}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-full max-h-96 object-cover"></div>`;
+                            }
+                            if (block.startsWith('~blue')) return `<p id="ch-block-${idx}" class="dialogue-blue">${sanitizeHTML(block.replace('~blue', '').trim())}</p>`;
+                            if (block.startsWith('~pink')) return `<p id="ch-block-${idx}" class="dialogue-pink">${sanitizeHTML(block.replace('~pink', '').trim())}</p>`;
+                            if (block.startsWith('~gold')) return `<p id="ch-block-${idx}" class="dialogue-gold">${sanitizeHTML(block.replace('~gold', '').trim())}</p>`;
+                            if (block.startsWith('~purple')) return `<p id="ch-block-${idx}" class="dialogue-purple">${sanitizeHTML(block.replace('~purple', '').trim())}</p>`;
+                            return `<p id="ch-block-${idx}">${sanitizeHTML(block)}</p>`;
+                        }).join('')}
+                    </article>
+
+                    <!-- Огоньки реакций -->
+                    <div class="glass-card p-4 rounded-2xl text-center space-y-2">
+                        <span class="text-xs font-bold text-gray-300 block">🔥 Поддержите главу магическим пламенем:</span>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="likeChapterFlame('${ch.id}', 'blue')" class="px-3.5 py-2 rounded-xl bg-blue-500/20 border border-blue-400/40 text-xs font-extrabold text-blue-300">💙 ${ch.likes?.blue || 0}</button>
+                            <button onclick="likeChapterFlame('${ch.id}', 'purple')" class="px-3.5 py-2 rounded-xl bg-purple-500/20 border border-purple-400/40 text-xs font-extrabold text-purple-300">💜 ${ch.likes?.purple || 0}</button>
+                            <button onclick="likeChapterFlame('${ch.id}', 'pink')" class="px-3.5 py-2 rounded-xl bg-pink-500/20 border border-pink-400/40 text-xs font-extrabold text-pink-300">❤️‍🔥 ${ch.likes?.pink || 0}</button>
+                            <button onclick="likeChapterFlame('${ch.id}', 'gold')" class="px-3.5 py-2 rounded-xl bg-amber-500/20 border border-amber-400/40 text-xs font-extrabold text-amber-300">💛 ${ch.likes?.gold || 0}</button>
+                        </div>
+                    </div>
+
+                    <!-- Комментарии к главе -->
+                    <div class="glass-card p-5 rounded-2xl space-y-4">
+                        <h3 class="text-sm font-extrabold text-white">💬 Комментарии читателей (${chComments.length})</h3>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${['🔥','❤️','⚡','👑','🌌','😭','👏','⚔️'].map(em => `
+                                <button onclick="insertEmojiToComment('${em}')" class="px-2.5 py-1 rounded-lg bg-white/10 text-sm">${em}</button>
+                            `).join('')}
+                        </div>
+                        <div class="flex gap-2">
+                            <input id="comment-input" type="text" placeholder="Напишите ваш отзыв о главе..." class="flex-1 glass-card p-3 rounded-xl text-xs text-white">
+                            <button onclick="addComment('${ch.id}')" class="px-4 py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Отправить</button>
+                        </div>
+
+                        <div class="space-y-3 pt-2">
+                            ${chComments.map(c => `
+                                <div class="p-3.5 rounded-2xl ${c.themeClass || 'comm-theme-default'} space-y-1.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="${c.avatar || DEFAULT_CREST_SVG}" class="w-7 h-7 rounded-full object-cover ${c.frameClass || 'frame-none'}">
+                                            <span class="text-xs font-extrabold text-white">${c.user}</span>
+                                            ${getRoleBadgeHTML(c.role)}
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-[10px] text-gray-400">${c.date}</span>
+                                            ${window.canModerateSupportAndMute(state.user.role) ? `
+                                                <button onclick="muteUserByNameQuick('${c.user}')" class="text-[10px] text-amber-400 font-bold" title="Поставить в мьют">🔇 Мьют</button>
+                                                <button onclick="deleteCommentById('${c.id}')" class="text-[10px] text-red-400 font-bold">✕</button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-100 pl-9">${c.text}</p>
+                                    ${c.mediaUrl ? `<div class="pl-9 pt-1"><img src="${c.mediaUrl}" class="max-h-40 rounded-xl border border-white/20"></div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLoreView() {
+            const state = window.appState;
+            return `
+                <div class="space-y-5 pb-10">
+                    <!-- Переключатель разделов Вселенной -->
+                    <div class="flex gap-2 overflow-x-auto pb-1">
+                        <button onclick="window.appState.activeLoreTab='bible'; router.render();" class="px-4 py-2.5 rounded-xl text-xs font-extrabold shrink-0 ${state.activeLoreTab==='bible'?'bg-gradient-to-r from-amber-500 to-accent-pink text-black':'glass-card text-gray-300'}">📜 Официальная Библия Мира</button>
+                        <button onclick="window.appState.activeLoreTab='entities'; router.render();" class="px-4 py-2.5 rounded-xl text-xs font-extrabold shrink-0 ${state.activeLoreTab==='entities'?'bg-gradient-to-r from-accent-blue to-accent-purple text-white':'glass-card text-gray-300'}">🦸 Персонажи & 🔒 Спойлер-папки</button>
+                    </div>
+
+                    ${state.activeLoreTab === 'bible' ? `
+                        <div class="bible-portal-card p-5 sm:p-6 rounded-3xl space-y-4">
+                            <div class="flex flex-wrap justify-between items-center gap-2 border-b border-amber-400/30 pb-3">
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-widest text-amber-300 font-extrabold block">Канонический Архив Автора</span>
+                                    <h1 class="text-lg sm:text-xl font-extrabold text-white">${state.worldBible.subtitle}</h1>
+                                </div>
+                                <a href="${state.worldBible.docUrl}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-amber-500 text-black text-xs font-extrabold">📄 Открыть Google Doc ↗</a>
+                            </div>
+                            <div class="space-y-4">
+                                ${state.worldBible.sections.map(sec => `
+                                    <div class="glass-card p-4 rounded-2xl border border-white/10 space-y-2">
+                                        <span class="text-[10px] font-extrabold text-accent-blue uppercase">${sec.badge}</span>
+                                        <h3 class="text-sm font-extrabold text-amber-300">${sec.heading}</h3>
+                                        <p class="text-xs text-gray-200 whitespace-pre-line leading-relaxed">${sec.content}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            ${state.characters.map(c => {
+                                const isUnlocked = (state.user.unlockedSpoilers || []).includes(c.id) || state.user.role === 'admin';
+                                const locked = c.isPaidSpoilerFolder && !isUnlocked;
+                                return `
+                                    <div onclick="tryOpenLoreEntity('${c.id}')" class="glass-card p-4 rounded-2xl border ${c.isPaidSpoilerFolder ? 'border-amber-400/60' : 'border-white/10'} flex items-center space-x-3.5 cursor-pointer interactive-btn">
+                                        <img src="${c.avatar || DEFAULT_CREST_SVG}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-16 h-16 rounded-2xl object-cover shrink-0 ${locked ? 'blur-sm' : ''}">
+                                        <div class="space-y-1 flex-1 min-w-0">
+                                            <span class="text-[10px] font-extrabold ${c.isPaidSpoilerFolder ? 'text-amber-300' : 'text-accent-blue'} block truncate">${c.folder}</span>
+                                            <h3 class="text-sm font-extrabold text-white truncate">${c.name}</h3>
+                                            <p class="text-[11px] text-gray-400 line-clamp-2">${locked ? '🔒 Секретная спойлер-папка. Нажмите для разблокировки.' : c.bioRu}</p>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderCharacterDetailView() {
+            const state = window.appState;
+            const ent = state.characters.find(c => c.id === state.activeEntityId) || state.characters[0];
+            if (!ent) return `<div class="p-6">Запись не найдена</div>`;
+            return `
+                <div class="space-y-4 pb-10">
+                    <button onclick="router.navigate('lore')" class="text-xs text-accent-blue font-bold">← Назад во Вселенную</button>
+                    <div class="glass-card p-6 rounded-3xl border border-accent-blue/40 space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <img src="${ent.avatar || DEFAULT_CREST_SVG}" onerror="this.src='${DEFAULT_CREST_SVG}'" class="w-20 h-20 rounded-2xl object-cover border-2 border-amber-400">
+                            <div>
+                                <span class="text-[10px] text-amber-300 font-extrabold uppercase">${ent.folder}</span>
+                                <h1 class="text-lg font-extrabold text-white">${ent.name}</h1>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-200 leading-relaxed">${ent.bioRu}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderChatView() {
+            const state = window.appState;
+            const supCfg = state.supportSettings;
+            const canMod = window.canModerateSupportAndMute(state.user.role);
+
+            return `
+                <div class="space-y-4 pb-10">
+                    <div class="flex gap-2">
+                        <button onclick="window.appState.activeChatTab='readers'; router.render();" class="flex-1 py-2.5 rounded-xl text-xs font-extrabold ${state.activeChatTab==='readers'?'cosmic-gradient text-white shadow-lg':'glass-card text-gray-300'}">🍻 Живой Чат Читателей</button>
+                        <button onclick="window.appState.activeChatTab='support'; router.render();" class="flex-1 py-2.5 rounded-xl text-xs font-extrabold ${state.activeChatTab==='support'?'bg-gradient-to-r from-amber-500 to-accent-pink text-black shadow-lg':'glass-card text-gray-300'}">🛡️ Поддержка (24ч Авто-ответ)</button>
+                    </div>
+
+                    ${state.activeChatTab === 'readers' ? `
+                        <div class="glass-card p-4 rounded-2xl space-y-3 border border-accent-blue/30">
+                            <h2 class="text-sm font-extrabold text-white">💬 Таверна «18 000 + 1 Вечность»</h2>
+                            <div class="space-y-2.5 max-h-[52vh] overflow-y-auto pr-1">
+                                ${state.liveChatMessages.map(m => `
+                                    <div class="p-3 rounded-2xl glass-card border border-white/10 space-y-1">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <img src="${m.avatar || DEFAULT_CREST_SVG}" class="w-6 h-6 rounded-full object-cover ${m.frameClass || 'frame-none'}">
+                                                <span class="text-xs font-extrabold text-white">${m.user}</span>
+                                                ${getRoleBadgeHTML(m.role)}
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-[10px] text-gray-400">${m.time}</span>
+                                                ${canMod ? `<button onclick="muteUserByNameQuick('${m.user}')" class="text-[10px] text-amber-400 font-bold">🔇 Мьют</button>` : ''}
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-200 pl-8">${m.text}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <input id="live-chat-input" type="text" placeholder="Написать сообщение в чат..." class="flex-1 glass-card p-3 rounded-xl text-xs text-white">
+                                <button onclick="sendLiveChatMessage()" class="px-4 py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Отправить</button>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="space-y-4">
+                            <!-- Закрепленная инструкция -->
+                            <div class="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/50 space-y-1">
+                                <p class="text-xs text-amber-200 whitespace-pre-line leading-relaxed font-medium">${supCfg.pinnedInstruction}</p>
+                            </div>
+
+                            <!-- Форма отправки вопроса -->
+                            <div class="glass-card p-4 rounded-2xl space-y-3">
+                                <h3 class="text-xs font-extrabold text-white">Задать вопрос Автору или Саб-админу:</h3>
+                                <textarea id="support-msg-input" rows="2" placeholder="Опишите ваш вопрос..." class="w-full glass-card p-3 rounded-xl text-xs text-white"></textarea>
+                                <button onclick="sendSupportTicket()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-accent-pink text-black text-xs font-extrabold">📨 Отправить обращение в поддержку</button>
+                            </div>
+
+                            <!-- Список тикетов -->
+                            <div class="space-y-3">
+                                ${state.supportTickets.map(t => `
+                                    <div class="glass-card p-4 rounded-2xl border border-white/15 space-y-2.5">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-extrabold text-accent-blue">От: ${t.fromUser}</span>
+                                            <span class="text-[10px] px-2 py-0.5 rounded ${t.status==='answered'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${t.status==='answered'?'✅ Отвечено':'⏳ Ожидает ответа (до 24ч)'}</span>
+                                        </div>
+                                        <p class="text-xs text-white font-semibold">❓ ${t.question}</p>
+                                        ${t.autoReply ? `<div class="p-2.5 rounded-xl bg-space-900/90 border border-accent-blue/30 text-[11px] text-gray-300 whitespace-pre-line">${t.autoReply}</div>` : ''}
+                                        ${t.reply ? `
+                                            <div class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-400/50 space-y-1">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-[11px] font-extrabold text-emerald-300">Ответ от: ${t.repliedBy || 'Администрация'}</span>
+                                                    ${getRoleBadgeHTML(t.repliedByRole || 'admin')}
+                                                </div>
+                                                <p class="text-xs text-white">${t.reply}</p>
+                                            </div>
+                                        ` : ''}
+                                        ${canMod ? `
+                                            <div class="flex gap-2 pt-1">
+                                                <input id="reply-input-${t.id}" type="text" placeholder="Ответить как ${state.user.role==='admin'?'Владелец':'Саб-админ'}..." class="flex-1 bg-space-900 p-2 rounded-xl text-xs text-white border border-white/15">
+                                                <button onclick="replySupportTicketAdmin('${t.id}')" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">Ответить</button>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderProfileView() {
+            const state = window.appState;
+            const u = state.user;
+            return `
+                <div class="space-y-5 pb-10">
+                    <!-- Карточка пользователя -->
+                    <div class="glass-card p-6 rounded-3xl border border-accent-purple/50 text-center space-y-3">
+                        <div class="relative inline-block">
+                            <img src="${u.avatar || DEFAULT_CREST_SVG}" class="w-24 h-24 rounded-full object-cover mx-auto ${u.frameClass || 'frame-gold'}">
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-center space-x-2">
+                                <h2 class="text-lg font-extrabold text-white">${u.name}</h2>
+                                ${getRoleBadgeHTML(u.role)}
+                            </div>
+                            ${u.premiumUntil ? `<p class="text-[11px] text-amber-300 font-bold mt-0.5">Статус активен: ${u.premiumUntil}</p>` : ''}
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-2 pt-1">
+                            <label class="cursor-pointer px-3.5 py-2 rounded-xl glass-card border border-accent-blue/40 text-xs font-bold text-accent-blue">
+                                📷 Сменить аватарку
+                                <input type="file" accept="image/*" onchange="uploadUserAvatar(this)" class="hidden">
+                            </label>
+                            <button onclick="openPaymentModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-accent-pink text-black text-xs font-extrabold">👑 Активировать VIP</button>
+                            ${u.role !== 'guest' ? `<button onclick="logoutUserAccount()" class="px-3 py-2 rounded-xl bg-red-600/30 border border-red-400/40 text-red-200 text-xs font-bold">Выйти</button>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Вход (для Гостя или входа под Админом / Саб-админом) -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border border-white/10">
+                        <h3 class="text-sm font-extrabold text-white">🔐 Вход в аккаунт / Кабинет Автора</h3>
+                        <p class="text-[11px] text-gray-400">Для входа владельца введите <b>Guardian_Angel_15</b>, для входа помощника — <b>SubAdmin_Helper</b>, либо любое свое имя читателя:</p>
+                        <input id="auth-name-input" type="text" placeholder="Ваш никнейм (напр. Guardian_Angel_15)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                        <input id="auth-email-input" type="email" placeholder="Ваш Email (необязательно)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                        <button onclick="loginUserAccount()" class="w-full py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Войти в профиль</button>
+                    </div>
+
+                    <!-- Выбор разных визуальных рамок -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <h3 class="text-sm font-extrabold text-amber-300">🖼️ Уникальные рамки аватара (Разные стили VIP и Спойлер)</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            ${state.avatarFrames.map(fr => `
+                                <div onclick="selectUserFrame('${fr.id}')" class="p-3 rounded-xl glass-card border ${u.frameClass===fr.cssClass?'border-amber-400 bg-amber-500/10':'border-white/10'} flex items-center justify-between cursor-pointer interactive-btn">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 rounded-full bg-space-800 ${fr.cssClass}"></div>
+                                        <span class="text-xs font-bold text-white">${fr.name}</span>
+                                    </div>
+                                    <span class="text-[10px] text-amber-300 font-bold">${fr.accessType==='free'?'Бесплатно':(fr.accessType==='premium'?'👑 VIP':`${fr.priceRub}₽`)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Выбор эксклюзивных окон сообщений -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <h3 class="text-sm font-extrabold text-accent-blue">💬 Эксклюзивные окна сообщений для комментариев</h3>
+                        <div class="space-y-2">
+                            ${state.commentThemes.map(ct => `
+                                <div onclick="selectUserCommentTheme('${ct.cssClass}', ${ct.isPremium}, '${ct.name}')" class="p-3.5 rounded-xl ${ct.cssClass} flex justify-between items-center cursor-pointer interactive-btn">
+                                    <span class="text-xs font-extrabold text-white">${ct.name}</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-black/40 text-amber-300 font-bold">${u.commentTheme===ct.cssClass?'✓ Выбрано':(ct.isPremium?'👑 VIP':'Выбрать')}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAdminView() {
+            const state = window.appState;
+            const role = state.user.role;
+            if (role !== 'admin' && role !== 'subadmin') {
+                return `
+                    <div class="glass-card p-8 rounded-3xl text-center space-y-3">
+                        <h2 class="text-base font-extrabold text-red-400">🔒 Доступ только для Администратора и Саб-админа</h2>
+                        <p class="text-xs text-gray-300">Перейдите во вкладку «Профиль» и войдите под именем <b>Guardian_Angel_15</b> или <b>SubAdmin_Helper</b>.</p>
+                        <button onclick="router.navigate('profile')" class="px-5 py-2.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Перейти ко входу</button>
+                    </div>
+                `;
+            }
+
+            const isFullOwner = role === 'admin';
+
+            return `
+                <div class="space-y-6 pb-12">
+                    <div class="glass-card p-5 rounded-2xl border border-accent-pink/50 flex flex-wrap justify-between items-center gap-2">
+                        <div>
+                            <h1 class="text-lg font-extrabold text-white">⚙️ Панель Управления (${isFullOwner ? 'Владелец — Уровень 5' : 'Саб-админ — Уровень 4'})</h1>
+                            <p class="text-xs text-gray-400">Все изменения мгновенно сохраняются в базе</p>
+                        </div>
+                        <button onclick="exportFullSiteBackup()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">💾 Скачать Бэкап</button>
+                    </div>
+
+                    <!-- Модерация пользователей (Мьют доступен Саб-админу, Бан и назначение Саб-админа — только Владельцу) -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border border-white/15">
+                        <h2 class="text-sm font-extrabold text-amber-300">🛡️ Пользователи, Мьют и 5-й уровень (Саб-админ)</h2>
+                        <div class="space-y-2">
+                            ${state.registeredUsers.map(u => `
+                                <div class="p-3 rounded-xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs font-extrabold text-white">${u.name}</span>
+                                        ${getRoleBadgeHTML(u.role)}
+                                        ${u.isMuted ? `<span class="text-[10px] text-amber-400 font-extrabold">🔇 В МЬЮТЕ</span>` : ''}
+                                        ${u.isBanned ? `<span class="text-[10px] text-red-400 font-extrabold">🚫 БАН</span>` : ''}
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <button onclick="toggleMuteUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[10px] font-bold">${u.isMuted ? '🔊 Снять мьют' : '🔇 Мьют'}</button>
+                                        ${isFullOwner ? `
+                                            <button onclick="setSubAdminRole('${u.id}')" class="px-2.5 py-1 rounded-lg bg-purple-600/30 border border-purple-400 text-purple-200 text-[10px] font-bold">${u.role==='subadmin'?'Снять Саб-админа':'🛡️ Сделать Саб-админом'}</button>
+                                            <button onclick="toggleBanUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-red-600/30 border border-red-400 text-red-200 text-[10px] font-bold">${u.isBanned ? 'Разбанить' : '🚫 Бан'}</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    ${isFullOwner ? `
+                        <!-- Публикация новой главы -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-blue/40">
+                            <h2 class="text-sm font-extrabold text-white">📖 Опубликовать новую главу</h2>
+                            <input id="adm-ch-title" type="text" placeholder="Название главы (напр. Глава 2: Клинок Синей Луны)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                            <textarea id="adm-ch-content" rows="5" placeholder="Текст главы (каждый абзац с новой строки; для реплик можно начинать со ~blue, ~pink, ~gold)..." class="w-full glass-card p-3 rounded-xl text-xs text-white"></textarea>
+                            <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                <input id="adm-ch-early" type="checkbox" class="rounded">
+                                <span>👑 Сделать главу ранним VIP-доступом (Premium)</span>
+                            </label>
+                            <button onclick="publishNewChapterAdmin()" class="w-full py-3 rounded-xl bg-gradient-to-r from-accent-blue to-accent-pink text-white text-xs font-extrabold">🚀 Опубликовать главу</button>
+                        </div>
+
+                        <!-- Создание и удаление эксклюзивных окон сообщений для Premium -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-amber-400/40">
+                            <h2 class="text-sm font-extrabold text-amber-300">💬 Конструктор эксклюзивных окон сообщений (VIP)</h2>
+                            <input id="new-comm-win-name" type="text" placeholder="Название окна (напр. Изумрудное Пламя)" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <div><span class="text-[10px] text-gray-400 block">Фон 1</span><input id="new-comm-win-bg1" type="color" value="#1E1B4B" class="w-full h-9 rounded"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Фон 2</span><input id="new-comm-win-bg2" type="color" value="#4C1D95" class="w-full h-9 rounded"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Рамка</span><input id="new-comm-win-border" type="color" value="#F59E0B" class="w-full h-9 rounded"></div>
+                            </div>
+                            <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                <input id="new-comm-win-prem" type="checkbox" checked>
+                                <span>Только для пользователей с Premium (VIP)</span>
+                            </label>
+                            <button onclick="createExclusiveCommentWindowAdmin()" class="w-full py-2.5 rounded-xl bg-amber-500 text-black text-xs font-extrabold">✨ Создать окно сообщений</button>
+                            <div class="space-y-1.5 pt-2">
+                                ${state.commentThemes.map(ct => `
+                                    <div class="flex justify-between items-center p-2 rounded-lg bg-space-900 text-xs">
+                                        <span>${ct.name}</span>
+                                        ${ct.id !== 'ct-default' ? `<button onclick="deleteExclusiveCommentWindowAdmin('${ct.id}')" class="text-red-400 font-bold">Удалить ✕</button>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Настройка автоответчика и закрепленной инструкции поддержки -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-emerald-400/40">
+                            <h2 class="text-sm font-extrabold text-emerald-300">🤖 Автоответчик Поддержки (24ч) и Закрепленная Инструкция</h2>
+                            <label class="flex items-center space-x-2 text-xs text-white">
+                                <input id="sup-auto-enabled" type="checkbox" ${state.supportSettings.autoReplyEnabled ? 'checked' : ''}>
+                                <span>Включить мгновенный авто-ответ при обращении</span>
+                            </label>
+                            <textarea id="sup-pinned-text" rows="3" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">${state.supportSettings.pinnedInstruction}</textarea>
+                            <textarea id="sup-auto-template" rows="3" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">${state.supportSettings.autoReplyTemplate}</textarea>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="saveSupportAutoReplySettings(false)" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">Сохранить шаблон</button>
+                                <button onclick="saveSupportAutoReplySettings(true)" class="flex-1 py-2.5 rounded-xl bg-amber-500 text-black text-xs font-extrabold">📢 Разослать во все чаты</button>
+                            </div>
+                        </div>
+
+                        <!-- Ключ ElevenLabs API -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-purple/50">
+                            <h2 class="text-sm font-extrabold text-white">🎙️ Подключение платного API-ключа ElevenLabs (10 живых голосов)</h2>
+                            <input id="elevenlabs-key-input" type="password" value="${state.tts.elevenLabsApiKey}" placeholder="Вставьте xi-api-key от ElevenLabs..." class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                            <button onclick="saveElevenLabsKey()" class="w-full py-2.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Сохранить ключ ElevenLabs</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ---
+        async function initApp() {
+            const savedData = await LocalDB.load('novel_full_data_v12');
+            if (savedData) {
+                Object.assign(window.appState, savedData);
+                if (savedData.musicTracks) window.appState.music.tracks = savedData.musicTracks;
+            }
+            window.injectCustomCommentThemesCSS();
+            window.applyReaderTypography();
+            window.updateUserBadge();
+            window.router.render();
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
