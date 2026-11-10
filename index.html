@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Общая облачная база (Supabase): без неё данные видны только на одном устройстве -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -125,20 +127,11 @@
         .nav-icon-glow { filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.55)); transition: all 0.2s ease; }
         .nav-active-tab { color: #38BDF8 !important; transform: translateY(-2px); }
         .nav-active-tab .nav-icon-glow { filter: drop-shadow(0 0 10px #F59E0B); }
-
-        /* Выдвижное боковое меню глав */
-        #chapter-drawer {
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: translateX(100%);
-        }
-        #chapter-drawer.open {
-            transform: translateX(0);
-        }
     </style>
 </head>
 <body class="flex flex-col antialiased selection:bg-accent-purple selection:text-white pb-28">
 
-    <!-- Скрытые глобальные инпуты для iPhone Safari -->
+    <!-- Скрытые глобальные инпуты для 100% совместимости с iPhone Safari -->
     <input type="file" id="global-avatar-file-input" accept="image/*" class="hidden" onchange="handleAvatarFileSelected(this)">
     <input type="file" id="global-music-file-input" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg" class="hidden" onchange="handleMusicFileSelected(this)">
 
@@ -149,16 +142,7 @@
     <div id="global-bg-layer" style="background: radial-gradient(circle at top, #121936 0%, #050508 80%);"></div>
     <div id="global-bg-overlay"></div>
 
-    <!-- Боковое мини-меню для быстрого перехода к любой главе -->
-    <div id="chapter-drawer-overlay" onclick="closeChapterDrawer()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity"></div>
-    <aside id="chapter-drawer" class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-space-900 border-l border-white/10 z-50 p-5 flex flex-col shadow-2xl">
-        <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
-            <h3 class="text-sm font-extrabold text-amber-300">📖 Главы новеллы</h3>
-            <button onclick="closeChapterDrawer()" class="p-1 rounded-lg text-gray-400 hover:text-white text-lg">✕</button>
-        </div>
-        <div id="chapter-drawer-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-    </aside>
-
+    <!-- Глобальные SVG-градиенты для креативных иконок -->
     <svg width="0" height="0" class="absolute pointer-events-none">
         <defs>
             <linearGradient id="astralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -174,7 +158,7 @@
         </defs>
     </svg>
 
-    <!-- Шапка сайта -->
+    <!-- Шапка сайта с креативными SVG-значками -->
     <header class="sticky top-0 z-40 glass border-b border-white/10 px-3 sm:px-6 py-2.5">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <button onclick="router.navigate('home')" class="flex items-center space-x-2.5 text-left">
@@ -188,19 +172,23 @@
             </button>
 
             <div class="flex items-center space-x-1.5 sm:space-x-2">
+                <!-- Креативный Колокол Звездных Вестей -->
                 <button onclick="openNotifySubscribeModal()" class="p-2 rounded-full glass-card border border-amber-400/50 shadow-md" title="Notifications">
                     <svg class="w-4 h-4 nav-icon-glow" viewBox="0 0 24 24" fill="url(#royalGoldGrad)"><path d="M12 2L14.2 6.5L19 7.2L15.5 10.6L16.3 15.4L12 13.1L7.7 15.4L8.5 10.6L5 7.2L9.8 6.5L12 2ZM12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"/></svg>
                 </button>
 
+                <!-- Креативная Арфа/Нота Космической Музыки -->
                 <button onclick="openMusicPlayerModal()" class="px-2.5 py-1.5 rounded-full text-xs font-bold glass-card border border-accent-pink/50 text-accent-pink flex items-center space-x-1.5 shadow-md">
                     <svg class="w-4 h-4 nav-icon-glow" viewBox="0 0 24 24" fill="url(#astralGrad)"><path d="M12 3V13.55C11.41 13.21 10.73 13 10 13C7.79 13 6 14.79 6 17C6 19.21 7.79 21 10 21C12.21 21 14 19.21 14 17V7H18V3H12Z"/></svg>
                     <span id="header-music-status" class="text-[10px]">Звук</span>
                 </button>
 
+                <!-- Креативный Кристалл Фонов -->
                 <button onclick="openBackgroundPickerModal()" class="p-2 rounded-full glass-card border border-accent-blue/50 shadow-md" title="Themes">
                     <svg class="w-4 h-4 nav-icon-glow" viewBox="0 0 24 24" fill="url(#astralGrad)"><path d="M12 2L2 9L12 22L22 9L12 2ZM12 5.3L18.4 9.5L12 18.2L5.6 9.5L12 5.3Z"/></svg>
                 </button>
 
+                <!-- Переключатель языка RU / EN -->
                 <button onclick="appState.toggleLang()" class="px-2.5 py-1.5 rounded-full text-[11px] font-extrabold glass-card border border-amber-400/60 text-amber-300 shadow-md">
                     <span id="lang-label">RU</span>
                 </button>
@@ -220,7 +208,7 @@
         <span id="floating-chat-label" class="hidden sm:inline">Чат & Поддержка</span>
     </button>
 
-    <!-- Нижняя навигация -->
+    <!-- Нижняя навигация с креативными фэнтези-значками -->
     <nav class="fixed bottom-0 left-0 right-0 z-40 glass border-t border-white/10 px-2 py-2 flex justify-around items-center max-w-3xl mx-auto" style="padding-bottom: max(8px, var(--safe-bottom));">
         <button onclick="router.navigate('home')" id="nav-home" class="flex flex-col items-center py-1 px-2 nav-active-tab">
             <svg class="w-5 h-5 mb-0.5 nav-icon-glow" viewBox="0 0 24 24" fill="url(#astralGrad)"><path d="M12 2L3 9V21H9V15H15V21H21V9L12 2ZM12 7.5L14 10H10L12 7.5Z"/></svg>
@@ -257,6 +245,7 @@
         const SUBADMIN_EMAIL = "helper@eternity.com";
         const REAL_BIBLE_URL = "https://docs.google.com/document/u/0/d/1YTNjJYCKK5WOxFfYqkb3UriSXidOvNudN75esemEzdc/mobilebasic";
 
+        // ПОЛНЫЙ СЛОВАРЬ ПЕРЕВОДА ИНТЕРФЕЙСА (РУССКИЙ + АНГЛИЙСКИЙ)
         const I18N = {
             RU: {
                 navHome: "Главная", navChapters: "Главы", navLore: "Вселенная", navChat: "Таверна", navProfile: "Профиль", navAdmin: "Админ+",
@@ -274,8 +263,7 @@
                 chatTabReaders: "🍻 Живой Чат Читателей", chatTabSupport: "🛡️ Поддержка (24ч Авто-ответ)",
                 changeAvatarBtn: "📷 Сменить аватарку", activateVipBtn: "👑 Активировать VIP", logoutBtn: "Выйти",
                 changePassTitle: "🔑 Изменить мой пароль аккаунта", savePassBtn: "Сохранить новый пароль",
-                soundLabel: "Звук", playingLabel: "Играет",
-                prevChapter: "← Назад", nextChapter: "Следующая глава →", drawerMenu: "📜 Список глав"
+                soundLabel: "Звук", playingLabel: "Играет"
             },
             EN: {
                 navHome: "Home", navChapters: "Chapters", navLore: "Universe", navChat: "Tavern", navProfile: "Profile", navAdmin: "Admin+",
@@ -293,8 +281,7 @@
                 chatTabReaders: "🍻 Live Readers Tavern", chatTabSupport: "🛡️ Support (24h Auto-Reply)",
                 changeAvatarBtn: "📷 Change Avatar", activateVipBtn: "👑 Activate VIP", logoutBtn: "Log Out",
                 changePassTitle: "🔑 Change My Account Password", savePassBtn: "Save New Password",
-                soundLabel: "Sound", playingLabel: "Playing",
-                prevChapter: "← Prev", nextChapter: "Next Chapter →", drawerMenu: "📜 Chapters"
+                soundLabel: "Sound", playingLabel: "Playing"
             }
         };
 
@@ -446,6 +433,192 @@
             }
         };
 
+
+        // =========================================================================
+        // ОБЩАЯ ОБЛАЧНАЯ БАЗА (SUPABASE)
+        // Раньше всё сохранялось только в IndexedDB браузера автора, поэтому
+        // читатели по ссылке не видели ни новых глав, ни изменений.
+        // Заполните url и anonKey (Supabase → Project Settings → API).
+        // Пока поля пустые, сайт работает по-старому (только локально).
+        // =========================================================================
+        const CLOUD_CONFIG = {
+            url: "",       // например: "https://abcdefgh.supabase.co"
+            anonKey: "",   // ключ "anon public"
+            bucket: "media"
+        };
+
+        // Ключи, которые меняет только Автор/Саб-админ (вход через Supabase Auth)
+        const OWNER_KEYS = ['siteConfig', 'countdown', 'supportSettings', 'avatarFrames', 'commentThemes', 'musicTracks', 'stickers', 'backgrounds', 'chapters', 'characters', 'prices', 'patreonUrl'];
+        // Ключи, в которые пишут и обычные читатели (комментарии, чат, лайки и т.д.)
+        const PUBLIC_KEYS = ['comments', 'liveChatMessages', 'supportTickets', 'notificationSubscribers', 'registeredUsers', 'chapterLikes'];
+        const PREPEND_KEYS = ['comments', 'supportTickets', 'notificationSubscribers'];
+
+        const Cloud = {
+            client: null, enabled: false, loaded: false, lastSynced: {},
+            init() {
+                if (!CLOUD_CONFIG.url || !CLOUD_CONFIG.anonKey || !window.supabase) return;
+                try {
+                    this.client = window.supabase.createClient(CLOUD_CONFIG.url, CLOUD_CONFIG.anonKey);
+                    this.enabled = true;
+                } catch (e) { console.error('Supabase init error', e); }
+            },
+            async loadAll() {
+                const { data, error } = await this.client.from('site_data').select('key,value');
+                if (error) throw error;
+                const out = {};
+                (data || []).forEach(r => { out[r.key] = r.value; this.lastSynced[r.key] = JSON.stringify(r.value); });
+                this.loaded = true;
+                return out;
+            },
+            async fetchKey(key) {
+                const { data, error } = await this.client.from('site_data').select('value').eq('key', key).maybeSingle();
+                if (error) throw error;
+                return data ? data.value : null;
+            },
+            async writeKey(key, value) {
+                const { error } = await this.client.from('site_data').upsert({ key, value, updated_at: new Date().toISOString() });
+                if (error) throw error;
+                this.lastSynced[key] = JSON.stringify(value);
+            },
+            async isOwnerSession() {
+                if (!this.enabled) return false;
+                try { const { data } = await this.client.auth.getSession(); return !!(data && data.session); } catch (e) { return false; }
+            },
+            subscribe(onChange) {
+                this.client.channel('site_data_changes')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'site_data' }, async (payload) => {
+                        const key = payload.new?.key;
+                        if (!key) return;
+                        try {
+                            const value = await this.fetchKey(key); // большие главы с фото не влезают в realtime-пакет, поэтому перечитываем
+                            const json = JSON.stringify(value);
+                            if (this.lastSynced[key] === json) return;
+                            this.lastSynced[key] = json;
+                            onChange(key, value);
+                        } catch (e) { console.error(e); }
+                    })
+                    .subscribe();
+            },
+            // Фото/музыка Автора загружаются в хранилище и получают постоянную ссылку,
+            // вместо base64/blob, которые не открываются на других устройствах
+            async maybeUpload(result, file) {
+                if (!this.enabled || !result || typeof result !== 'string') return result;
+                if (result.startsWith('http')) return result;
+                if (!(await this.isOwnerSession())) return result;
+                try {
+                    const blob = await (await fetch(result)).blob();
+                    const type = blob.type || file?.type || 'application/octet-stream';
+                    const ext = (type.split('/')[1] || 'bin').replace(/[^a-z0-9]/gi, '').slice(0, 5) || 'bin';
+                    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+                    const { error } = await this.client.storage.from(CLOUD_CONFIG.bucket).upload(path, blob, { contentType: type, upsert: false });
+                    if (error) throw error;
+                    return this.client.storage.from(CLOUD_CONFIG.bucket).getPublicUrl(path).data.publicUrl;
+                } catch (e) {
+                    console.error('Upload error', e);
+                    showToast('⚠️ Файл не загрузился в облако — он будет виден только на этом устройстве', 'error');
+                    return result;
+                }
+            }
+        };
+        Cloud.init();
+
+        async function hashPassword(p) {
+            try {
+                const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('eternity::' + p));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch (e) { return 'plain::' + p; }
+        }
+
+        function cloudIdOf(x) { return (x && x.id != null) ? String(x.id) : JSON.stringify(x); }
+
+        // Слияние списков: чужие новые записи сохраняются, мои удаления/правки применяются
+        function mergeListById(remote, local, prevJson, prepend) {
+            remote = Array.isArray(remote) ? remote : [];
+            local = Array.isArray(local) ? local : [];
+            const prev = prevJson ? (JSON.parse(prevJson) || []) : [];
+            const localMap = new Map(local.map(x => [cloudIdOf(x), x]));
+            const prevMap = new Map(prev.map(x => [cloudIdOf(x), JSON.stringify(x)]));
+            const deleted = new Set([...prevMap.keys()].filter(id => !localMap.has(id)));
+            const remoteIds = new Set(remote.map(cloudIdOf));
+            const merged = remote.filter(x => !deleted.has(cloudIdOf(x))).map(x => {
+                const id = cloudIdOf(x);
+                const l = localMap.get(id);
+                if (!l) return x;
+                return prevMap.get(id) !== JSON.stringify(l) ? l : x;
+            });
+            const fresh = local.filter(x => { const id = cloudIdOf(x); return !remoteIds.has(id) && !prevMap.has(id); });
+            return prepend ? [...fresh, ...merged] : [...merged, ...fresh];
+        }
+
+        // Лайки складываются по разнице, чтобы одновременные нажатия разных читателей не терялись
+        function mergeLikes(remote, local, prevJson) {
+            const prev = prevJson ? (JSON.parse(prevJson) || {}) : {};
+            const out = JSON.parse(JSON.stringify(remote || {}));
+            Object.keys(local || {}).forEach(chId => {
+                Object.keys(local[chId] || {}).forEach(c => {
+                    const prevVal = Number((prev[chId] || {})[c]) || 0;
+                    const delta = (Number(local[chId][c]) || 0) - prevVal;
+                    out[chId] = out[chId] || {};
+                    const base = out[chId][c] != null ? Number(out[chId][c]) : prevVal;
+                    out[chId][c] = base + delta;
+                });
+            });
+            return out;
+        }
+
+        function cloudValueFor(state, key) {
+            if (key === 'prices') return state.finance.prices;
+            if (key === 'patreonUrl') return state.finance.payoutDetails.patreonUrl || 'https://www.patreon.com/';
+            if (key === 'musicTracks') return state.music.tracks.map(t => ({ ...t, customUrl: (t.customUrl && t.customUrl.startsWith('blob:')) ? null : t.customUrl }));
+            if (key === 'registeredUsers') return state.registeredUsers.map(u => { const c = { ...u }; delete c.password; return c; });
+            if (key === 'chapters') return state.chapters.map(ch => { const c = { ...ch }; delete c.likes; return c; });
+            if (key === 'chapterLikes') {
+                const out = {};
+                state.chapters.forEach(ch => { if (ch.likes) out[ch.id] = ch.likes; });
+                return out;
+            }
+            return state[key];
+        }
+
+        function applyCloudValue(state, key, value) {
+            if (value == null) return;
+            if (key === 'prices') { state.finance.prices = value; return; }
+            if (key === 'patreonUrl') { state.finance.payoutDetails.patreonUrl = value; return; }
+            if (key === 'musicTracks') { state.music.tracks = value; return; }
+            if (key === 'chapterLikes') {
+                state._chapterLikes = value;
+                state.chapters.forEach(ch => { if (value[ch.id]) ch.likes = { ...value[ch.id] }; });
+                return;
+            }
+            if (key === 'chapters') {
+                state.chapters = value.map(ch => ({ ...ch, likes: (state._chapterLikes && state._chapterLikes[ch.id]) ? { ...state._chapterLikes[ch.id] } : (ch.likes || { blue: 0, purple: 0, pink: 0, gold: 0 }) }));
+                return;
+            }
+            if (key === 'registeredUsers') {
+                const localPw = new Map((state.registeredUsers || []).map(u => [u.id, u.password]));
+                state.registeredUsers = value.map(u => localPw.get(u.id) ? { ...u, password: localPw.get(u.id) } : u);
+                return;
+            }
+            state[key] = value;
+        }
+
+        // Перерисовка после изменений от других пользователей — не мешаем, если человек что-то печатает
+        function safeRerenderAfterRemote() {
+            const st = window.appState;
+            const ae = document.activeElement;
+            const typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable);
+            if (st.currentView === 'admin' || typing || st.tts.isPlaying || document.querySelector('#modal-container > *')) {
+                st._pendingRerender = true;
+                return;
+            }
+            st._pendingRerender = false;
+            const y = window.scrollY;
+            window.router.render();
+            window.scrollTo(0, y);
+        }
+        document.addEventListener('focusout', () => setTimeout(() => { if (window.appState?._pendingRerender) safeRerenderAfterRemote(); }, 400));
+
+        // НАДЕЖНАЯ ОБРАБОТКА ИЗОБРАЖЕНИЙ НА IPHONE (включая HEIC / Safari fallback)
         window.processImageFile = function(file, maxW = 900) {
             return new Promise((resolve) => {
                 if (!file) return resolve(null);
@@ -477,9 +650,11 @@
             });
         };
 
+        // МГНОВЕННАЯ ОБРАБОТКА МУЗЫКИ НА IPHONE (без переполнения памяти)
         window.processAudioFile = function(file) {
             return new Promise((resolve) => {
                 if (!file) return resolve(null);
+                // Для больших MP3/WAV (> 4 МБ) создаем мгновенный Blob URL, чтобы Safari на iPhone не сбрасывал загрузку
                 if (file.size > 4 * 1024 * 1024) {
                     try { return resolve(URL.createObjectURL(file)); } catch (e) {}
                 }
@@ -491,6 +666,13 @@
                 reader.readAsDataURL(file);
             });
         };
+
+        // Загрузка фото/музыки Автора в облако (если подключено)
+        (function () {
+            const origImg = window.processImageFile, origAudio = window.processAudioFile;
+            window.processImageFile = async (file, maxW) => Cloud.maybeUpload(await origImg(file, maxW), file);
+            window.processAudioFile = async (file) => Cloud.maybeUpload(await origAudio(file), file);
+        })();
 
         const FONT_COLORS = [
             { id: 'c-white', name: 'Белый', hex: '#FFFFFF' },
@@ -599,12 +781,14 @@
                     sbpPhone: "+7 (999) 000-00-00 (СБП)",
                     unionPayCard: "6230 •••• •••• 5544 (UnionPay)",
                     paypalEmail: "arien.mahash.9@gmail.com",
-                    boostyUrl: "https://boosty.to/guardian_angel_15"
+                    boostyUrl: "https://boosty.to/guardian_angel_15",
+                    patreonUrl: "https://www.patreon.com/"
                 },
                 transactions: [
                     { id: "tx-1", user: "StarReader_VIP", method: "Карта МИР / СБП", amount: "+299 ₽ ($3.99)", date: "07.11.2026" }
                 ]
             },
+            // РОВНО 8 УНИКАЛЬНЫХ ЖИВЫХ ГОЛОСОВ (ВКЛЮЧАЯ БАРХАТНЫЙ СЕКСУАЛЬНЫЙ ГОЛОС АНДЖЕЛИНЫ ДЖОЛИ НА РУССКОМ!)
             tts: {
                 isPlaying: false,
                 selectedProfileId: 'ru_f_angelina',
@@ -641,27 +825,27 @@
                     {
                         badge: "Раздел I • Космология, Время и 5 Божественных Измерений",
                         heading: "Макрокосм (18 001 Мир) и Календарь Свободных Людей",
-                        content: "• Эпоха: ~598 115 год до н.э. (1015 год — рождение принца Расса Ди Ариэна; 1020 год — Великий Банкет; 1030 год — после 10-летнего таймскипа). Год состоит из 372 дней (4 сезона по 3 цикла ровно по 31 дню).\n• В начале времен Единый Бог-Творец создал 18 001 мир. Над мирами смертных возвышаются 5 Божественных Измерений:\n1) Измерение Рая: 108 высокоуровневых ангелов, 37 Высших ангелов и 5 Архангелов — Микаил, Азраил, Гавриил, Уриэль, Рафаэль.\n2) Измерение Ада (Геенна, 9 кругов): 72 Короля Ада и 7 Первородных Грехов.\n3) Измерение Зверей и Существ: 13 Первородных Родов.\n4) Измерение Легенд и 5) Изначальное Божественное Измерение Единого Бога-Творца."
+                        content: "• Эпоха: ~598 115 год до н.э. (1015 год — рождение принца Расса Ди Ариэна; 1020 год — Великий Банкет; 1030 год — после 10-летнего таймскипа). Год состоит из 372 дней (4 сезона по 3 цикла ровно по 31 дню).\n• В начале времен Единый Бог-Творец создал 18 001 мир. Над мирами смертных возвышаются 5 Божественных Измерений:\n1) Измерение Рая: 108 высокоуровневых ангелов, 37 Высших ангелов и 5 Архангелов — Микаил («Таинственные аметистовые письмена»), Азраил («Безукоризненные черные письмена», нарек принца именем Расса Ди Ариэн), Гавриил (жизнь и сотворение), Уриэль (справедливость), Рафаэль (исцеление и любовь).\n2) Измерение Ада (Геенна, 9 кругов): 72 Короля Ада и 7 Первородных Грехов — Люцифер (Гордыня), Сатана (Гнев), Бельфегор (Лень), Асмодей (Похоть), Лилит (Зависть, свергла Афараса, разделившегося на Агареса и Зехно), Маммон (Алчность), Вельзевул (Чревоугодие). Некоронованные монархи: Абаддон и Азазель. Стражи Ада: теневой змей Деха и первый гибрид Левиафан.\n3) Измерение Зверей и Существ: 13 Первородных Родов (10 Первородных Драконов, включая 3-го Бахамута; Фениксы, Птицы Рух, Феи-духи, Тигры, Девятихвостые Лисы, Кирины, Киты, Львы, Олени, Волки, Эмидрасы, Морские Драконы) и Проклятый змеиный клан Дракна.\n4) Измерение Легенд и 5) Изначальное Божественное Измерение Единого Бога-Творца (более 3 000 серафимов)."
                     },
                     {
                         badge: "Раздел II • Система Сил (27 Уровней), Особые Глаза и 515 Артефактов",
                         heading: "Путь Пробужденных, Глаза Начала и Артефакты Энпатуара",
-                        content: "• 27 Уровней Пробужденных (по 9 ступеней): Смертные (1–13) и Божественные (14–27).\n• Особые Глаза Начала: Божественного, Демонического и Звериного Начала. Во всем мироздании существует 8 обладателей Дара «Письмен», включая принца Ариэна («Небесные Письмена» — 100% совместимость с любой энергией).\n• 515 Номерных Артефактов Бога Кузнецов Энпатуара: №201 «Клинок Синей Луны» (двуручный меч Ариэна с 99% энергопроводимости)."
+                        content: "• 27 Уровней Пробужденных (по 9 ступеней): Смертные (1–13): 1. Уровень Начал → 2. Уровень Основы → 3. Воин → 4. Истинный Воин → 5. Высший Воин → 6. Лорд → 7. Высший Лорд → 8. Король → 9. Верховный Король → 10. Император (телепатия) → 11. Верховный Император → 12. Монарх → 13. Верховный Монарх. Божественные (14–27): 14. Полубог → 15. Бог → 16. Истинный Бог → 17. Воинственный Бог → 18. Божественный Лорд → 19. Божественный Король → 20. Божественный Верховный Король → 21. Божественный Император → 22. Божественный Верховный Император → 23. Божественный Монарх → 24. Верховный Божественный Монарх → 25–26. [Скрытые] → 27. Вечный Бог.\n• Особые Глаза Начала: Божественного, Демонического и Звериного Начала. Во всем мироздании существует 8 обладателей Дара «Письмен», включая Императрицу Журен («Святые Белые Письмена») и принца Ариэна («Небесные Письмена» — 100% совместимость с любой энергией).\n• 515 Номерных Артефактов Бога Кузнецов Энпатуара: №91 «Кольцо Первого Монарха», №138 «Кольцо Скрытого Нефрита» (у Ариэна), №201 «Клинок Синей Луны» (двуручный меч Ариэна с 99% энергопроводимости), №218 (у Велкадии), №277 (пистолеты Сэта)."
                     },
                     {
                         badge: "Раздел III • Геополитика и 8 Великих Империй",
                         heading: "Рейтинг 8 Империй Людей (24 Вассальных Королевства) и 9 Кланов Зверей",
-                        content: "1 место — Великая Фиолетовая Империя Молнии;\n2 место — Великая Империя Черной Тени;\n3 место — Великая Святая Белая Империя (Императрица Расса Ди Журен и принц Расса Ди Ариэн);\n4 место — Великая Империя Изумрудного Ветра;\n5 место — Великая Кроваво-Красная Империя (Император Кастос, принцесса Кармила)."
+                        content: "1 место — Великая Фиолетовая Империя Молнии (Тройственный Альянс): Император Рису Л. Агарес (Верховный Король 9 ст.), Наследная принцесса Рису Л. Астер (Глаза Божественного Начала — дар «Альтернативный путь монарха», до 10 живых клонов с 90% силы).\n2 место — Великая Империя Черной Тени (Тройственный Альянс): Император Аксенус Н. Маркус, 1-й Столп Аксенус Н. Тиара (дар Глаз «Последний Читатель»), принцесса Виксена.\n3 место — Великая Святая Белая Империя (Тройственный Альянс): Императрица Расса Ди Журен и принц Расса Ди Ариэн. Единственная империя с 11 этапами Великого Искусства, 30 Столпами и монополией на исцеление и святые белые слитки.\n4 место — Великая Империя Изумрудного Ветра: Император Нотус Дж. Джеронимо, принцесса Аниз, 2-й Столп Вайанару.\n5 место — Великая Кроваво-Красная Империя (Главный скрытый враг): 4-й Император Грена В. Кастос (Глаза Демонического Начала), принцесса Грена В. Кармила (дар «Сторонний Наблюдатель»).\n6 место — Империя Бронзового Пламени; 7 место — Империя Лазурных Морей; 8 место — Империя Желтой Земли."
                     },
                     {
                         badge: "Раздел IV • Святая Белая Империя: Правящая Династия и 30 Столпов",
                         heading: "Императрица Журен, Наследный Принц Ариэн и 30 Столпов Света",
-                        content: "• Императрица Расса Ди Журен: Верховная Королева пика 8-й ступени.\n• Наследный Принц Расса Ди Ариэн: Король 7-й ступени, резерв энергии в 37–38 раз выше нормы.\n• 30 Столпов Империи: 18 Королей Белого Света, 10 Святых Белых Дев-Хранительниц и 2 Предводительницы."
+                        content: "• Императрица Расса Ди Журен (533 года после таймскипа, Верховная Королева пика 8-й ступени): единственная освоила все 11 этапов Святого Белого Искусства.\n• Наследный Принц Расса Ди Ариэн (род. 15 августа 1015 г.; после таймскипа 15 лет, рост 188 см, Пробужденный Король 7-й ступени, резерв энергии в 37–38 раз выше нормы): пробудил Глаза Божественного Начала («Небесные Письмена») и 7 собственных техник.\n• 30 Столпов Империи: 18 Королей Белого Света (Азиль, Баан, Джин, Сэт, Гаррисон, Димария, Зара, Велкадия, Мишель, Одетта, Гримсон, Ясмин, Ирбис, Хорин, Скарлетт, Тина, Син, Дикрион), 10 Святых Белых Дев-Хранительниц и 2 Предводительницы Святых Дев (Госпожа Геката и Госпожа Грис)."
                     },
                     {
                         badge: "Раздел V • Древние Легенды и 8-е Плавание Синдбада",
                         heading: "Энмесоргеус, Давид, Печать Соломона и Падшие Черные Короли",
-                        content: "• Первый Монарх Энмесоргеус: владел Кольцом №91.\n• Царь Давид и Царь Соломон: Соломон подчинил 72 Королей Ада.\n• 8-е плавание Синдбада: сломал печать Соломона по приказу царя Ровоама."
+                        content: "• Первый Монарх Энмесоргеус: пробудил дары «Абсолютный Монарх» и «Бессмертный путь монарха», владелец Кольца №91.\n• Царь Давид и Царь Соломон (дары «Сотворение звезд» и «Железная печать мира»): Соломон подчинил 72 Королей Ада и запечатал их внутри собственного тела, ставшего Золотым Звездным Сосудом.\n• Царь Ровоам и Синдбад (дар «Все дороги открыты»): в ходе тайного 8-го плавания Синдбад достал Золотой Сосуд и по приказу Ровоама сломал печать Соломона, выпустив 72 Королей Ада."
                     }
                 ]
             },
@@ -687,7 +871,7 @@
                 {
                     id: "char-zari", category: "characters", name: "Зари Диазура (Секретная Спойлер-Папка)",
                     folder: "🔒 Спец-папка Спойлеров • Арфангелы", isPaidSpoilerFolder: true, folderPriceRub: 249, folderPriceUsd: 2.99,
-                    bioRu: "Эксклюзивное досье и закрытые концепт-арты одного из легендарных Арфангелов.",
+                    bioRu: "Эксклюзивное досье и закрытые концепт-арты одного из легендарных Арфангелов. Папка открывается только при отдельной оплате.",
                     avatar: DEFAULT_CREST_SVG, gallery: [{ id: "art-zari-1", url: DEFAULT_CREST_SVG }]
                 }
             ],
@@ -716,7 +900,13 @@
                 { id: "com-1", chapterId: "ch-1", user: "StarReader_VIP", role: "premium", avatar: DEFAULT_CREST_SVG, frameClass: "frame-gold", themeClass: "comm-theme-gold", text: "Невероятная атмосфера космоса и потрясающая вселенная! 🔥❤️", date: "19:30", timestamp: Date.now() }
             ],
 
-            async saveAllData() {
+            saveAllData() {
+                // Очередь: сохранения идут по одному, без гонок
+                this._saveChain = (this._saveChain || Promise.resolve()).then(() => this._doSaveAll()).catch(e => console.error(e));
+                return this._saveChain;
+            },
+
+            async _doSaveAll() {
                 const payload = {
                     siteConfig: this.siteConfig, countdown: this.countdown, supportSettings: this.supportSettings,
                     notificationSubscribers: this.notificationSubscribers, liveChatMessages: this.liveChatMessages,
@@ -726,7 +916,49 @@
                     backgrounds: this.backgrounds, chapters: this.chapters, characters: this.characters,
                     comments: this.comments, readerSettings: this.readerSettings
                 };
-                await LocalDB.save('novel_full_data_v15', payload);
+                await LocalDB.save('novel_full_data_v15', payload); // локальный кэш (работает и офлайн)
+
+                if (!Cloud.enabled) return;
+                if (!Cloud.loaded) {
+                    // Не пишем в облако, пока не получили его актуальное состояние — иначе затрём чужие данные
+                    try {
+                        const remote = await Cloud.loadAll();
+                        Object.keys(remote).forEach(k => applyCloudValue(this, k, remote[k]));
+                        if (remote.chapterLikes) applyCloudValue(this, 'chapterLikes', remote.chapterLikes);
+                    }
+                    catch (e) { showToast('⚠️ Нет связи с облачной базой — изменения сохранены только на этом устройстве', 'error'); return; }
+                }
+                // Пароли читателей уходят в облако только в виде хеша
+                for (const u of this.registeredUsers) {
+                    if (u.password && !u.passHash) { u.passHash = await hashPassword(u.password); delete u.password; }
+                }
+                const isOwner = await Cloud.isOwnerSession();
+                const keys = isOwner ? [...PUBLIC_KEYS, ...OWNER_KEYS] : PUBLIC_KEYS;
+                let failed = false;
+                for (const key of keys) {
+                    const value = cloudValueFor(this, key);
+                    if (value === undefined) continue;
+                    if (Cloud.lastSynced[key] === JSON.stringify(value)) continue;
+                    try {
+                        let toWrite = value;
+                        if (PUBLIC_KEYS.includes(key)) {
+                            const remote = await Cloud.fetchKey(key);
+                            toWrite = key === 'chapterLikes'
+                                ? mergeLikes(remote, value, Cloud.lastSynced[key])
+                                : mergeListById(remote, value, Cloud.lastSynced[key], PREPEND_KEYS.includes(key));
+                            if (key === 'registeredUsers' && !isOwner) {
+                                const rm = new Map((remote || []).map(x => [x.id, x]));
+                                toWrite = toWrite.map(x => rm.has(x.id) ? { ...x, role: rm.get(x.id).role, premiumUntil: rm.get(x.id).premiumUntil, isBanned: rm.get(x.id).isBanned, isMuted: rm.get(x.id).isMuted } : { ...x, role: 'user', premiumUntil: null });
+                            }
+                            applyCloudValue(this, key, toWrite);
+                        }
+                        await Cloud.writeKey(key, toWrite);
+                    } catch (e) {
+                        console.error('Cloud save error', key, e);
+                        failed = true;
+                    }
+                }
+                if (failed) showToast('⚠️ Часть данных не сохранилась в облаке. Проверьте вход Автора и интернет.', 'error');
             },
 
             saveSession(userObj) {
@@ -734,7 +966,8 @@
                 if (userObj.role === 'guest' && !userObj.isOwnerAuthenticated) {
                     localStorage.removeItem('eternity_secure_session_v15');
                 } else {
-                    localStorage.setItem('eternity_secure_session_v15', JSON.stringify(userObj));
+                    const safeCopy = { ...userObj }; delete safeCopy.password;
+                    localStorage.setItem('eternity_secure_session_v15', JSON.stringify(safeCopy));
                 }
                 updateUserBadge();
             },
@@ -742,6 +975,7 @@
             toggleLang() {
                 this.lang = this.lang === 'RU' ? 'EN' : 'RU';
                 document.getElementById('lang-label').innerText = this.lang;
+                // При переключении на EN автоматически активируем английский бархатный голос, а на RU — русский голос Анджелины
                 if (this.lang === 'EN' && this.tts.selectedProfileId.startsWith('ru_')) {
                     this.tts.selectedProfileId = 'en_f_1';
                 } else if (this.lang === 'RU' && this.tts.selectedProfileId.startsWith('en_')) {
@@ -750,76 +984,6 @@
                 updateStaticLangLabels();
                 showToast(this.lang === 'EN' ? "🌐 Interface & Novel Language: ENGLISH (EN)" : "🌐 Язык сайта и глав: РУССКИЙ (RU)");
                 router.render();
-            }
-        };
-
-        // --- ЭКСПОРТ ГОТОВОГО ФАЙЛА САЙТА ДЛЯ ПУБЛИКАЦИИ ПО ССЫЛКЕ ---
-        window.downloadUpdatedHtmlFile = function() {
-            // Клонируем текущий HTML и вшиваем состояние в начальные переменные
-            let htmlContent = document.documentElement.outerHTML;
-            const stateExport = {
-                siteConfig: window.appState.siteConfig,
-                chapters: window.appState.chapters,
-                characters: window.appState.characters,
-                stickers: window.appState.stickers,
-                backgrounds: window.appState.backgrounds,
-                musicTracks: window.appState.music.tracks,
-                finance: window.appState.finance
-            };
-            
-            // Внедряем предзагруженный блок данных в самое начало скрипта
-            const injection = `\n        /* PRELOADED_STATE_START */\n        const PRELOADED_EXPORT_STATE = ${JSON.stringify(stateExport)};\n        /* PRELOADED_STATE_END */\n`;
-            if (htmlContent.includes('/* PRELOADED_STATE_START */')) {
-                htmlContent = htmlContent.replace(/\/\* PRELOADED_STATE_START \*\/[\s\S]*?\/\* PRELOADED_STATE_END \*\//, `/* PRELOADED_STATE_START */\n        const PRELOADED_EXPORT_STATE = ${JSON.stringify(stateExport)};\n        /* PRELOADED_STATE_END */`);
-            } else {
-                htmlContent = htmlContent.replace('const ADMIN_USERNAME =', `${injection}        const ADMIN_USERNAME =`);
-            }
-
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'index.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            showToast("✅ Файл 'index.html' сохранен! Замените его на хостинге/ссылке.");
-        };
-
-        // --- УПРАВЛЕНИЕ МИНИ-МЕНЮ (DRAWER) ГЛАВ ---
-        window.openChapterDrawer = function() {
-            const drawer = document.getElementById('chapter-drawer');
-            const overlay = document.getElementById('chapter-drawer-overlay');
-            const list = document.getElementById('chapter-drawer-list');
-            const state = window.appState;
-            const isEn = state.lang === 'EN';
-
-            if (list) {
-                list.innerHTML = state.chapters.map((ch, idx) => `
-                    <div onclick="router.navigate('reader', '${ch.id}'); closeChapterDrawer();" class="p-3 rounded-xl glass-card border ${state.activeChapterId === ch.id ? 'border-amber-400 bg-amber-500/15 text-amber-300' : 'border-white/10 text-white'} flex items-center justify-between cursor-pointer">
-                        <span class="text-xs font-bold truncate pr-2">${idx + 1}. ${isEn ? (ch.titleEn || ch.titleRu) : ch.titleRu}</span>
-                        ${state.activeChapterId === ch.id ? '<span class="text-[10px] text-amber-300 font-extrabold shrink-0">Сейчас</span>' : ''}
-                    </div>
-                `).join('');
-            }
-
-            if (overlay) overlay.classList.remove('hidden');
-            if (drawer) drawer.classList.add('open');
-        };
-
-        window.closeChapterDrawer = function() {
-            const drawer = document.getElementById('chapter-drawer');
-            const overlay = document.getElementById('chapter-drawer-overlay');
-            if (drawer) drawer.classList.remove('open');
-            if (overlay) overlay.classList.add('hidden');
-        };
-
-        window.navigateToSiblingChapter = function(direction) {
-            const state = window.appState;
-            const currIdx = state.chapters.findIndex(c => c.id === state.activeChapterId);
-            if (currIdx === -1) return;
-            const targetIdx = currIdx + direction;
-            if (targetIdx >= 0 && targetIdx < state.chapters.length) {
-                router.navigate('reader', state.chapters[targetIdx].id);
             }
         };
 
@@ -860,9 +1024,13 @@
             }
         };
 
+        // --- НАДЕЖНАЯ ЗАГРУЗКА АВАТАРКИ НА IPHONE (СРАБАТЫВАЕТ В 1 КЛИК) ---
         window.triggerAvatarFilePicker = function() {
             const inp = document.getElementById('global-avatar-file-input');
-            if (inp) { inp.value = ''; inp.click(); }
+            if (inp) {
+                inp.value = '';
+                inp.click();
+            }
         };
 
         window.handleAvatarFileSelected = async function(inputElem) {
@@ -870,10 +1038,11 @@
             if (!file) return;
             showToast("⏳ Обновление аватарки...");
             const compressed = await window.processImageFile(file, 480);
-            if (!compressed) return alertCustom("Не удалось прочитать фото.");
+            if (!compressed) return alertCustom("Не удалось прочитать фото. Попробуйте другой снимок.");
 
             const state = window.appState;
             state.user.avatar = compressed;
+            // Обновляем аватарку пользователя во всех его комментариях и сообщениях
             state.comments.forEach(c => { if (c.user === state.user.name) c.avatar = compressed; });
             state.liveChatMessages.forEach(m => { if (m.user === state.user.name) m.avatar = compressed; });
             const regU = state.registeredUsers.find(x => x.name.toLowerCase() === state.user.name.toLowerCase());
@@ -888,10 +1057,14 @@
             showToast("✅ Аватарка успешно изменена!");
         };
 
+        // --- НАДЕЖНАЯ ЗАГРУЗКА МУЗЫКИ НА IPHONE ---
         window.triggerMusicFilePicker = function(isFromModal = false) {
             window._musicUploadFromModal = isFromModal;
             const inp = document.getElementById('global-music-file-input');
-            if (inp) { inp.value = ''; inp.click(); }
+            if (inp) {
+                inp.value = '';
+                inp.click();
+            }
         };
 
         window.handleMusicFileSelected = async function(inputElem) {
@@ -908,8 +1081,9 @@
             const newTrack = { id: 'm-custom-' + Date.now(), name: trackName, icon: '🎧', mode: 'custom', customUrl: audioData };
             window.appState.music.tracks.unshift(newTrack);
             await window.appState.saveAllData();
+            // Сразу включаем загруженный трек, чтобы пользователь услышал результат
             window.playMusicTrack(newTrack.id);
-            showToast(`✅ Музыка «${trackName}» загружена!`);
+            showToast(`✅ Ваша музыка «${trackName}» загружена и играет!`);
             if (isFromModal) openMusicPlayerModal();
             else router.render();
         };
@@ -945,14 +1119,14 @@
             window.appState.saveAllData();
             const label = document.getElementById('font-size-val');
             if (label) label.innerText = rs.fontSize + 'px';
-            showToast(`🔠 Размер: ${rs.fontSize}px`);
+            showToast(`🔠 Размер текста: ${rs.fontSize}px`);
         };
 
         window.setReaderFontColor = function(hex, colorName) {
             window.appState.readerSettings.fontColor = hex;
             window.applyReaderTypography();
             window.appState.saveAllData();
-            showToast(`🎨 Цвет: ${colorName}`);
+            showToast(`🎨 Цвет текста: ${colorName}`);
         };
 
         window.setReadingEyeTheme = function(mode) {
@@ -960,10 +1134,11 @@
             if (mode === 'dark' && window.appState.readerSettings.fontColor === '#0F172A') window.appState.readerSettings.fontColor = '#FFFFFF';
             window.applyReaderTypography();
             window.appState.saveAllData();
-            showToast(`👁️ Режим чтения обновлен`);
+            showToast(`👁️ Режим чтения применен!`);
             router.render();
         };
 
+        // --- УПРАВЛЕНИЕ ФОНАМИ ---
         window.applyGlobalBackground = function(bgId) {
             const state = window.appState;
             const bg = state.backgrounds.find(b => b.id === bgId) || state.backgrounds[0];
@@ -988,14 +1163,14 @@
             const prev = document.getElementById(previewDomId);
             if (prev) {
                 prev.classList.remove('hidden');
-                prev.innerHTML = `<img src="${dataUrl}" class="w-full h-32 object-cover rounded-xl border-2 border-emerald-400 shadow-lg"><span class="text-[11px] text-emerald-300 font-extrabold block mt-1">✓ Картинка готова! Сохраните фон.</span>`;
+                prev.innerHTML = `<img src="${dataUrl}" class="w-full h-32 object-cover rounded-xl border-2 border-emerald-400 shadow-lg"><span class="text-[11px] text-emerald-300 font-extrabold block mt-1">✓ Картинка готова! Нажмите «Установить и сохранить фон».</span>`;
             }
-            showToast("🖼️ Картинка фона выбрана!");
+            showToast("🖼️ Картинка фона загружена!");
         };
 
         window.confirmSaveNewBackground = async function(isFromModal = false) {
             const dataUrl = window.appState.pendingBgDataUrl;
-            if (!dataUrl) return alertCustom("Сначала выберите картинку!");
+            if (!dataUrl) return alertCustom("Сначала выберите картинку из галереи!");
             const nameInput = document.getElementById(isFromModal ? 'modal-bg-name' : 'adm-bg-name');
             const premInput = document.getElementById('adm-bg-prem');
             const bgName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : `Мой Фон ${window.appState.backgrounds.length + 1}`;
@@ -1050,72 +1225,83 @@
                             `).join('')}
                         </div>
                         <div class="pt-2 border-t border-white/10 space-y-2">
-                            <span class="text-xs font-extrabold text-accent-blue block">➕ Загрузить свой фон:</span>
-                            <input id="modal-bg-name" type="text" placeholder="Название фона..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                            <span class="text-xs font-extrabold text-accent-blue block">➕ Загрузить свою картинку на фон:</span>
+                            <input id="modal-bg-name" type="text" placeholder="Название вашего фона..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                             <label class="cursor-pointer w-full py-2.5 px-3 rounded-xl bg-white/10 border border-accent-blue/50 text-white text-xs font-extrabold flex items-center justify-center">
-                                📷 1. Выбрать картинку
+                                📷 1. Выбрать картинку из галереи
                                 <input type="file" accept="image/*" onchange="previewBackgroundBeforeAdd(this, 'modal-bg-preview')" class="hidden">
                             </label>
                             <div id="modal-bg-preview" class="hidden text-center"></div>
-                            <button onclick="confirmSaveNewBackground(true)" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold shadow-lg">✅ 2. Сохранить фон</button>
+                            <button onclick="confirmSaveNewBackground(true)" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold shadow-lg">✅ 2. Установить и сохранить фон</button>
                         </div>
                     </div>
                 </div>
             `;
         };
 
+        // --- ПЛАТЕЖНАЯ СИСТЕМА ---
+        // ОПЛАТА ЧЕРЕЗ PATREON: читатель платит на Patreon, Автор выдаёт VIP в админке
         window.openPaymentModal = function() {
             const p = window.appState.finance.prices;
             const d = window.appState.finance.payoutDetails;
+            const u = window.appState.user;
+            const isEn = window.appState.lang === 'EN';
+            const nick = u.role === 'guest' ? (isEn ? 'your nickname on this site' : 'ваш ник на этом сайте') : sanitizeHTML(u.name);
             const modal = document.getElementById('modal-container');
             modal.innerHTML = `
-                <div class="fixed inset-0 z-50 bg-space-900/90 backdrop-blur-md flex items-center justify-center p-4">
+                <div class="fixed inset-0 z-50 bg-space-900/90 backdrop-blur-md flex items-center justify-center p-4" onclick="if (event.target === this) closeModal()">
                     <div class="glass-card p-6 rounded-2xl w-full max-w-sm space-y-4 border-2 border-amber-400 text-center max-h-[90vh] overflow-y-auto">
                         <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                            <h3 class="text-base font-extrabold text-amber-300">👑 Статус Premium (VIP)</h3>
+                            <h3 class="text-base font-extrabold text-amber-300">👑 Premium (VIP)</h3>
                             <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
                         </div>
-                        <p class="text-xs text-gray-200 leading-relaxed">Откройте все VIP-рамки, эксклюзивные окна сообщений, ранние главы и VIP-фоны на 30 дней!</p>
+                        <p class="text-xs text-gray-200 leading-relaxed">${isEn ? 'Early chapters, VIP frames, comment themes and backgrounds.' : 'Ранние главы, VIP-рамки, оформление комментариев и фоны.'}</p>
                         <div class="p-3 rounded-xl bg-space-900 border border-amber-500/40">
-                            <span class="text-base font-extrabold text-white block">${p.premiumMonthRub} ₽ / $${p.premiumMonthUsd}</span>
+                            <span class="text-base font-extrabold text-white block">$${p.premiumMonthUsd} / ${isEn ? 'month' : 'месяц'}</span>
                         </div>
-                        <div class="space-y-2 text-left">
-                            <button onclick="activatePremiumNow('Карта МИР / СБП')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-extrabold flex justify-between"><span>🇷🇺 Карта МИР / СБП</span><span>${p.premiumMonthRub} ₽ →</span></button>
-                            <button onclick="activatePremiumNow('Visa / MasterCard')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-extrabold flex justify-between"><span>💳 Visa / MasterCard</span><span>$${p.premiumMonthUsd} / ${p.premiumMonthRub} ₽ →</span></button>
-                            <button onclick="activatePremiumNow('UnionPay')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 text-white text-xs font-extrabold flex justify-between"><span>🌏 UnionPay</span><span>${p.premiumMonthRub} ₽ / $${p.premiumMonthUsd} →</span></button>
-                            <button onclick="activatePremiumNow('Boosty')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-black text-xs font-extrabold flex justify-between"><span>🚀 Boosty</span><span>${p.premiumMonthRub} ₽ →</span></button>
-                            <button onclick="activatePremiumNow('PayPal')" class="w-full p-2.5 rounded-xl bg-sky-600 text-white text-xs font-extrabold flex justify-between"><span>🅿️ PayPal</span><span>$${p.premiumMonthUsd} →</span></button>
-                        </div>
-                        <div class="text-[10px] text-gray-400 space-y-0.5 text-left bg-space-900/70 p-2.5 rounded-xl">
-                            <div>Получатель: <b>${d.cardHolder}</b></div>
-                            <div>МИР: ${d.mirCard}</div>
-                            <div>СБП: ${d.sbpPhone}</div>
-                            <div>Visa/MC: ${d.visaMastercard}</div>
+                        <a href="${d.patreonUrl || 'https://www.patreon.com/'}" target="_blank" rel="noopener" class="block w-full p-3 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 text-white text-sm font-extrabold">${isEn ? 'Subscribe on Patreon' : 'Оформить на Patreon'}</a>
+                        <p class="text-[10px] text-gray-400">Visa · MasterCard · PayPal · Apple Pay</p>
+                        <div class="text-[11px] text-gray-200 text-left bg-space-900/70 p-3 rounded-xl space-y-1 leading-relaxed">
+                            <div>1. ${isEn ? 'Subscribe on Patreon.' : 'Оформите подписку на Patreon.'}</div>
+                            <div>2. ${isEn ? 'In the Patreon message to the author, write' : 'В сообщении Автору на Patreon укажите'}: <b class="text-amber-300">${nick}</b></div>
+                            <div>3. ${isEn ? 'VIP is activated within 24 hours.' : 'VIP включится в течение 24 часов.'}</div>
                         </div>
                     </div>
                 </div>
             `;
         };
 
-        window.activatePremiumNow = async function(method) {
-            closeModal();
-            const state = window.appState;
-            const p = state.finance.prices;
-            if (state.user.role === 'guest') state.user.name = "Звездный Читатель";
-            if (state.user.role !== 'admin' && state.user.role !== 'subadmin') state.user.role = 'premium';
-            state.user.premiumUntil = new Date(Date.now() + 30 * 86400000).toLocaleDateString('ru-RU');
-            state.finance.balanceRub += Number(p.premiumMonthRub);
-            state.finance.balanceUsd = +(state.finance.balanceUsd + Number(p.premiumMonthUsd)).toFixed(2);
-            state.finance.premiumSubscribers += 1;
-            state.finance.transactions.unshift({
-                id: "tx-" + Date.now(), user: state.user.name, method: `Premium VIP (${method})`,
-                amount: `+${p.premiumMonthRub} ₽ ($${p.premiumMonthUsd})`, date: new Date().toLocaleDateString('ru-RU')
-            });
-            state.saveSession(state.user);
-            await state.saveAllData();
-            showToast("👑 Статус Premium мгновенно активирован!");
+        // Выдать VIP может только Автор или Саб-админ
+        window.grantPremiumAdmin = async function(userId, days = 30) {
+            const st = window.appState;
+            if (!((st.user.role === 'admin' || st.user.role === 'subadmin') && st.user.isOwnerAuthenticated)) return;
+            const u = st.registeredUsers.find(x => x.id === userId);
+            if (!u || u.role === 'admin' || u.role === 'subadmin') return;
+            if (u.role === 'premium') { u.role = 'user'; u.premiumUntil = null; }
+            else { u.role = 'premium'; u.premiumUntil = new Date(Date.now() + days * 86400000).toLocaleDateString('ru-RU'); }
+            await st.saveAllData();
             router.render();
+            showToast(u.role === 'premium' ? `👑 VIP выдан: ${u.name} (до ${u.premiumUntil})` : `VIP снят: ${u.name}`);
         };
+
+        // При входе/обновлении роль читателя берётся из списка аккаунтов (там её меняет только Автор)
+        window.syncMyRoleFromRegistry = function() {
+            const st = window.appState, u = st.user;
+            if (!u || u.role === 'guest' || u.role === 'admin' || u.role === 'subadmin') return;
+            const r = st.registeredUsers.find(x => x.name.toLowerCase() === u.name.toLowerCase());
+            if (!r) return;
+            let role = r.role === 'premium' ? 'premium' : 'user';
+            if (role === 'premium' && r.premiumUntil) {
+                const [dd, mm, yy] = String(r.premiumUntil).split('.').map(Number);
+                if (yy && new Date(yy, mm - 1, dd, 23, 59) < new Date()) role = 'user';
+            }
+            if (u.role !== role || u.premiumUntil !== r.premiumUntil) {
+                u.role = role; u.premiumUntil = r.premiumUntil;
+                st.saveSession(u);
+            }
+        };
+
+        window.activatePremiumNow = function() { window.openPaymentModal(); };
 
         setInterval(() => {
             if (window.appState.currentView !== 'home' || !window.appState.countdown.enabled) return;
@@ -1151,7 +1337,7 @@
                             <option value="Instagram">📸 Instagram (@username)</option>
                             <option value="Email">✉️ Email</option>
                         </select>
-                        <input type="text" id="notify-contact" placeholder="Укажите ваш никнейм или Email..." class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                        <input type="text" id="notify-contact" placeholder="Укажите ваш @никнейм или Email..." class="w-full glass-card p-3 rounded-xl text-xs text-white">
                         <button onclick="submitNotificationSubscription()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-accent-pink text-black text-xs font-extrabold">🔔 Включить уведомления</button>
                     </div>
                 </div>
@@ -1161,7 +1347,7 @@
         window.submitNotificationSubscription = async function() {
             const channel = document.getElementById('notify-channel')?.value || 'Telegram';
             const contact = document.getElementById('notify-contact')?.value.trim();
-            if (!contact) return alertCustom("Укажите контакт!");
+            if (!contact) return alertCustom("Укажите ваш контакт!");
             window.appState.notificationSubscribers.unshift({ id: "sub-" + Date.now(), user: window.appState.user.name, channel, contact: sanitizeHTML(contact), date: new Date().toLocaleDateString('ru-RU') });
             await window.appState.saveAllData();
             closeModal();
@@ -1169,14 +1355,15 @@
         };
 
         window.exportFullSiteBackup = function() {
-            const blob = new Blob([JSON.stringify(window.appState, null, 2)], { type: "application/json" });
+            const blob = new Blob([JSON.stringify(window.appState, (k, v) => (k === 'security' || k === 'password' || k === '_saveChain') ? undefined : v, 2)], { type: "application/json" });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = `Eternity_Backup_${new Date().toISOString().slice(0,10)}.json`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            showToast("💾 Бэкап сохранен!");
+            showToast("💾 Бэкап базы сайта скачан!");
         };
 
+        // --- ФОНОВАЯ МУЗЫКА И ДОБАВЛЕНИЕ ПО ССЫЛКЕ / ФАЙЛУ ---
         const wavCache = {};
         function buildAmbientWavBlobUrl(mode) {
             if (wavCache[mode]) return wavCache[mode];
@@ -1226,7 +1413,7 @@
                 player.pause();
                 state.music.isPlaying = false;
                 state.music.currentId = null;
-                showToast("⏹ Музыка остановлена");
+                showToast("⏹ Фоновая музыка остановлена");
             } else {
                 player.src = track.customUrl || buildAmbientWavBlobUrl(track.mode || 'space_theme');
                 player.volume = state.music.volume;
@@ -1237,7 +1424,7 @@
                     if (document.getElementById('modal-container').innerHTML !== '') openMusicPlayerModal();
                     if (state.currentView === 'admin') router.render();
                     showToast(`🎵 Играет: ${track.name}`);
-                }).catch(() => alertCustom("Включите звук и нажмите ▶ еще раз!"));
+                }).catch(() => alertCustom("Включите звук на телефоне и нажмите ▶ еще раз!"));
                 return;
             }
             updateMusicStatusLabel();
@@ -1256,7 +1443,7 @@
             const titleEl = document.getElementById(isFromModal ? 'modal-music-title' : 'adm-music-title');
             const urlEl = document.getElementById(isFromModal ? 'modal-music-url' : 'adm-music-url');
             const url = urlEl ? urlEl.value.trim() : '';
-            if (!url) return alertCustom("Вставьте прямую ссылку на MP3!");
+            if (!url) return alertCustom("Вставьте прямую ссылку на MP3 или нажмите кнопку выбора файла с устройства!");
             const trackName = (titleEl && titleEl.value.trim()) ? titleEl.value.trim() : `Мелодия ${window.appState.music.tracks.length + 1}`;
             const newTrack = { id: 'm-custom-' + Date.now(), name: trackName, icon: '🎧', mode: 'custom', customUrl: url };
             window.appState.music.tracks.unshift(newTrack);
@@ -1317,7 +1504,7 @@
                                             <span class="text-xl shrink-0">${t.icon}</span>
                                             <div class="min-w-0">
                                                 <h4 class="text-xs font-bold text-white truncate">${t.name}</h4>
-                                                <span class="text-[10px] ${isCurrent ? 'text-emerald-300 font-extrabold' : 'text-gray-400'}">${isCurrent ? '🔊 Играет...' : 'Нажмите для запуска'}</span>
+                                                <span class="text-[10px] ${isCurrent ? 'text-emerald-300 font-extrabold' : 'text-gray-400'}">${isCurrent ? '🔊 Сейчас играет...' : 'Нажмите для запуска'}</span>
                                             </div>
                                         </div>
                                         <div class="flex items-center space-x-1.5 shrink-0">
@@ -1329,13 +1516,13 @@
                             }).join('')}
                         </div>
                         <div class="pt-3 border-t border-white/10 space-y-2">
-                            <span class="text-xs font-extrabold text-amber-300 block">➕ Загрузить аудио:</span>
-                            <input id="modal-music-title" type="text" placeholder="Название трека..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                            <span class="text-xs font-extrabold text-amber-300 block">➕ Загрузить свою музыку с iPhone / ПК:</span>
+                            <input id="modal-music-title" type="text" placeholder="Название трека (необязательно)..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
                             <button type="button" onclick="triggerMusicFilePicker(true)" class="w-full py-3 px-3 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white text-xs font-extrabold flex items-center justify-center shadow-lg">
-                                🎼 Выбрать аудиофайл из «Файлов»
+                                🎼 Выбрать аудиофайл (MP3 / WAV / M4A) из «Файлов»
                             </button>
                             <div class="flex gap-1.5 pt-1">
-                                <input id="modal-music-url" type="url" placeholder="Или прямая ссылка на MP3..." class="flex-1 glass-card p-2 rounded-xl text-xs text-white">
+                                <input id="modal-music-url" type="url" placeholder="Или вставьте прямую ссылку на MP3..." class="flex-1 glass-card p-2 rounded-xl text-xs text-white">
                                 <button type="button" onclick="addMusicByDirectUrl(true)" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">+ URL</button>
                             </div>
                         </div>
@@ -1344,6 +1531,9 @@
             `;
         };
 
+        // =========================================================================
+        // 8 ЖИВЫХ И РАЗНЫХ ГОЛОСОВ (ТЕМБР АНДЖЕЛИНЫ ДЖОЛИ + WEBAUDIO DSP FORMANTS)
+        // =========================================================================
         let cachedVoices = [];
         function refreshVoices() {
             if ('speechSynthesis' in window) cachedVoices = window.speechSynthesis.getVoices();
@@ -1378,6 +1568,7 @@
             const state = window.appState;
             const vp = document.getElementById('voice-tts-player');
 
+            // 1. УРОВЕНЬ 1: Прямой нейронный поток ElevenLabs (если введен ваш ключ) — бархатный голос с индивидуальными настройками тембра
             if (state.tts.elevenLabsApiKey && state.tts.elevenLabsApiKey.trim().length > 10) {
                 try {
                     const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${profile.elevenVoiceId}`, {
@@ -1411,8 +1602,9 @@
                 } catch(e) {}
             }
 
+            // 2. УРОВЕНЬ 2: Многоголосый выразительный интонационный синтезатор с глубокой модуляцией тембра (Анджелина контральто / Сопрано / Баритон / Императорский бас)
             if (!('speechSynthesis' in window)) {
-                alertCustom("Озвучка не поддерживается браузером.");
+                alertCustom("Ваш браузер не поддерживает озвучку.");
                 if (onComplete) onComplete();
                 return;
             }
@@ -1420,6 +1612,7 @@
             window.speechSynthesis.cancel();
             window.speechSynthesis.resume();
 
+            // Художественное разбиение на смысловые фразы с живым дыханием
             const rawParts = fullText.match(/[^.!?…;—]+[.!?…;—]*/g) || [fullText];
             const phrases = rawParts.map(s => s.trim()).filter(Boolean);
             let sIdx = 0;
@@ -1438,10 +1631,12 @@
                 let p = profile.pitch;
                 let r = profile.rate;
 
+                // Выразительная актерская интонация
                 if (phrase.endsWith('?')) { p += 0.14; r += 0.02; }
                 else if (phrase.endsWith('!')) { p += 0.09; r += 0.05; }
                 else if (phrase.includes('…') || phrase.includes('...')) { p -= 0.07; r -= 0.06; }
 
+                // Микро-модуляция между фразами для живого человеческого эффекта
                 const breathWave = ((sIdx % 3) - 1) * 0.03;
                 utter.pitch = Math.max(0.45, Math.min(1.65, p + breathWave));
                 utter.rate = Math.max(0.68, Math.min(1.3, r));
@@ -1467,7 +1662,7 @@
             window.stopChapterVoice();
             state.tts.isPlaying = true;
             const sampleBtn = document.getElementById('tts-sample-btn');
-            if (sampleBtn) sampleBtn.innerText = '🔊 Проигрывание...';
+            if (sampleBtn) sampleBtn.innerText = '🔊 Звучит голос...';
 
             speakExpressiveText(profile.sampleText, profile, () => {
                 state.tts.isPlaying = false;
@@ -1478,7 +1673,7 @@
         window.selectVoiceProfile = function(profileId) {
             window.appState.tts.selectedProfileId = profileId;
             const p = window.appState.tts.profiles.find(x => x.id === profileId);
-            showToast(`🎙️ Голос: ${p ? p.name.split('(')[0] : ''}`);
+            showToast(`🎙️ Выбран голос: ${p ? p.name.split('(')[0] : ''}`);
             if (window.appState.tts.isPlaying) {
                 window.stopChapterVoice();
                 window.startChapterVoice();
@@ -1514,7 +1709,7 @@
                 vp.src = ch.audioUrl;
                 vp.play().catch(()=>{});
                 vp.onended = () => window.stopChapterVoice();
-                showToast("🎧 Играет MP3 главы!");
+                showToast("🎧 Играет студийная MP3-озвучка главы!");
                 return;
             }
 
@@ -1528,7 +1723,7 @@
                 }
             });
 
-            if (speakableItems.length === 0) return alertCustom("Нет текста для озвучки.");
+            if (speakableItems.length === 0) return alertCustom("В главе нет текста для озвучки.");
 
             window.stopChapterVoice();
             state.tts.isPlaying = true;
@@ -1562,9 +1757,10 @@
             const key = document.getElementById('elevenlabs-key-input')?.value.trim() || '';
             window.appState.tts.elevenLabsApiKey = key;
             localStorage.setItem('elevenlabs_api_key', key);
-            showToast("✅ Ключ ElevenLabs сохранен!");
+            showToast("✅ Платный ключ ElevenLabs сохранен! Все 8 голосов работают через нейросеть.");
         };
 
+        // --- ПЛАТНЫЕ СПОЙЛЕР-ПАПКИ ---
         window.openUnlockSpoilerModal = function(itemId, itemTitle, priceRub, priceUsd) {
             const p = window.appState.finance.payoutDetails;
             const modal = document.getElementById('modal-container');
@@ -1572,12 +1768,12 @@
                 <div class="fixed inset-0 z-50 bg-space-900/90 backdrop-blur-md flex items-center justify-center p-4">
                     <div class="glass-card p-6 rounded-2xl w-full max-w-sm space-y-3.5 border-2 border-amber-400 text-center max-h-[90vh] overflow-y-auto">
                         <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                            <h3 class="text-sm font-extrabold text-amber-300">🔒 Спойлер-папка</h3>
+                            <h3 class="text-sm font-extrabold text-amber-300">🔒 Специальный Платный Спойлер</h3>
                             <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
                         </div>
-                        <p class="text-xs text-gray-200"><b>«${itemTitle}»</b> открывается навсегда.</p>
+                        <p class="text-xs text-gray-200"><b>«${itemTitle}»</b> открывается <b>навсегда</b> после отдельной оплаты.</p>
                         <div class="p-2.5 rounded-xl bg-space-900 border border-amber-500/40">
-                            <span class="text-sm font-extrabold text-white block">${priceRub} ₽ / $${priceUsd}</span>
+                            <span class="text-sm font-extrabold text-white block">К оплате: ${priceRub} ₽ / $${priceUsd}</span>
                         </div>
                         <div class="space-y-2 text-left">
                             <button onclick="confirmUnlockSpoilerItem('${itemId}', '${itemTitle}', ${priceRub}, ${priceUsd}, 'Карта МИР / СБП')" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-extrabold flex justify-between"><span>🇷🇺 Карта МИР / СБП</span><span>${priceRub} ₽ →</span></button>
@@ -1604,7 +1800,7 @@
             });
             window.appState.saveSession(window.appState.user);
             await window.appState.saveAllData();
-            showToast(`🔥 Доступ к «${itemTitle}» открыт!`);
+            showToast(`🔥 Доступ к «${itemTitle}» открыт навсегда!`);
             router.render();
         };
 
@@ -1614,7 +1810,7 @@
             if (!ent) return;
             const isUnlockedFolder = (state.user.unlockedSpoilers || []).includes(ent.id) || state.user.role === 'admin';
             if (ent.isPaidSpoilerFolder && !isUnlockedFolder) {
-                openUnlockSpoilerModal(ent.id, `Спец-папка: ${ent.name}`, ent.folderPriceRub || 249, ent.folderPriceUsd || 2.99);
+                openUnlockSpoilerModal(ent.id, `Спец-папка Спойлеров: ${ent.name}`, ent.folderPriceRub || 249, ent.folderPriceUsd || 2.99);
                 return;
             }
             router.navigate('character_detail', entityId);
@@ -1628,7 +1824,7 @@
             const isSpoiler = document.getElementById('adm-lore-spoiler')?.checked || false;
             const priceRub = parseInt(document.getElementById('adm-lore-rub')?.value) || 249;
 
-            if (!name) return alertCustom("Укажите имя персонажа!");
+            if (!name) return alertCustom("Укажите имя персонажа или название папки!");
             let avaUrl = DEFAULT_CREST_SVG;
             if (inputElem?.files?.[0]) {
                 const processed = await window.processImageFile(inputElem.files[0], 900);
@@ -1641,7 +1837,7 @@
                 bioRu: bio, avatar: avaUrl, gallery: [{ id: 'art-' + Date.now(), url: avaUrl }]
             });
             await window.appState.saveAllData();
-            showToast(`🦸 Персонаж «${name}» добавлен!`);
+            showToast(`🦸 Карточка «${name}» мгновенно добавлена!`);
             router.render();
         };
 
@@ -1656,17 +1852,18 @@
             ent.gallery.push({ id: 'art-' + Date.now(), url: imgData });
             ent.avatar = imgData;
             await window.appState.saveAllData();
-            showToast("🖼️ Арт добавлен!");
+            showToast("🖼️ Иллюстрация добавлена!");
             router.render();
         };
 
+        // --- МОДЕРАЦИЯ ---
         window.toggleBanUser = async function(userId) {
             if (window.appState.user.role !== 'admin') return;
             const u = window.appState.registeredUsers.find(x => x.id === userId);
             if (!u) return;
             u.isBanned = !u.isBanned;
             await window.appState.saveAllData();
-            showToast(u.isBanned ? `🚫 ${u.name} забанен` : `✅ ${u.name} разбанен`);
+            showToast(u.isBanned ? `🚫 ${u.name} ЗАБАНЕН!` : `✅ ${u.name} разбанен`);
             router.render();
         };
 
@@ -1676,7 +1873,7 @@
             if (!u || u.role === 'admin') return;
             u.isMuted = !u.isMuted;
             await window.appState.saveAllData();
-            showToast(u.isMuted ? `🔇 ${u.name} в мьюте` : `🔊 Мьют снят с ${u.name}`);
+            showToast(u.isMuted ? `🔇 ${u.name} в МЬЮТЕ!` : `🔊 Мьют снят с ${u.name}`);
             router.render();
         };
 
@@ -1691,7 +1888,7 @@
                 u.isMuted = !u.isMuted;
             }
             await window.appState.saveAllData();
-            showToast(u.isMuted ? `🔇 ${userName} замучен` : `🔊 Снят мьют с ${userName}`);
+            showToast(u.isMuted ? `🔇 ${userName} поставлен в МЬЮТ!` : `🔊 Мьют снят с ${userName}!`);
             router.render();
         };
 
@@ -1702,10 +1899,37 @@
             u.role = u.role === 'subadmin' ? 'premium' : 'subadmin';
             u.premiumUntil = u.role === 'subadmin' ? 'Бессрочно (Саб-админ)' : u.premiumUntil;
             await window.appState.saveAllData();
-            showToast(u.role === 'subadmin' ? `🛡️ ${u.name} назначен Саб-админом` : `Роль снята`);
+            showToast(u.role === 'subadmin' ? `🛡️ ${u.name} назначен Саб-админом!` : `Роль Саб-админа снята`);
             router.render();
         };
 
+        window.createExclusiveCommentWindowAdmin = async function() {
+            if (window.appState.user.role !== 'admin') return;
+            const name = document.getElementById('new-comm-win-name')?.value.trim();
+            const bg1 = document.getElementById('new-comm-win-bg1')?.value || '#1E1B4B';
+            const bg2 = document.getElementById('new-comm-win-bg2')?.value || '#4C1D95';
+            const borderCol = document.getElementById('new-comm-win-border')?.value || '#F59E0B';
+            const isPrem = document.getElementById('new-comm-win-prem')?.checked ?? true;
+            if (!name) return alertCustom("Введите название окна сообщений!");
+            const cssClass = 'comm-theme-custom-' + Date.now();
+            const customStyle = `background: linear-gradient(135deg, ${bg1}E6, ${bg2}CC) !important; border: 1.5px solid ${borderCol} !important; box-shadow: 0 0 18px ${borderCol}55 !important;`;
+            window.appState.commentThemes.push({ id: cssClass, name: isPrem ? `👑 ${name} (VIP)` : name, cssClass, isPremium: isPrem, customStyle });
+            window.injectCustomCommentThemesCSS();
+            await window.appState.saveAllData();
+            showToast(`💬 Окно «${name}» создано!`);
+            router.render();
+        };
+
+        window.deleteExclusiveCommentWindowAdmin = async function(themeId) {
+            if (window.appState.user.role !== 'admin' || themeId === 'ct-default') return;
+            window.appState.commentThemes = window.appState.commentThemes.filter(t => t.id !== themeId);
+            window.injectCustomCommentThemesCSS();
+            await window.appState.saveAllData();
+            showToast("🗑️ Окно удалено!");
+            router.render();
+        };
+
+        // --- ОБЛОЖКА, ГЕРБ И ФИНАНСЫ ---
         window.previewAndApplyCoverAdmin = async function(inputElem) {
             const file = inputElem?.files?.[0];
             if (!file) return;
@@ -1713,7 +1937,7 @@
             if (!compressed) return;
             window.appState.siteConfig.bannerUrl = compressed;
             await window.appState.saveAllData();
-            showToast("✅ Новая обложка сохранена!");
+            showToast("✅ Новая обложка новеллы мгновенно установлена!");
             router.render();
         };
 
@@ -1725,7 +1949,7 @@
             window.appState.siteConfig.crestUrl = compressed;
             await window.appState.saveAllData();
             updateUserBadge();
-            showToast("✅ Новый Герб сохранен!");
+            showToast("✅ Новый Герб сайта мгновенно установлен!");
             router.render();
         };
 
@@ -1735,7 +1959,7 @@
                 window.appState.siteConfig.title = titleInput;
                 updateUserBadge();
                 await window.appState.saveAllData();
-                showToast("✅ Название обновлено!");
+                showToast("✅ Название новеллы обновлено!");
                 router.render();
             }
         };
@@ -1756,23 +1980,25 @@
             fin.payoutDetails.unionPayCard = document.getElementById('fin-unionpay')?.value.trim() || fin.payoutDetails.unionPayCard;
             fin.payoutDetails.paypalEmail = document.getElementById('fin-paypal')?.value.trim() || fin.payoutDetails.paypalEmail;
             fin.payoutDetails.boostyUrl = document.getElementById('fin-boosty')?.value.trim() || fin.payoutDetails.boostyUrl;
+            fin.payoutDetails.patreonUrl = document.getElementById('fin-patreon')?.value.trim() || fin.payoutDetails.patreonUrl;
 
             await window.appState.saveAllData();
-            showToast("💳 Реквизиты и цены сохранены!");
+            showToast("💳 Все платежные реквизиты и цены сохранены!");
             router.render();
         };
 
         window.withdrawAuthorFunds = async function() {
             const f = window.appState.finance;
-            if (f.balanceRub <= 0 && f.balanceUsd <= 0) return alertCustom("На балансе 0 ₽.");
+            if (f.balanceRub <= 0 && f.balanceUsd <= 0) return alertCustom("На балансе пока 0 ₽ / $0.");
             const sumRub = f.balanceRub, sumUsd = f.balanceUsd;
-            f.transactions.unshift({ id: "tx-" + Date.now(), user: "💸 ВЫВОД СРЕДСТВ", method: f.payoutDetails.mirCard, amount: `-${sumRub} ₽ ($${sumUsd})`, date: new Date().toLocaleDateString('ru-RU') });
+            f.transactions.unshift({ id: "tx-" + Date.now(), user: "💸 ВЫВОД СРЕДСТВ АВТОРА", method: f.payoutDetails.mirCard, amount: `-${sumRub} ₽ ($${sumUsd})`, date: new Date().toLocaleDateString('ru-RU') });
             f.balanceRub = 0; f.balanceUsd = 0;
             await window.appState.saveAllData();
-            showToast(`💸 Заявка на вывод ${sumRub} ₽ принята!`);
+            showToast(`💸 Выплата ${sumRub} ₽ ($${sumUsd}) отправлена на ваши реквизиты!`);
             router.render();
         };
 
+        // МГНОВЕННАЯ СМЕНА РАМКИ С ПЕРВОГО НАЖАТИЯ
         window.selectUserFrame = async function(frameId) {
             const state = window.appState;
             const fr = state.avatarFrames.find(f => f.id === frameId);
@@ -1796,7 +2022,7 @@
             updateUserBadge();
             router.render();
             await state.saveAllData();
-            showToast(`✨ Рамка «${fr.name}» установлена!`);
+            showToast(`✨ Рамка «${fr.name}» мгновенно установлена!`);
         };
 
         window.selectUserCommentTheme = async function(cssClass, isPremium, themeName) {
@@ -1807,14 +2033,15 @@
             window.appState.saveSession(u);
             router.render();
             await window.appState.saveAllData();
-            showToast(`💬 Окно «${themeName}» применено!`);
+            showToast(`💬 Окно сообщений «${themeName}» применено!`);
         };
 
+        // --- ЧАТ И ПОДДЕРЖКА ---
         window.sendLiveChatMessage = async function() {
             const u = window.appState.user;
             if (u.role === 'guest') return alertCustom("Войдите в Профиле, чтобы писать в чат!");
             const regRecord = window.appState.registeredUsers.find(x => x.name.toLowerCase() === u.name.toLowerCase());
-            if (u.isBanned || u.isMuted || (regRecord && regRecord.isMuted)) return alertCustom("🔇 Вы в мьюте.");
+            if (u.isBanned || u.isMuted || (regRecord && regRecord.isMuted)) return alertCustom("🔇 Вы находитесь в мьюте.");
 
             const input = document.getElementById('live-chat-input');
             const text = input ? sanitizeHTML(input.value.trim()) : '';
@@ -1828,13 +2055,13 @@
             input.value = '';
             router.render();
             await window.appState.saveAllData();
-            showToast("💬 Сообщение отправлено!");
+            showToast("💬 Сообщение отправлено в чат!");
         };
 
         window.sendSupportTicket = async function() {
             const input = document.getElementById('support-msg-input');
             const text = input ? sanitizeHTML(input.value.trim()) : '';
-            if (!text) return alertCustom("Опишите ваш вопрос!");
+            if (!text) return alertCustom("Опишите ваш вопрос для поддержки!");
 
             const supCfg = window.appState.supportSettings;
             window.appState.supportTickets.unshift({
@@ -1846,7 +2073,7 @@
             input.value = '';
             router.render();
             await window.appState.saveAllData();
-            showToast("🤖 Обращение отправлено!");
+            showToast("🤖 Обращение отправлено! Авто-ответ получен.");
         };
 
         window.replySupportTicketAdmin = async function(ticketId) {
@@ -1854,7 +2081,7 @@
             if (!window.canModerateSupportAndMute(u.role)) return;
             const replyInput = document.getElementById(`reply-input-${ticketId}`);
             const replyText = replyInput ? sanitizeHTML(replyInput.value.trim()) : '';
-            if (!replyText) return alertCustom("Напишите ответ!");
+            if (!replyText) return alertCustom("Напишите текст ответа!");
 
             const ticket = window.appState.supportTickets.find(t => t.id === ticketId);
             if (!ticket) return;
@@ -1864,9 +2091,30 @@
             ticket.status = "answered";
             router.render();
             await window.appState.saveAllData();
-            showToast(`✅ Ответ отправлен!`);
+            showToast(`✅ Ответ отправлен пользователю ${ticket.fromUser}!`);
         };
 
+        window.saveSupportAutoReplySettings = async function(broadcastAll = false) {
+            if (window.appState.user.role !== 'admin') return;
+            const enabled = document.getElementById('sup-auto-enabled')?.checked ?? true;
+            const pinned = document.getElementById('sup-pinned-text')?.value.trim();
+            const template = document.getElementById('sup-auto-template')?.value.trim();
+
+            if (pinned) window.appState.supportSettings.pinnedInstruction = pinned;
+            if (template) window.appState.supportSettings.autoReplyTemplate = template;
+            window.appState.supportSettings.autoReplyEnabled = enabled;
+
+            if (broadcastAll) {
+                window.appState.supportTickets.forEach(t => { t.autoReply = window.appState.supportSettings.autoReplyTemplate; });
+                showToast("📢 Инструкция разослана во все чаты поддержки!");
+            } else {
+                showToast("✅ Настройки автоответчика сохранены!");
+            }
+            router.render();
+            await window.appState.saveAllData();
+        };
+
+        // --- КОММЕНТАРИИ И МГНОВЕННЫЙ СЧЕТЧИК ПЛАМЕНИ ---
         window.insertEmojiToComment = function(emoji) {
             const input = document.getElementById('comment-input');
             if (!input) return;
@@ -1882,7 +2130,7 @@
                 box.classList.remove('hidden');
                 box.innerHTML = `<div class="inline-flex items-center space-x-2 bg-space-900 p-2 rounded-2xl border border-amber-400"><img src="${stickerUrl}" class="w-14 h-14 object-contain rounded-xl"><span class="text-xs font-bold text-amber-300">Стикер: ${stickerName}</span><button onclick="clearCommentDraftMedia()" class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">✕</button></div>`;
             }
-            showToast(`✨ Стикер выбран!`);
+            showToast(`✨ Стикер «${stickerName}» выбран!`);
         };
 
         window.selectQuickGifForComment = function(gifUrl, gifName) {
@@ -1893,7 +2141,7 @@
                 box.classList.remove('hidden');
                 box.innerHTML = `<div class="inline-flex items-center space-x-2 bg-space-900 p-2 rounded-2xl border border-accent-pink"><img src="${gifUrl}" class="h-14 rounded-xl object-cover"><span class="text-xs font-bold text-accent-pink">GIF: ${gifName}</span><button onclick="clearCommentDraftMedia()" class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">✕</button></div>`;
             }
-            showToast(`🎬 GIF прикреплена!`);
+            showToast(`🎬 GIF «${gifName}» прикреплена!`);
         };
 
         window.attachCommentMediaFile = async function(inputElem) {
@@ -1906,9 +2154,9 @@
             const box = document.getElementById('comment-media-preview');
             if (box) {
                 box.classList.remove('hidden');
-                box.innerHTML = `<div class="inline-flex items-center space-x-2 bg-space-900 p-2 rounded-2xl border border-accent-blue"><img src="${data}" class="h-16 rounded-xl object-cover"><span class="text-xs font-bold text-accent-blue">Фото готово</span><button onclick="clearCommentDraftMedia()" class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">✕</button></div>`;
+                box.innerHTML = `<div class="inline-flex items-center space-x-2 bg-space-900 p-2 rounded-2xl border border-accent-blue"><img src="${data}" class="h-16 rounded-xl object-cover"><span class="text-xs font-bold text-accent-blue">Фото / GIF готово</span><button onclick="clearCommentDraftMedia()" class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">✕</button></div>`;
             }
-            showToast("🖼️ Фото прикреплено!");
+            showToast("🖼️ Изображение прикреплено!");
         };
 
         window.clearCommentDraftMedia = function() {
@@ -1918,18 +2166,38 @@
             if (box) { box.classList.add('hidden'); box.innerHTML = ''; }
         };
 
+        window.uploadNewStickerAdmin = async function(inputElem) {
+            const file = inputElem?.files?.[0];
+            if (!file) return;
+            const nameEl = document.getElementById('adm-sticker-name');
+            const stName = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : `Стикер ${window.appState.stickers.length + 1}`;
+            const dataUrl = await window.processImageFile(file, 320);
+            if (!dataUrl) return;
+            window.appState.stickers.push({ id: 'st-' + Date.now(), name: stName, url: dataUrl });
+            router.render();
+            await window.appState.saveAllData();
+            showToast(`✨ Стикер «${stName}» добавлен!`);
+        };
+
+        window.deleteStickerAdmin = async function(stId) {
+            window.appState.stickers = window.appState.stickers.filter(s => s.id !== stId);
+            router.render();
+            await window.appState.saveAllData();
+            showToast("🗑️ Стикер удален");
+        };
+
         window.addComment = async function(chId) {
             const u = window.appState.user;
-            if (u.isBanned) return alertCustom("🚫 Аккаунт заблокирован!");
+            if (u.isBanned) return alertCustom("🚫 Ваш аккаунт заблокирован!");
             const regRecord = window.appState.registeredUsers.find(x => x.name.toLowerCase() === u.name.toLowerCase());
-            if (u.isMuted || (regRecord && regRecord.isMuted)) return alertCustom("🔇 Вы в мьюте!");
+            if (u.isMuted || (regRecord && regRecord.isMuted)) return alertCustom("🔇 Вы находитесь в мьюте!");
 
             const input = document.getElementById('comment-input');
             const text = input ? sanitizeHTML(input.value.trim()) : '';
             const mediaUrl = window.appState.draftCommentMedia;
             const isSticker = window.appState.draftCommentIsSticker;
 
-            if (!text && !mediaUrl) return alertCustom("Напишите комментарий!");
+            if (!text && !mediaUrl) return alertCustom("Напишите текст комментария или выберите стикер / GIF!");
 
             const newCom = {
                 id: "com-" + Date.now(),
@@ -1960,7 +2228,7 @@
                 router.render();
             }
 
-            showToast("✅ Комментарий опубликован!");
+            showToast("✅ Ваш комментарий мгновенно опубликован!");
             await window.appState.saveAllData();
         };
 
@@ -1990,15 +2258,18 @@
             }
 
             window.playFantasyFlameSound();
-            showToast(`🔥 +1 Пламя (${ch.likes[colorKey]})!`);
+            showToast(`🔥 +1 Магическое Пламя (${ch.likes[colorKey]})!`);
             state.saveAllData();
         };
 
+        // =========================================================================
+        // АВТОРИЗАЦИЯ И ЛИЧНЫЕ ПАРОЛИ ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ (С ВОЗМОЖНОСТЬЮ СМЕНЫ ПАРОЛЯ)
+        // =========================================================================
         window.loginUserAccount = async function() {
             const nameInput = document.getElementById('auth-name-input')?.value.trim();
             const emailInput = document.getElementById('auth-email-input')?.value.trim() || '';
             const passInput = document.getElementById('auth-pass-input')?.value.trim() || '';
-            if (!nameInput) return alertCustom("Введите никнейм!");
+            if (!nameInput) return alertCustom("Введите ваше имя или никнейм!");
 
             const state = window.appState;
             const isTryingAdmin = nameInput.toLowerCase() === ADMIN_USERNAME.toLowerCase() || emailInput.toLowerCase() === ADMIN_EMAIL.toLowerCase();
@@ -2009,33 +2280,51 @@
             let isOwnerAuth = false;
 
             if (isTryingAdmin) {
-                if (passInput !== state.security.adminPass) {
-                    return alertCustom("🔒 Неверный пароль Владельца!");
+                if (Cloud.enabled) {
+                    // Настоящая проверка пароля на сервере (пароль Автора задаётся в Supabase → Authentication)
+                    const { error } = await Cloud.client.auth.signInWithPassword({ email: ADMIN_EMAIL, password: passInput });
+                    if (error) return alertCustom("🔒 Неверный пароль Владельца сайта (Guardian_Angel_15)!");
+                } else if (passInput !== state.security.adminPass) {
+                    return alertCustom("🔒 Неверный пароль Владельца сайта (Guardian_Angel_15)!");
                 }
                 role = 'admin';
                 frameClass = 'frame-gold';
                 isOwnerAuth = true;
             } else if (isTryingSub) {
-                if (passInput !== state.security.subadminPass && passInput !== state.security.adminPass) {
-                    return alertCustom("🔒 Неверный пароль Саб-админа!");
+                if (Cloud.enabled) {
+                    const { error } = await Cloud.client.auth.signInWithPassword({ email: SUBADMIN_EMAIL, password: passInput });
+                    if (error) return alertCustom("🔒 Неверный пароль Саб-админа (SubAdmin_Helper)!");
+                } else if (passInput !== state.security.subadminPass && passInput !== state.security.adminPass) {
+                    return alertCustom("🔒 Неверный пароль Саб-админа (SubAdmin_Helper)!");
                 }
                 role = 'subadmin';
                 frameClass = 'frame-astral-ring';
                 isOwnerAuth = true;
             } else {
+                // Проверяем существующего пользователя или регистрируем нового с его личным паролем
                 let regUser = state.registeredUsers.find(x => x.name.toLowerCase() === nameInput.toLowerCase());
                 if (regUser) {
-                    if (regUser.password && passInput && regUser.password !== passInput) {
-                        return alertCustom("🔒 Неверный пароль!");
+                    // ИСПРАВЛЕНО: раньше пустой пароль пропускал в чужой аккаунт
+                    const enteredHash = await hashPassword(passInput);
+                    if (regUser.passHash) {
+                        if (regUser.passHash !== enteredHash) return alertCustom("🔒 Неверный пароль от этого аккаунта читателя!");
+                    } else if (regUser.password) {
+                        if (regUser.password !== passInput) return alertCustom("🔒 Неверный пароль от этого аккаунта читателя!");
+                        regUser.passHash = enteredHash; // переводим старый аккаунт на хеш
+                        delete regUser.password;
+                    } else {
+                        if (!passInput || passInput.length < 3) return alertCustom("Придумайте пароль (минимум 3 символа) для этого аккаунта.");
+                        regUser.passHash = enteredHash;
                     }
                     role = regUser.role || 'user';
                     frameClass = regUser.frameClass || 'frame-neon';
                 } else {
+                    if (!passInput || passInput.length < 3) return alertCustom("Придумайте пароль (минимум 3 символа), чтобы никто другой не смог войти под вашим именем.");
                     regUser = {
                         id: "u-" + Date.now(),
                         name: sanitizeHTML(nameInput),
                         email: sanitizeHTML(emailInput || 'reader@eternity.com'),
-                        password: passInput || '1234',
+                        passHash: await hashPassword(passInput),
                         role: 'user',
                         avatar: state.user.avatar || DEFAULT_CREST_SVG,
                         frameClass: 'frame-neon',
@@ -2051,7 +2340,6 @@
                 uid: "u-" + Date.now(),
                 name: sanitizeHTML(nameInput),
                 email: sanitizeHTML(emailInput || 'reader@eternity.com'),
-                password: passInput || '1234',
                 role,
                 avatar: state.user.avatar || DEFAULT_CREST_SVG,
                 frameClass,
@@ -2064,12 +2352,66 @@
             };
 
             state.saveSession(newUser);
+            window.syncMyRoleFromRegistry();
             router.render();
             await state.saveAllData();
             showToast(`✨ Добро пожаловать, ${newUser.name}!`);
         };
 
+        // ФУНКЦИЯ СМЕНЫ СОБСТВЕННОГО ПАРОЛЯ ДЛЯ ЛЮБОГО ПОЛЬЗОВАТЕЛЯ
+        window.changeMyUserPassword = async function() {
+            const newPass = document.getElementById('user-new-password-input')?.value.trim();
+            if (!newPass || newPass.length < 3) return alertCustom("Введите новый пароль (минимум 3 символа)!");
+
+            const state = window.appState;
+            const u = state.user;
+            if (u.role === 'guest') return alertCustom("Сначала войдите в профиль под своим именем!");
+
+            if (Cloud.enabled && (u.role === 'admin' || u.role === 'subadmin') && u.isOwnerAuthenticated) {
+                const { error } = await Cloud.client.auth.updateUser({ password: newPass });
+                if (error) return alertCustom("Не удалось сменить пароль: " + sanitizeHTML(error.message));
+            }
+            if (u.role === 'admin' && u.isOwnerAuthenticated) {
+                state.security.adminPass = newPass;
+                localStorage.setItem('eternity_adm_pass', newPass);
+            } else if (u.role === 'subadmin' && u.isOwnerAuthenticated) {
+                state.security.subadminPass = newPass;
+                localStorage.setItem('eternity_sub_pass', newPass);
+            }
+
+            const regU = state.registeredUsers.find(x => x.name.toLowerCase() === u.name.toLowerCase());
+            if (regU) { regU.passHash = await hashPassword(newPass); delete regU.password; }
+
+            state.saveSession(u);
+            await state.saveAllData();
+            document.getElementById('user-new-password-input').value = '';
+            showToast("🔑 Ваш личный пароль успешно изменен и сохранен!");
+        };
+
+        window.saveNewAdminPasswords = async function() {
+            if (window.appState.user.role !== 'admin') return;
+            const admP = document.getElementById('sec-adm-pass')?.value.trim();
+            const subP = document.getElementById('sec-sub-pass')?.value.trim();
+            if (Cloud.enabled) {
+                if (admP) {
+                    const { error } = await Cloud.client.auth.updateUser({ password: admP });
+                    if (error) return alertCustom("Не удалось сменить пароль: " + sanitizeHTML(error.message));
+                }
+                return showToast("🔐 Пароль Владельца обновлён. Пароль Саб-админа меняется в Supabase → Authentication → Users.");
+            }
+            if (admP) {
+                window.appState.security.adminPass = admP;
+                localStorage.setItem('eternity_adm_pass', admP);
+            }
+            if (subP) {
+                window.appState.security.subadminPass = subP;
+                localStorage.setItem('eternity_sub_pass', subP);
+            }
+            showToast("🔐 Пароли безопасности обновлены!");
+        };
+
         window.logoutUserAccount = function() {
+            if (Cloud.enabled) Cloud.client.auth.signOut().catch(() => {});
             window.appState.saveSession({
                 uid: null, name: "Гость", email: null, password: "", role: "guest",
                 avatar: DEFAULT_CREST_SVG, frameClass: "frame-none", commentTheme: "comm-theme-default",
@@ -2079,6 +2421,9 @@
             router.navigate('home');
         };
 
+        // =========================================================================
+        // КОНСТРУКТОР ГЛАВ: РАЗБИВКА НА АБЗАЦЫ, ПЕРЕМЕЩЕНИЕ ФОТО И УДАЛЕНИЕ ГЛАВ
+        // =========================================================================
         window.syncDraftChapterMeta = function() {
             const t = document.getElementById('adm-ch-title');
             const e = document.getElementById('adm-ch-early');
@@ -2095,7 +2440,7 @@
             window.appState.chapterBuilderBlocks = [...(ch.contentRu || [])];
             window.appState.draftChapterAudio = ch.audioUrl || null;
             router.render();
-            showToast(`✏️ Глава «${ch.titleRu}» открыта!`);
+            showToast(`✏️ Глава «${ch.titleRu}» открыта для редактирования!`);
         };
 
         window.clearChapterBuilder = function() {
@@ -2105,19 +2450,19 @@
             window.appState.chapterBuilderBlocks = ["Первый абзац новой главы..."];
             window.appState.draftChapterAudio = null;
             router.render();
-            showToast("📄 Форма очищена!");
+            showToast("📄 Форма очищена для новой главы!");
         };
 
         window.deleteChapterAdmin = async function(chId, e) {
             if (e) e.stopPropagation();
             if (window.appState.user.role !== 'admin') return;
-            if (window.appState.chapters.length <= 1) return alertCustom("Должна остаться хотя бы одна глава!");
+            if (window.appState.chapters.length <= 1) return alertCustom("На сайте должна остаться хотя бы одна глава!");
             const target = window.appState.chapters.find(c => c.id === chId);
             window.appState.chapters = window.appState.chapters.filter(c => c.id !== chId);
             if (window.appState.editingChapterId === chId) window.appState.editingChapterId = null;
             router.render();
             await window.appState.saveAllData();
-            showToast(`🗑️ Глава удалена!`);
+            showToast(`🗑️ Глава «${target ? target.titleRu : ''}» удалена!`);
         };
 
         window.updateBuilderParagraphText = function(idx, val) {
@@ -2126,9 +2471,9 @@
 
         window.addParagraphAfterBuilderIdx = function(idx) {
             window.syncDraftChapterMeta();
-            window.appState.chapterBuilderBlocks.splice(idx + 1, 0, "Новый абзац...");
+            window.appState.chapterBuilderBlocks.splice(idx + 1, 0, "Новый абзац текста...");
             router.render();
-            showToast("➕ Абзац добавлен!");
+            showToast("➕ Добавлен новый абзац!");
         };
 
         window.insertPhotoAfterBuilderIdx = async function(idx, inputElem) {
@@ -2139,7 +2484,7 @@
             if (!imgData) return;
             window.appState.chapterBuilderBlocks.splice(idx + 1, 0, imgData);
             router.render();
-            showToast(`📸 Фото вставлено после блока #${idx + 1}!`);
+            showToast(`📸 Фотография вставлена после блока #${idx + 1}!`);
         };
 
         window.moveBuilderBlock = function(idx, dir) {
@@ -2155,7 +2500,7 @@
 
         window.removeBuilderBlock = function(idx) {
             window.syncDraftChapterMeta();
-            if (window.appState.chapterBuilderBlocks.length <= 1) return alertCustom("Должен остаться хотя бы один блок!");
+            if (window.appState.chapterBuilderBlocks.length <= 1) return alertCustom("В главе должен остаться хотя бы один блок!");
             window.appState.chapterBuilderBlocks.splice(idx, 1);
             router.render();
         };
@@ -2164,7 +2509,7 @@
             window.syncDraftChapterMeta();
             const rawEl = document.getElementById('adm-ch-bulk-paste');
             const raw = rawEl ? rawEl.value.trim() : '';
-            if (!raw) return alertCustom("Вставьте текст!");
+            if (!raw) return alertCustom("Сначала вставьте текст главы в поле для разбивки!");
 
             let lines = raw.split(/\r?\n+/).map(l => l.trim()).filter(Boolean);
             if (lines.length === 1 && raw.length > 280) {
@@ -2175,11 +2520,14 @@
                 }
             }
 
-            if (replaceExisting) window.appState.chapterBuilderBlocks = [...lines];
-            else window.appState.chapterBuilderBlocks.push(...lines);
+            if (replaceExisting) {
+                window.appState.chapterBuilderBlocks = [...lines];
+            } else {
+                window.appState.chapterBuilderBlocks.push(...lines);
+            }
             if (rawEl) rawEl.value = '';
             router.render();
-            showToast(`✅ Разбито на ${lines.length} абзацев!`);
+            showToast(`✅ Текст успешно разбит на ${lines.length} абзацев!`);
         };
 
         window.uploadChapterStudioMp3Admin = async function(inputElem) {
@@ -2188,7 +2536,7 @@
             const audioData = await window.processAudioFile(file);
             if (!audioData) return;
             window.appState.draftChapterAudio = audioData;
-            showToast("🎧 MP3 прикреплен!");
+            showToast("🎧 Студийный MP3-файл прикреплен к главе!");
         };
 
         window.publishNewChapterAdmin = async function() {
@@ -2205,8 +2553,8 @@
             const isEarly = !!window.appState.draftChapterEarly;
             const blocks = (window.appState.chapterBuilderBlocks || []).map(b => b.trim()).filter(Boolean);
 
-            if (!titleRu) return alertCustom("Введите название главы!");
-            if (blocks.length === 0) return alertCustom("Добавьте абзац текста!");
+            if (!titleRu) return alertCustom("Введите название главы в верхнем поле!");
+            if (blocks.length === 0) return alertCustom("Добавьте хотя бы один абзац текста!");
 
             let openTargetId = null;
             if (window.appState.editingChapterId) {
@@ -2221,7 +2569,7 @@
                     openTargetId = existing.id;
                 }
                 window.appState.editingChapterId = null;
-                showToast(`✅ Глава «${titleRu}» обновлена!`);
+                showToast(`✅ Глава «${titleRu}» успешно обновлена!`);
             } else {
                 const newCh = {
                     id: "ch-" + Date.now(),
@@ -2239,7 +2587,7 @@
                 };
                 window.appState.chapters.push(newCh);
                 openTargetId = newCh.id;
-                showToast(`📖 Глава «${titleRu}» опубликована!`);
+                showToast(`📖 Новая глава «${titleRu}» опубликована!`);
             }
 
             window.appState.draftChapterTitle = "";
@@ -2248,6 +2596,7 @@
             router.navigate('reader', openTargetId);
         };
 
+        // --- РОУТЕР И ОТРИСОВКА ---
         window.router = {
             navigate(view, param = null) {
                 window.stopChapterVoice();
@@ -2404,11 +2753,83 @@
             `;
         }
 
+        // =========================================================================
+        // НАВИГАЦИЯ ПО ГЛАВАМ: ПРЕДЫДУЩАЯ / СПИСОК ГЛАВ / СЛЕДУЮЩАЯ
+        // =========================================================================
+        function getChapterNeighbors(chId) {
+            const list = window.appState.chapters;
+            const i = list.findIndex(c => c.id === chId);
+            return {
+                prev: i > 0 ? list[i - 1] : null,
+                next: (i >= 0 && i < list.length - 1) ? list[i + 1] : null,
+                index: i, total: list.length
+            };
+        }
+
+        window.goToChapter = function(chId) {
+            closeModal();
+            router.navigate('reader', chId);
+        };
+
+        function renderChapterNavHTML(ch) {
+            const isEn = window.appState.lang === 'EN';
+            const { prev, next, index, total } = getChapterNeighbors(ch.id);
+            const base = 'min-h-[52px] px-3 py-2.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition';
+            const prevBtn = prev
+                ? `<button type="button" onclick="goToChapter('${prev.id}')" class="${base} justify-start glass-card border border-accent-blue/50 text-sky-200 hover:border-accent-blue"><span class="text-base leading-none">‹</span><span>${isEn ? 'Previous' : 'Предыдущая'}</span></button>`
+                : `<button type="button" disabled class="${base} justify-start border border-white/10 text-gray-500 opacity-50 cursor-not-allowed"><span class="text-base leading-none">‹</span><span>${isEn ? 'Previous' : 'Предыдущая'}</span></button>`;
+            const nextBtn = next
+                ? `<button type="button" onclick="goToChapter('${next.id}')" class="${base} justify-end cosmic-gradient text-white shadow-lg"><span>${isEn ? 'Next' : 'Следующая'}</span><span class="text-base leading-none">›</span></button>`
+                : `<button type="button" disabled class="${base} justify-end border border-white/10 text-gray-500 opacity-50 cursor-not-allowed"><span>${isEn ? 'Last chapter' : 'Последняя'}</span></button>`;
+            return `
+                <nav aria-label="${isEn ? 'Chapter navigation' : 'Навигация по главам'}" class="glass-card p-2.5 rounded-2xl border border-white/15 grid grid-cols-[1fr_auto_1fr] gap-2 items-stretch">
+                    ${prevBtn}
+                    <button type="button" onclick="openChapterListMenu()" aria-label="${isEn ? 'All chapters' : 'Список глав'}" class="min-h-[52px] px-4 rounded-xl bg-white/10 border border-amber-400/50 text-amber-300 flex flex-col items-center justify-center hover:bg-white/15">
+                        <span class="text-lg leading-none">☰</span>
+                        <span class="text-[10px] font-extrabold mt-0.5">${index + 1} / ${total}</span>
+                    </button>
+                    ${nextBtn}
+                </nav>
+            `;
+        }
+
+        window.openChapterListMenu = function() {
+            const state = window.appState;
+            const isEn = state.lang === 'EN';
+            const currentId = (state.chapters.find(c => c.id === state.activeChapterId) || state.chapters[0] || {}).id;
+            const modal = document.getElementById('modal-container');
+            if (!modal) return;
+            modal.innerHTML = `
+                <div class="fixed inset-0 z-50 bg-space-900/85 backdrop-blur-md flex items-end sm:items-center justify-center p-3" onclick="if (event.target === this) closeModal()">
+                    <div class="glass-card w-full max-w-md rounded-2xl border border-amber-400/50 flex flex-col max-h-[75vh]">
+                        <div class="flex justify-between items-center p-4 border-b border-white/10">
+                            <h3 class="text-sm font-extrabold text-amber-300">${isEn ? 'Chapters' : 'Главы'} (${state.chapters.length})</h3>
+                            <button type="button" onclick="closeModal()" aria-label="${isEn ? 'Close' : 'Закрыть'}" class="text-gray-400 hover:text-white text-lg px-2">✕</button>
+                        </div>
+                        <div class="overflow-y-auto p-2 space-y-1">
+                            ${state.chapters.map((c, i) => {
+                                const active = c.id === currentId;
+                                const title = isEn ? (c.titleEn || c.titleRu) : c.titleRu;
+                                return `
+                                    <button type="button" ${active ? 'id="chapter-menu-current"' : ''} onclick="goToChapter('${c.id}')" class="w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-2.5 ${active ? 'bg-accent-blue/25 border border-accent-blue text-white' : 'border border-transparent text-gray-200 hover:bg-white/10'}">
+                                        <span class="w-7 shrink-0 text-center text-[11px] font-extrabold ${active ? 'text-amber-300' : 'text-gray-400'}">${i + 1}</span>
+                                        <span class="flex-1 text-xs font-bold leading-snug">${sanitizeHTML(title)}</span>
+                                        ${c.isEarly ? `<span class="px-1.5 py-0.5 rounded bg-amber-500 text-black text-[9px] font-extrabold shrink-0">VIP</span>` : ''}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            const cur = document.getElementById('chapter-menu-current');
+            if (cur) cur.scrollIntoView({ block: 'center' });
+        };
+
         function renderReaderView() {
             const state = window.appState;
             const isEn = state.lang === 'EN';
-            const currIdx = state.chapters.findIndex(c => c.id === state.activeChapterId);
-            const ch = (currIdx !== -1) ? state.chapters[currIdx] : state.chapters[0];
+            const ch = state.chapters.find(c => c.id === state.activeChapterId) || state.chapters[0];
             if (!ch) return `<div class="p-6 text-center">Chapter not found</div>`;
 
             if (ch.isEarly && !window.hasPremiumPrivileges(state.user.role)) {
@@ -2417,6 +2838,7 @@
                         <h2 class="text-lg font-extrabold text-amber-300">🔒 VIP Early Access Chapter</h2>
                         <button onclick="openPaymentModal()" class="px-6 py-3 rounded-xl bg-amber-500 text-black font-extrabold text-xs">👑 Unlock VIP Access</button>
                     </div>
+                    <div class="mt-4">${renderChapterNavHTML(ch)}</div>
                 `;
             }
 
@@ -2424,18 +2846,11 @@
             const activeContent = (isEn && ch.contentEn && ch.contentEn.length > 0) ? ch.contentEn : (ch.contentRu || []);
             const activeTitle = isEn ? (ch.titleEn || ch.titleRu) : ch.titleRu;
 
-            const hasPrev = currIdx > 0;
-            const hasNext = currIdx !== -1 && currIdx < state.chapters.length - 1;
-
             return `
                 <div class="space-y-5 pb-10">
-                    <!-- Панель управления и навигация верха -->
                     <div class="glass-card p-4 rounded-2xl border border-accent-blue/40 space-y-3">
                         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
-                            <div class="flex items-center space-x-2">
-                                <button onclick="router.navigate('chapters')" class="text-xs text-gray-300 font-bold">${t('backToChapters')}</button>
-                                <button onclick="openChapterDrawer()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-400/40 text-xs font-bold">${t('drawerMenu')}</button>
-                            </div>
+                            <button onclick="router.navigate('chapters')" class="text-xs text-gray-300 font-bold">${t('backToChapters')}</button>
                             <div class="flex items-center space-x-1.5">
                                 <button onclick="setReaderFontSize(-1)" class="px-2.5 py-1 rounded-lg bg-white/10 text-xs font-bold">A-</button>
                                 <span id="font-size-val" class="text-xs font-bold text-amber-300">${state.readerSettings.fontSize}px</span>
@@ -2460,7 +2875,7 @@
                             ${FONT_COLORS.map(c => `<button onclick="setReaderFontColor('${c.hex}', '${c.name}')" class="w-5 h-5 rounded-full shrink-0 border border-white/40" style="background:${c.hex};"></button>`).join('')}
                         </div>
 
-                        <!-- 8 Голосов озвучки -->
+                        <!-- 8 ЖИВЫХ ГОЛОСОВ (ВКЛЮЧАЯ БАРХАТНЫЙ ГОЛОС АНДЖЕЛИНЫ ДЖОЛИ) -->
                         <div class="pt-2 border-t border-white/10 space-y-2">
                             <label class="text-[11px] font-extrabold text-amber-300 block">${t('ttsHeader')}</label>
                             <select onchange="selectVoiceProfile(this.value)" class="w-full bg-space-900 text-white text-xs p-2.5 rounded-xl border border-accent-purple/50 font-semibold">
@@ -2477,7 +2892,6 @@
                         </div>
                     </div>
 
-                    <!-- Текст главы -->
                     <article id="novel-text-content" class="glass-card p-5 sm:p-8 rounded-3xl space-y-4 ${state.readerSettings.font}">
                         <h1 class="text-xl sm:text-2xl font-extrabold text-amber-300 border-b border-white/10 pb-3">${activeTitle}</h1>
                         ${activeContent.map((block, idx) => {
@@ -2492,20 +2906,9 @@
                         }).join('')}
                     </article>
 
-                    <!-- БЛОК ПЕРЕКЛЮЧЕНИЯ ГЛАВ (ПРЕДЫДУЩАЯ / МЕНЮ / СЛЕДУЮЩАЯ) -->
-                    <div class="glass-card p-4 rounded-2xl border border-white/15 flex items-center justify-between gap-2">
-                        <button onclick="navigateToSiblingChapter(-1)" ${!hasPrev ? 'disabled' : ''} class="px-4 py-2.5 rounded-xl glass-card border border-white/20 text-xs font-bold ${!hasPrev ? 'opacity-30 cursor-not-allowed text-gray-500' : 'text-white hover:border-amber-400'}">
-                            ${t('prevChapter')}
-                        </button>
-                        <button onclick="openChapterDrawer()" class="px-4 py-2.5 rounded-xl bg-amber-500/20 border border-amber-400/60 text-amber-300 text-xs font-extrabold shadow-md">
-                            ${t('drawerMenu')}
-                        </button>
-                        <button onclick="navigateToSiblingChapter(1)" ${!hasNext ? 'disabled' : ''} class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-accent-blue to-accent-pink text-white text-xs font-extrabold shadow-md ${!hasNext ? 'opacity-30 cursor-not-allowed' : ''}">
-                            ${t('nextChapter')}
-                        </button>
-                    </div>
+                    ${renderChapterNavHTML(ch)}
 
-                    <!-- Разноцветное пламя -->
+                    <!-- РАЗНОЦВЕТНОЕ ФЭНТЕЗИ ПЛАМЯ -->
                     <div class="glass-card p-5 rounded-3xl text-center space-y-3 border border-amber-400/40">
                         <span class="text-xs font-extrabold gold-shimmer uppercase tracking-wider block">${t('flameHeader')}</span>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
@@ -2532,7 +2935,7 @@
                         </div>
                     </div>
 
-                    <!-- Комментарии -->
+                    <!-- КОММЕНТАРИИ -->
                     <div class="glass-card p-5 rounded-3xl space-y-4 border border-white/15">
                         <h3 class="text-sm font-extrabold text-white">${t('commentsHeader')} (<span id="chapter-comments-count">${chComments.length}</span>)</h3>
                         
@@ -2702,7 +3105,7 @@
                             </div>
                             <div class="glass-card p-4 rounded-2xl space-y-3">
                                 <h3 class="text-xs font-extrabold text-white">Задать вопрос Автору или Саб-админу:</h3>
-                                <textarea id="support-msg-input" rows="2" placeholder="Опишите вопрос..." class="w-full glass-card p-3 rounded-xl text-xs text-white"></textarea>
+                                <textarea id="support-msg-input" rows="2" placeholder="Опишите ваш вопрос..." class="w-full glass-card p-3 rounded-xl text-xs text-white"></textarea>
                                 <button onclick="sendSupportTicket()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-accent-pink text-black text-xs font-extrabold">📨 Отправить обращение</button>
                             </div>
                             <div class="space-y-3">
@@ -2710,7 +3113,7 @@
                                     <div class="glass-card p-4 rounded-2xl border border-white/15 space-y-2.5">
                                         <div class="flex justify-between items-center">
                                             <span class="text-xs font-extrabold text-accent-blue">От: ${t.fromUser}</span>
-                                            <span class="text-[10px] px-2 py-0.5 rounded ${t.status==='answered'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${t.status==='answered'?'✅ Отвечено':'⏳ Ожидает ответа'}</span>
+                                            <span class="text-[10px] px-2 py-0.5 rounded ${t.status==='answered'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${t.status==='answered'?'✅ Отвечено':'⏳ Ожидает ответа (до 24ч)'}</span>
                                         </div>
                                         <p class="text-xs text-white font-semibold">❓ ${t.question}</p>
                                         ${t.autoReply ? `<div class="p-2.5 rounded-xl bg-space-900/90 border border-accent-blue/30 text-[11px] text-gray-300 whitespace-pre-line">${t.autoReply}</div>` : ''}
@@ -2743,6 +3146,7 @@
             const u = state.user;
             return `
                 <div class="space-y-5 pb-10">
+                    <!-- Карточка пользователя с прямой кнопкой смены аватарки для iPhone -->
                     <div class="glass-card p-6 rounded-3xl border border-accent-purple/50 text-center space-y-3">
                         <div onclick="triggerAvatarFilePicker()" class="relative inline-block cursor-pointer group">
                             <img id="profile-main-avatar" src="${u.avatar || DEFAULT_CREST_SVG}" class="w-24 h-24 rounded-full object-cover mx-auto ${u.frameClass || 'frame-gold'}">
@@ -2753,7 +3157,7 @@
                                 <h2 class="text-lg font-extrabold text-white">${u.name}</h2>
                                 ${getRoleBadgeHTML(u.role)}
                             </div>
-                            ${u.premiumUntil ? `<p class="text-[11px] text-amber-300 font-bold mt-0.5">Статус: ${u.premiumUntil}</p>` : ''}
+                            ${u.premiumUntil ? `<p class="text-[11px] text-amber-300 font-bold mt-0.5">Статус активен: ${u.premiumUntil}</p>` : ''}
                         </div>
                         <div class="flex flex-wrap justify-center gap-2 pt-1">
                             <button type="button" onclick="triggerAvatarFilePicker()" class="px-4 py-2.5 rounded-xl bg-accent-blue/25 border border-accent-blue text-xs font-extrabold text-sky-200 shadow-lg">
@@ -2764,16 +3168,30 @@
                         </div>
                     </div>
 
+                    <!-- СМЕНА СОБСТВЕННОГО ПАРОЛЯ ДЛЯ ЛЮБОГО ПОЛЬЗОВАТЕЛЯ -->
+                    ${u.role !== 'guest' ? `
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-emerald-400/40">
+                            <h3 class="text-sm font-extrabold text-emerald-300">${t('changePassTitle')} (${u.name})</h3>
+                            <div class="flex gap-2">
+                                <input id="user-new-password-input" type="password" placeholder="Введите ваш новый пароль..." class="flex-1 glass-card p-3 rounded-xl text-xs text-white">
+                                <button type="button" onclick="changeMyUserPassword()" class="px-4 py-3 rounded-xl bg-emerald-600 text-white text-xs font-extrabold shrink-0">${t('savePassBtn')}</button>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- ВХОД / РЕГИСТРАЦИЯ С ПАРОЛЕМ -->
                     <div class="glass-card p-5 rounded-2xl space-y-3 border border-white/10">
-                        <h3 class="text-sm font-extrabold text-white">🔐 Вход в профиль</h3>
+                        <h3 class="text-sm font-extrabold text-white">🔐 Вход / Регистрация с личным паролем</h3>
+                        <p class="text-[11px] text-gray-400">Каждый пользователь может задать свой пароль при входе. Для владельца (<b>Guardian_Angel_15</b>) и Саб-админа (<b>SubAdmin_Helper</b>) действует усиленная защита:</p>
                         <input id="auth-name-input" type="text" placeholder="Ваш никнейм..." class="w-full glass-card p-3 rounded-xl text-xs text-white">
-                        <input id="auth-email-input" type="email" placeholder="Email (необязательно)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
-                        <input id="auth-pass-input" type="password" placeholder="Пароль аккаунта..." class="w-full glass-card p-3 rounded-xl text-xs text-white border border-amber-400/40">
-                        <button type="button" onclick="loginUserAccount()" class="w-full py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Войти</button>
+                        <input id="auth-email-input" type="email" placeholder="Ваш Email (необязательно)" class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                        <input id="auth-pass-input" type="password" placeholder="Ваш пароль аккаунта..." class="w-full glass-card p-3 rounded-xl text-xs text-white border border-amber-400/40">
+                        <button type="button" onclick="loginUserAccount()" class="w-full py-3 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Войти в профиль</button>
                     </div>
 
+                    <!-- ВЫБОР РАМОК -->
                     <div class="glass-card p-5 rounded-2xl space-y-3">
-                        <h3 class="text-sm font-extrabold text-amber-300">🖼️ Рамки аватара</h3>
+                        <h3 class="text-sm font-extrabold text-amber-300">🖼️ Уникальные рамки аватара (Применяются в 1 клик)</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             ${state.avatarFrames.map(fr => {
                                 const isSelected = u.frameClass === fr.cssClass;
@@ -2783,10 +3201,22 @@
                                             <div class="w-9 h-9 rounded-full bg-space-800 shrink-0 ${fr.cssClass}"></div>
                                             <span class="text-xs font-bold text-white">${fr.name}</span>
                                         </div>
-                                        <span class="text-[10px] px-2 py-0.5 rounded ${isSelected ? 'bg-emerald-500 text-black font-extrabold' : 'text-amber-300 font-bold'}">${isSelected ? '✓' : (fr.accessType==='free'?'Free':(fr.accessType==='premium'?'👑 VIP':`${fr.priceRub}₽`))}</span>
+                                        <span class="text-[10px] px-2 py-0.5 rounded ${isSelected ? 'bg-emerald-500 text-black font-extrabold' : 'text-amber-300 font-bold'}">${isSelected ? '✓ Активна' : (fr.accessType==='free'?'Бесплатно':(fr.accessType==='premium'?'👑 VIP':`${fr.priceRub}₽`))}</span>
                                     </button>
                                 `;
                             }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <h3 class="text-sm font-extrabold text-accent-blue">💬 Эксклюзивные окна сообщений для комментариев</h3>
+                        <div class="space-y-2">
+                            ${state.commentThemes.map(ct => `
+                                <button type="button" onclick="selectUserCommentTheme('${ct.cssClass}', ${ct.isPremium}, '${ct.name}')" class="w-full p-3.5 rounded-xl ${ct.cssClass} flex justify-between items-center text-left">
+                                    <span class="text-xs font-extrabold text-white">${ct.name}</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-black/50 text-amber-300 font-bold">${u.commentTheme===ct.cssClass?'✓ Активно':(ct.isPremium?'👑 VIP':'Выбрать')}</span>
+                                </button>
+                            `).join('')}
                         </div>
                     </div>
                 </div>
@@ -2799,8 +3229,8 @@
             if ((role !== 'admin' && role !== 'subadmin') || !state.user.isOwnerAuthenticated) {
                 return `
                     <div class="glass-card p-8 rounded-3xl text-center space-y-3 border-2 border-red-500/50">
-                        <h2 class="text-base font-extrabold text-red-400">🔒 Доступ защищен</h2>
-                        <p class="text-xs text-gray-300">Войдите в Профиле под логином <b>Guardian_Angel_15</b>.</p>
+                        <h2 class="text-base font-extrabold text-red-400">🔒 Доступ к Админ-панели защищен паролем</h2>
+                        <p class="text-xs text-gray-300">Войдите в «Профиле» с секретным паролем владельца.</p>
                         <button onclick="router.navigate('profile')" class="px-5 py-2.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Перейти ко входу</button>
                     </div>
                 `;
@@ -2813,27 +3243,30 @@
                 <div class="space-y-6 pb-12">
                     <div class="glass-card p-5 rounded-2xl border border-accent-pink/50 flex flex-wrap justify-between items-center gap-2">
                         <div>
-                            <h1 class="text-lg font-extrabold text-white">⚙️ Панель Управления (${isFullOwner ? 'Владелец' : 'Саб-админ'})</h1>
-                            <p class="text-xs text-emerald-300 font-semibold">Все изменения видны моментально</p>
+                            <h1 class="text-lg font-extrabold text-white">⚙️ Защищенная Админ-Панель (${isFullOwner ? 'Владелец — Уровень 5' : 'Саб-админ — Уровень 4'})</h1>
+                            <p class="text-xs text-emerald-300 font-semibold">Все изменения мгновенно отображаются на экране</p>
                         </div>
-                        <div class="flex gap-2">
-                            <!-- КНОПКА РЕШЕНИЯ ПРОБЛЕМЫ СО ССЫЛКОЙ -->
-                            <button onclick="downloadUpdatedHtmlFile()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-accent-pink text-black text-xs font-black shadow-2xl border-2 border-white animate-pulse">
-                                🚀 Скачать код для ссылки (index.html)
-                            </button>
-                            <button onclick="exportFullSiteBackup()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">💾 Бэкап</button>
-                        </div>
+                        <button onclick="exportFullSiteBackup()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">💾 Скачать Бэкап</button>
                     </div>
 
                     ${isFullOwner ? `
-                        <!-- Обложка и герб -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-red-400/50">
+                            <h2 class="text-sm font-extrabold text-red-300">🔐 Пароли защиты входа в Админку</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                <div><span class="text-[10px] text-gray-400 block">Пароль Владельца (Guardian_Angel_15):</span><input id="sec-adm-pass" type="text" value="${state.security.adminPass}" class="w-full glass-card p-2.5 rounded-xl text-white font-bold"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Пароль Саб-админа (SubAdmin_Helper):</span><input id="sec-sub-pass" type="text" value="${state.security.subadminPass}" class="w-full glass-card p-2.5 rounded-xl text-white font-bold"></div>
+                            </div>
+                            <button onclick="saveNewAdminPasswords()" class="px-4 py-2.5 rounded-xl bg-red-600 text-white text-xs font-extrabold">💾 Обновить пароли безопасности</button>
+                        </div>
+
+                        <!-- 1. ОБЛОЖКА, ГЕРБ И НАЗВАНИЕ -->
                         <div class="glass-card p-5 rounded-2xl space-y-4 border border-amber-400/50">
-                            <h2 class="text-sm font-extrabold text-amber-300">👑 Обложка и Название</h2>
+                            <h2 class="text-sm font-extrabold text-amber-300">👑 Обложка Новеллы, Герб Сайта и Название</h2>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="p-3.5 rounded-2xl bg-space-900/80 border border-white/10 flex items-center space-x-3.5">
                                     <img src="${state.siteConfig.bannerUrl || DEFAULT_CREST_SVG}" class="w-16 h-20 rounded-xl object-cover border border-amber-400 shrink-0">
                                     <div class="space-y-2 flex-1">
-                                        <span class="text-xs font-extrabold text-white block">Обложка книги</span>
+                                        <span class="text-xs font-extrabold text-white block">Обложка новеллы</span>
                                         <label class="cursor-pointer inline-block px-3 py-2 rounded-xl bg-amber-500 text-black text-xs font-extrabold">
                                             🖼️ Загрузить обложку
                                             <input type="file" accept="image/*" onchange="previewAndApplyCoverAdmin(this)" class="hidden">
@@ -2857,11 +3290,14 @@
                             </div>
                         </div>
 
-                        <!-- Конструктор глав -->
+                        <!-- 2. УПРАВЛЕНИЕ ГЛАВАМИ -->
                         <div class="glass-card p-5 rounded-2xl space-y-4 border-2 border-accent-blue/60">
                             <div class="flex flex-wrap justify-between items-center gap-2">
-                                <h2 class="text-sm font-extrabold text-white">📖 Управление Главами</h2>
-                                <button onclick="clearChapterBuilder()" class="px-3 py-1.5 rounded-xl bg-white/10 text-xs font-bold text-amber-300">➕ Новая глава</button>
+                                <div>
+                                    <h2 class="text-sm font-extrabold text-white">📖 Управление Главами, Разбивка на Абзацы и Вставка Фото</h2>
+                                    <p class="text-[11px] text-gray-400">Редактируйте, удаляйте главы или создавайте новые с иллюстрациями между абзацами</p>
+                                </div>
+                                <button onclick="clearChapterBuilder()" class="px-3 py-1.5 rounded-xl bg-white/10 text-xs font-bold text-amber-300">➕ Новая пустая глава</button>
                             </div>
 
                             <div class="space-y-1.5 max-h-40 overflow-y-auto bg-space-900/70 p-2.5 rounded-xl border border-white/10">
@@ -2870,20 +3306,20 @@
                                         <span class="font-bold text-white truncate pr-2">${c.titleRu} (${c.date})</span>
                                         <div class="flex items-center space-x-1.5 shrink-0">
                                             <button onclick="loadChapterIntoBuilder('${c.id}')" class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 font-bold">✏️ Ред.</button>
-                                            <button onclick="deleteChapterAdmin('${c.id}', event)" class="px-2.5 py-1 rounded bg-red-600/40 text-red-200 font-bold">🗑️</button>
+                                            <button onclick="deleteChapterAdmin('${c.id}', event)" class="px-2.5 py-1 rounded bg-red-600/40 text-red-200 font-bold">🗑️ Удалить</button>
                                         </div>
                                     </div>
                                 `).join('')}
                             </div>
 
-                            <input id="adm-ch-title" type="text" value="${ sanitizeHTML(state.draftChapterTitle) }" oninput="window.appState.draftChapterTitle=this.value" placeholder="Название главы..." class="w-full glass-card p-3 rounded-xl text-xs text-white font-bold">
+                            <input id="adm-ch-title" type="text" value="${ sanitizeHTML(state.draftChapterTitle) }" oninput="window.appState.draftChapterTitle=this.value" placeholder="Название главы (напр. Глава 2: Пробуждение Клинка)" class="w-full glass-card p-3 rounded-xl text-xs text-white font-bold">
 
                             <div class="p-3.5 rounded-xl bg-space-900/90 border border-accent-blue/40 space-y-2.5">
-                                <span class="text-xs font-extrabold text-accent-blue block">📋 Вставка текста для автоматической разбивки:</span>
-                                <textarea id="adm-ch-bulk-paste" rows="4" placeholder="Вставьте сюда текст главы..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
+                                <span class="text-xs font-extrabold text-accent-blue block">📋 Вставьте текст главы целиком для автоматической разбивки на абзацы:</span>
+                                <textarea id="adm-ch-bulk-paste" rows="4" placeholder="Вставьте сюда весь текст главы — система автоматически разделит его на отдельные абзацы..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white"></textarea>
                                 <div class="flex flex-wrap gap-2">
-                                    <button type="button" onclick="importRawTextToBuilder(true)" class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">✂️ Заменить и разбить</button>
-                                    <button type="button" onclick="importRawTextToBuilder(false)" class="flex-1 py-2.5 px-3 rounded-xl bg-accent-blue text-white text-xs font-extrabold">➕ Добавить в конец</button>
+                                    <button type="button" onclick="importRawTextToBuilder(true)" class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">✂️ Заменить и разбить на абзацы</button>
+                                    <button type="button" onclick="importRawTextToBuilder(false)" class="flex-1 py-2.5 px-3 rounded-xl bg-accent-blue text-white text-xs font-extrabold">➕ Добавить абзацы в конец</button>
                                 </div>
                             </div>
 
@@ -2894,14 +3330,14 @@
                                         <div class="p-3 rounded-2xl bg-space-900/90 border ${isImg ? 'border-amber-400/60' : 'border-white/15'} space-y-2">
                                             <div class="flex flex-wrap items-center justify-between gap-2">
                                                 <span class="text-[10px] font-extrabold px-2 py-0.5 rounded ${isImg ? 'bg-amber-500 text-black' : 'bg-white/10 text-accent-blue'}">
-                                                    ${isImg ? `🖼️ ФОТО (#${idx + 1})` : `📝 АБЗАЦ #${idx + 1}`}
+                                                    ${isImg ? `🖼️ ФОТОГРАФИЯ (Блок #${idx + 1})` : `📝 АБЗАЦ #${idx + 1}`}
                                                 </span>
                                                 <div class="flex flex-wrap items-center gap-1.5">
-                                                    <button type="button" onclick="moveBuilderBlock(${idx}, -1)" class="px-2 py-1 rounded bg-white/10 text-xs font-bold">⬆️</button>
-                                                    <button type="button" onclick="moveBuilderBlock(${idx}, 1)" class="px-2 py-1 rounded bg-white/10 text-xs font-bold">⬇️</button>
-                                                    <button type="button" onclick="addParagraphAfterBuilderIdx(${idx})" class="px-2 py-1 rounded bg-accent-blue/25 text-[10px] font-extrabold text-sky-200">+ Абзац</button>
-                                                    <label class="cursor-pointer px-2.5 py-1 rounded bg-amber-500/25 text-[10px] font-extrabold text-amber-300">
-                                                        📸 + Фото
+                                                    <button type="button" onclick="moveBuilderBlock(${idx}, -1)" class="px-2 py-1 rounded bg-white/10 text-xs font-bold">⬆️ Вверх</button>
+                                                    <button type="button" onclick="moveBuilderBlock(${idx}, 1)" class="px-2 py-1 rounded bg-white/10 text-xs font-bold">⬇️ Вниз</button>
+                                                    <button type="button" onclick="addParagraphAfterBuilderIdx(${idx})" class="px-2 py-1 rounded bg-accent-blue/25 border border-accent-blue/50 text-[10px] font-extrabold text-sky-200">+ Абзац ниже</button>
+                                                    <label class="cursor-pointer px-2.5 py-1 rounded bg-amber-500/25 border border-amber-400/60 text-[10px] font-extrabold text-amber-300">
+                                                        📸 + Фото после абзаца
                                                         <input type="file" accept="image/*" onchange="insertPhotoAfterBuilderIdx(${idx}, this)" class="hidden">
                                                     </label>
                                                     <button type="button" onclick="removeBuilderBlock(${idx})" class="px-2 py-1 rounded bg-red-600/40 text-red-200 text-xs font-bold">✕</button>
@@ -2913,21 +3349,152 @@
                                 }).join('')}
                             </div>
 
+                            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
+                                <label class="flex items-center space-x-2 text-xs text-amber-300 font-bold">
+                                    <input id="adm-ch-early" type="checkbox" ${state.draftChapterEarly ? 'checked' : ''} onchange="window.appState.draftChapterEarly=this.checked" class="rounded">
+                                    <span>👑 Ранний VIP-доступ</span>
+                                </label>
+                                <label class="cursor-pointer px-3.5 py-2 rounded-xl glass-card border border-accent-pink/50 text-accent-pink text-xs font-extrabold">
+                                    🎧 Прикрепить MP3 главы
+                                    <input type="file" accept="audio/*,.mp3,.wav,.m4a" onchange="uploadChapterStudioMp3Admin(this)" class="hidden">
+                                </label>
+                            </div>
+
                             <button type="button" onclick="publishNewChapterAdmin()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-accent-blue to-accent-pink text-white text-xs font-extrabold shadow-xl">
-                                🚀 ${state.editingChapterId ? 'Сохранить изменения' : 'Опубликовать главу'}
+                                🚀 ${state.editingChapterId ? 'Сохранить изменения и открыть главу' : 'Опубликовать главу и открыть ее'}
                             </button>
                         </div>
+
+                        <!-- 3. ДОБАВЛЕНИЕ И УДАЛЕНИЕ МУЗЫКИ + ФОНЫ -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-pink/40">
+                                <h2 class="text-sm font-extrabold text-accent-pink">🎵 Управление Фоновой Музыкой (${state.music.tracks.length})</h2>
+                                <input id="adm-music-title" type="text" placeholder="Название новой мелодии..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <button type="button" onclick="triggerMusicFilePicker(false)" class="w-full py-2.5 px-3 rounded-xl bg-accent-pink text-white text-xs font-extrabold flex items-center justify-center shadow-lg">
+                                    🎼 Выбрать MP3 / WAV / M4A с устройства
+                                </button>
+                                <div class="flex gap-1.5">
+                                    <input id="adm-music-url" type="url" placeholder="Или прямая ссылка на MP3..." class="flex-1 glass-card p-2 rounded-xl text-xs text-white">
+                                    <button type="button" onclick="addMusicByDirectUrl(false)" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">+ URL</button>
+                                </div>
+                                <div class="space-y-1.5 max-h-40 overflow-y-auto pt-2">
+                                    ${state.music.tracks.map(t => `
+                                        <div class="flex items-center justify-between p-2 rounded-lg bg-space-900 text-xs">
+                                            <span class="truncate pr-2">${t.icon} ${t.name}</span>
+                                            <div class="flex items-center space-x-1 shrink-0">
+                                                <button onclick="playMusicTrack('${t.id}')" class="px-2 py-0.5 rounded bg-accent-pink/30 text-white font-bold">${state.music.currentId===t.id && state.music.isPlaying ? '⏹' : '▶'}</button>
+                                                <button onclick="deleteMusicTrack('${t.id}', event)" class="px-2 py-0.5 rounded bg-red-600/40 text-red-200 font-bold">🗑️</button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-blue/40">
+                                <h2 class="text-sm font-extrabold text-accent-blue">🌌 Добавить фон сайта (С предпросмотром)</h2>
+                                <input id="adm-bg-name" type="text" placeholder="Название фона..." class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <label class="flex items-center space-x-2 text-xs text-gray-300">
+                                    <input id="adm-bg-prem" type="checkbox">
+                                    <span>Сделать фон эксклюзивным для VIP</span>
+                                </label>
+                                <label class="cursor-pointer w-full py-2.5 px-3 rounded-xl bg-white/10 border border-accent-blue text-white text-xs font-extrabold flex items-center justify-center">
+                                    🖼️ 1. Выбрать картинку фона
+                                    <input type="file" accept="image/*" onchange="previewBackgroundBeforeAdd(this, 'adm-bg-preview')" class="hidden">
+                                </label>
+                                <div id="adm-bg-preview" class="hidden text-center"></div>
+                                <button type="button" onclick="confirmSaveNewBackground(false)" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">✅ 2. Установить и сохранить фон</button>
+                            </div>
+                        </div>
+
+                        <!-- 4. СТИКЕРЫ -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-amber-400/40">
+                            <h2 class="text-sm font-extrabold text-amber-300">✨ Стикеры для комментариев (${state.stickers.length})</h2>
+                            <div class="flex flex-wrap gap-2">
+                                <input id="adm-sticker-name" type="text" placeholder="Название стикера..." class="flex-1 glass-card p-2.5 rounded-xl text-xs text-white">
+                                <label class="cursor-pointer px-4 py-2.5 rounded-xl bg-amber-500 text-black text-xs font-extrabold">
+                                    ➕ Загрузить стикер
+                                    <input type="file" accept="image/*" onchange="uploadNewStickerAdmin(this)" class="hidden">
+                                </label>
+                            </div>
+                            <div class="flex gap-2.5 overflow-x-auto pt-2">
+                                ${state.stickers.map(st => `
+                                    <div class="p-2 rounded-xl bg-space-900 border border-white/10 flex flex-col items-center w-24 shrink-0">
+                                        <img src="${st.url}" class="w-12 h-12 object-contain">
+                                        <span class="text-[9px] text-gray-300 truncate w-full text-center mt-1">${st.name}</span>
+                                        <button onclick="deleteStickerAdmin('${st.id}')" class="mt-1 text-[9px] text-red-400 font-bold">Удалить</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- 5. ПЛАТЕЖНАЯ СИСТЕМА -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-emerald-400/50">
+                            <div class="flex flex-wrap justify-between items-center gap-2">
+                                <div>
+                                    <h2 class="text-sm font-extrabold text-emerald-300">💳 Платежная система, Цены и Баланс Автора</h2>
+                                    <p class="text-xs text-white font-bold">Баланс: <span class="text-emerald-400">${fin.balanceRub} ₽ ($${fin.balanceUsd})</span> • VIP подписчиков: ${fin.premiumSubscribers}</p>
+                                </div>
+                                <button onclick="withdrawAuthorFunds()" class="px-4 py-2 rounded-xl bg-emerald-500 text-black text-xs font-extrabold">💸 Вывести средства</button>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                                <div><span class="text-[10px] text-gray-400 block">VIP Месяц (₽)</span><input id="price-prem-rub" type="number" value="${fin.prices.premiumMonthRub}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">VIP Месяц ($)</span><input id="price-prem-usd" type="number" step="0.1" value="${fin.prices.premiumMonthUsd}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Ранние главы (₽)</span><input id="price-ch-rub" type="number" value="${fin.prices.chapterPriceRub}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Ранние главы ($)</span><input id="price-ch-usd" type="number" step="0.1" value="${fin.prices.chapterPriceUsd}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Спойлер-папка (₽)</span><input id="price-spoiler-rub" type="number" value="${fin.prices.spoilerFolderPriceRub}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                                <div><span class="text-[10px] text-gray-400 block">Спойлер-папка ($)</span><input id="price-spoiler-usd" type="number" step="0.1" value="${fin.prices.spoilerFolderPriceUsd}" class="w-full glass-card p-2 rounded-lg text-white"></div>
+                            </div>
+                            <div class="space-y-2 pt-2">
+                                <input id="fin-holder" type="text" value="${fin.payoutDetails.cardHolder}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-mir" type="text" value="${fin.payoutDetails.mirCard}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-sbp" type="text" value="${fin.payoutDetails.sbpPhone}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-visa" type="text" value="${fin.payoutDetails.visaMastercard}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-unionpay" type="text" value="${fin.payoutDetails.unionPayCard}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-paypal" type="text" value="${fin.payoutDetails.paypalEmail}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <input id="fin-boosty" type="text" value="${fin.payoutDetails.boostyUrl}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <span class="text-[10px] text-gray-400 block mt-2">Ссылка на ваш Patreon (кнопка оплаты):</span>
+                                <input id="fin-patreon" type="text" value="${fin.payoutDetails.patreonUrl || 'https://www.patreon.com/'}" class="w-full glass-card p-2.5 rounded-xl text-xs text-white">
+                                <button onclick="saveFinanceAndPricesAdmin()" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">💾 Сохранить реквизиты и цены</button>
+                            </div>
+                        </div>
+
+                        <!-- КЛЮЧ ELEVENLABS -->
+                        <div class="glass-card p-5 rounded-2xl space-y-3 border border-accent-purple/50">
+                            <h2 class="text-sm font-extrabold text-white">🎙️ Ваш платный API-ключ ElevenLabs (Для 8 живых голосов)</h2>
+                            <input id="elevenlabs-key-input" type="password" value="${state.tts.elevenLabsApiKey}" placeholder="Вставьте xi-api-key от ElevenLabs..." class="w-full glass-card p-3 rounded-xl text-xs text-white">
+                            <button onclick="saveElevenLabsKey()" class="w-full py-2.5 rounded-xl cosmic-gradient text-white text-xs font-extrabold">Сохранить ключ ElevenLabs</button>
+                        </div>
                     ` : ''}
+
+                    <!-- МОДЕРАЦИЯ -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border border-white/15">
+                        <h2 class="text-sm font-extrabold text-amber-300">🛡️ Пользователи, Мьют и Саб-админ</h2>
+                        <div class="space-y-2">
+                            ${state.registeredUsers.map(u => `
+                                <div class="p-3 rounded-xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs font-extrabold text-white">${u.name}</span>
+                                        ${getRoleBadgeHTML(u.role)}
+                                        ${u.isMuted ? `<span class="text-[10px] text-amber-400 font-extrabold">🔇 В МЬЮТЕ</span>` : ''}
+                                        ${u.isBanned ? `<span class="text-[10px] text-red-400 font-extrabold">🚫 БАН</span>` : ''}
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        ${(u.role !== 'admin' && u.role !== 'subadmin') ? `<button onclick="grantPremiumAdmin('${u.id}')" class="px-2.5 py-1 rounded-lg bg-amber-500/30 border border-amber-400 text-amber-200 text-[10px] font-bold">${u.role === 'premium' ? 'Снять VIP' : '👑 Выдать VIP (30 дн.)'}</button>` : ''}
+                                        <button onclick="toggleMuteUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[10px] font-bold">${u.isMuted ? '🔊 Снять мьют' : '🔇 Мьют'}</button>
+                                        ${isFullOwner ? `
+                                            <button onclick="setSubAdminRole('${u.id}')" class="px-2.5 py-1 rounded-lg bg-purple-600/30 border border-purple-400 text-purple-200 text-[10px] font-bold">${u.role==='subadmin'?'Снять Саб-админа':'🛡️ Сделать Саб-админом'}</button>
+                                            <button onclick="toggleBanUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-red-600/30 border border-red-400 text-red-200 text-[10px] font-bold">${u.isBanned ? 'Разбанить' : '🚫 Бан'}</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>
             `;
         }
 
         async function initApp() {
-            // Если в файле уже есть предзагруженные данные, используем их для всех, кто зашел по ссылке!
-            if (typeof PRELOADED_EXPORT_STATE !== 'undefined' && PRELOADED_EXPORT_STATE) {
-                Object.assign(window.appState, PRELOADED_EXPORT_STATE);
-            }
-
             const savedData = await LocalDB.load('novel_full_data_v15');
             if (savedData) {
                 const defaultProfiles = window.appState.tts.profiles;
@@ -2935,7 +3502,49 @@
                 Object.assign(window.appState, savedData);
                 window.appState.tts.profiles = defaultProfiles;
                 window.appState.worldBible = defaultBible;
+                if (savedData.musicTracks) window.appState.music.tracks = savedData.musicTracks;
             }
+            if (Cloud.enabled) {
+                try {
+                    const remote = await Cloud.loadAll();
+                    // likes применяем раньше глав, чтобы главы сразу получили актуальные счётчики
+                    if (remote.chapterLikes) applyCloudValue(window.appState, 'chapterLikes', remote.chapterLikes);
+                    Object.keys(remote).forEach(k => { if (k !== 'chapterLikes') applyCloudValue(window.appState, k, remote[k]); });
+                    if (remote.chapterLikes) applyCloudValue(window.appState, 'chapterLikes', remote.chapterLikes);
+                } catch (e) {
+                    console.error('Cloud load error', e);
+                    showToast('⚠️ Не удалось загрузить данные сайта из облака. Показана сохранённая копия.', 'error');
+                }
+                // Если локально «вошёл как Автор», но серверной сессии нет — сбрасываем вход
+                const u = window.appState.user;
+                if (u.isOwnerAuthenticated && !(await Cloud.isOwnerSession())) {
+                    window.appState.saveSession({
+                        uid: null, name: "Гость", email: null, role: "guest",
+                        avatar: DEFAULT_CREST_SVG, frameClass: "frame-none", commentTheme: "comm-theme-default",
+                        unlockedSpoilers: [], isBanned: false, isMuted: false, premiumUntil: null, isOwnerAuthenticated: false
+                    });
+                    showToast('Войдите в профиль Автора снова', 'error');
+                }
+                Cloud.subscribe((key, value) => {
+                    applyCloudValue(window.appState, key, value);
+                    if (key === 'registeredUsers') window.syncMyRoleFromRegistry();
+                    if (key === 'commentThemes') window.injectCustomCommentThemesCSS();
+                    safeRerenderAfterRemote();
+                });
+                // При возврате на вкладку — подтягиваем свежие данные
+                document.addEventListener('visibilitychange', async () => {
+                    if (document.visibilityState !== 'visible') return;
+                    try {
+                        const before = JSON.stringify(Cloud.lastSynced);
+                        const remote = await Cloud.loadAll();
+                        if (JSON.stringify(Cloud.lastSynced) === before) return;
+                        Object.keys(remote).forEach(k => applyCloudValue(window.appState, k, remote[k]));
+                        if (remote.chapterLikes) applyCloudValue(window.appState, 'chapterLikes', remote.chapterLikes);
+                        safeRerenderAfterRemote();
+                    } catch (e) {}
+                });
+            }
+            window.syncMyRoleFromRegistry();
             window.injectCustomCommentThemesCSS();
             window.applyReaderTypography();
             if (window.appState.readerSettings?.activeBgId) {
