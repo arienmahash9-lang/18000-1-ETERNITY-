@@ -442,8 +442,8 @@
         // Пока поля пустые, сайт работает по-старому (только локально).
         // =========================================================================
         const CLOUD_CONFIG = {
-            url: "https://gtathywdtouhpupnnomu.supabase.co"
-            anonKey: "sb_publishable_aC8OZaOvPDpocJJfH48IOQ_uKLTQhnB"
+            url: "https://gtathywdtouhpupnnomu.supabase.co",
+            anonKey: "sb_publishable_aC8OZaOvPDpocJJfH48IOQ_uKLTQhnB",
             bucket: "media"
         };
 
@@ -521,6 +521,11 @@
             }
         };
         Cloud.init();
+
+        // Защита от «зависания»: если облако не отвечает, сайт всё равно открывается
+        function withTimeout(promise, ms) {
+            return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+        }
 
         async function hashPassword(p) {
             try {
@@ -3506,7 +3511,7 @@
             }
             if (Cloud.enabled) {
                 try {
-                    const remote = await Cloud.loadAll();
+                    const remote = await withTimeout(Cloud.loadAll(), 8000);
                     // likes применяем раньше глав, чтобы главы сразу получили актуальные счётчики
                     if (remote.chapterLikes) applyCloudValue(window.appState, 'chapterLikes', remote.chapterLikes);
                     Object.keys(remote).forEach(k => { if (k !== 'chapterLikes') applyCloudValue(window.appState, k, remote[k]); });
@@ -3517,7 +3522,7 @@
                 }
                 // Если локально «вошёл как Автор», но серверной сессии нет — сбрасываем вход
                 const u = window.appState.user;
-                if (u.isOwnerAuthenticated && !(await Cloud.isOwnerSession())) {
+                if (u.isOwnerAuthenticated && !(await withTimeout(Cloud.isOwnerSession(), 5000).catch(() => false))) {
                     window.appState.saveSession({
                         uid: null, name: "Гость", email: null, role: "guest",
                         avatar: DEFAULT_CREST_SVG, frameClass: "frame-none", commentTheme: "comm-theme-default",
@@ -3525,12 +3530,12 @@
                     });
                     showToast('Войдите в профиль Автора снова', 'error');
                 }
-                Cloud.subscribe((key, value) => {
+                try { Cloud.subscribe((key, value) => {
                     applyCloudValue(window.appState, key, value);
                     if (key === 'registeredUsers') window.syncMyRoleFromRegistry();
                     if (key === 'commentThemes') window.injectCustomCommentThemesCSS();
                     safeRerenderAfterRemote();
-                });
+                }); } catch (e) { console.error('Realtime error', e); }
                 // При возврате на вкладку — подтягиваем свежие данные
                 document.addEventListener('visibilitychange', async () => {
                     if (document.visibilityState !== 'visible') return;
@@ -3559,7 +3564,7 @@
             window.router.render();
         }
 
-        initApp();
+        initApp().catch(e => { console.error('Init error', e); try { window.router.render(); } catch (_) {} });
     </script>
 </body>
 </html>
